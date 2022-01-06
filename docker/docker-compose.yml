@@ -1,0 +1,19 @@
+version: '3.9'
+
+
+services:
+  main:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: kagemeka/dsalgo-rust
+    restart: on-failure
+    tty: true
+    volumes:
+      - type: bind
+        source: $ROOT
+        target: /root/$PROJECT
+        volume: 
+          nocopy: true
+    working_dir: /root/$PROJECT
+  
