@@ -1,0 +1,34 @@
+[package]
+name = "dsalgo"
+version = "0.1.0"
+edition = "2018"
+
+documentation = "https://docs.rs/dsalgo"
+readme = "README.md"
+description = "A package for Datastructures and Algorithms."
+homepage = "https://github.com/kagemeka/rust-algorithms"
+repository = "https://github.com/kagemeka/rust-algorithms"
+license = "MIT"
+keywords = ["algorithms", "data-structures"]
+category = ["algorithms", "data-structures"]
+
+
+exclude = [
+    "docker/",
+]
+
+
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+
+
+
+[workspace]
+members = []
+
+
+
+
