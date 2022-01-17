@@ -33,7 +33,8 @@ impl<'a, S: Default + Clone> SparseTable<'a, S> {
     /// O(1)
     pub fn get(&self, l: usize, r: usize) -> S {
         assert!(l < r && r <= self.data[0].len());
-        let k = bit_length(r - l) - 1;
+        if r - l == 1 { return self.data[0][l].clone(); }
+        let k = bit_length(r - 1 - l) - 1;
         (self.sg.op)(&self.data[k][l], &self.data[k][r - (1 << k)])
     }
 }
@@ -76,7 +77,7 @@ impl<'a, S: Default + Clone> DisjointSparseTable<'a, S> {
     pub fn get(&self, l: usize, r: usize) -> S {
         assert!(l < r && r <= self.data[0].len());
         if r - l == 1 { return self.data[0][l].clone(); }
-        let k = bit_length(l ^ r) - 1;
+        let k = bit_length(l ^ (r - 1)) - 1;
         (self.sg.op)(&self.data[k][l], &self.data[k][r - 1])
     }
 }
