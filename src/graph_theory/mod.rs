@@ -10,7 +10,7 @@ pub mod tree_diameter;
 pub mod euler_tour;
 pub mod rerooting;
 pub mod tree_bfs;
-pub mod lca;
+pub mod lowest_common_ancestor;
 pub mod max_flow;
 pub mod max_cardinal_match;
 pub mod min_cost_flow;
