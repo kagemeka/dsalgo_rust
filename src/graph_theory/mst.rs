@@ -109,8 +109,7 @@ pub fn boruvka(n: usize, g: &Vec<(usize, usize, i64)>) -> Vec<(usize, usize, i64
 
 
 
-/// references
-/// - https://en.wikipedia.org/wiki/Reverse-delete_algorithm
+
 pub fn reverse_delete() {}
 
 

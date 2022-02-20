@@ -21,10 +21,6 @@ impl std::error::Error for NonDAGError {
 }
 
 
-/// topological sort with dfs
-/// O(V + E)
-/// references
-/// - https://en.wikipedia.org/wiki/Topological_sorting
 pub fn with_dfs(g: &Vec<Vec<usize>>) -> Result<Vec<usize>, NonDAGError> {
     fn dfs(g: &Vec<Vec<usize>>, state: &mut Vec<u8>, result: &mut Vec<usize>, u: usize) -> Result<(), NonDAGError> {
         if state[u] == 1 { return Err(NonDAGError::new()); }
@@ -48,10 +44,7 @@ pub fn with_dfs(g: &Vec<Vec<usize>>) -> Result<Vec<usize>, NonDAGError> {
 }
 
 
-/// topological sort kahn algorithm
-/// O(V + E)
-/// references
-/// - https://en.wikipedia.org/wiki/Topological_sorting
+
 pub fn kahn(g: &Vec<Vec<usize>>) -> Result<Vec<usize>, NonDAGError> {
     let n = g.len();
     let mut in_deg = vec![0u32; n];

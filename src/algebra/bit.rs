@@ -1,11 +1,3 @@
-//! bit operations.
-//! references
-//! - https://www.slideshare.net/KMC_JP/slide-www
-//! - https://qiita.com/zawawahoge/items/8bbd4c2319e7f7746266
-//! - https://rsk0315.hatenablog.com/entry/2019/11/02/064952
-//! - https://stackoverflow.com/questions/746171/efficient-algorithm-for-bit-reversal-from-msb-lsb-to-lsb-msb-in-c
-
-
 /// O(1)
 pub fn msb(n: usize) -> isize { 0usize.leading_zeros() as isize - n.leading_zeros() as isize - 1 }
 

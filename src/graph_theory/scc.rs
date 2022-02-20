@@ -1,8 +1,5 @@
 
-/// scc path based algorithm 
-/// O(V + E)
-/// references
-/// - https://en.wikipedia.org/wiki/Path-based_strong_component_algorithm
+
 pub fn path_based(g: &Vec<Vec<usize>>) -> Vec<usize> {
     fn dfs(
         g: &Vec<Vec<usize>>, 
@@ -49,10 +46,7 @@ pub fn path_based(g: &Vec<Vec<usize>>) -> Vec<usize> {
 }
 
 
-/// scc Tarjan with lowlink
-/// O(V + E)
-/// references
-/// - https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
+
 pub fn tarjan(g: &Vec<Vec<usize>>) -> Vec<usize> {
     fn dfs(
         g: &Vec<Vec<usize>>, 
@@ -104,10 +98,6 @@ pub fn tarjan(g: &Vec<Vec<usize>>) -> Vec<usize> {
 
 
 
-/// scc Kosaraju 
-/// O(V + E)
-/// references
-/// - https://en.wikipedia.org/wiki/Kosaraju%27s_algorithm
 pub fn kosaraju(g: &Vec<Vec<usize>>) -> Vec<usize> {
     fn dfs(g: &Vec<Vec<usize>>, visited: &mut Vec<bool>, que: &mut Vec<usize>, u: usize) {
         visited[u] = true;

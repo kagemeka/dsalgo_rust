@@ -29,9 +29,6 @@ impl UnionFind {
 }
 
 
-/// https://nyaannyaan.github.io/library/data-structure/rollback-union-find.hpp.html
-/// https://usaco.guide/adv/offline-del?lang=cpp
-/// https://noshi91.hatenablog.com/entry/2018/05/30/191943
 pub struct RollbackUnionFind {}
 
 
