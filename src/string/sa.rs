@@ -1,7 +1,6 @@
 use crate::vector::compress_array;
 
 
-/// O(N|log^2{N})
 pub fn sa_doubling(a: &Vec<usize>) -> Vec<usize> {
     let n = a.len();
     let (mut rank, _) = compress_array(&a);
@@ -27,7 +26,6 @@ pub fn sa_doubling(a: &Vec<usize>) -> Vec<usize> {
 }
   
 
-/// O(N\log{N})
 pub fn sa_doubling_with_countsort(a: &Vec<usize>) -> Vec<usize> {
     let n = a.len();
     let counting_sort_key = |a: &Vec<usize>| -> Vec<usize> {
@@ -67,11 +65,6 @@ pub fn sa_doubling_with_countsort(a: &Vec<usize>) -> Vec<usize> {
 }
 
 
-
-/// suffix array with induced sort.
-/// O(N)
-/// references
-/// - https://mametter.hatenablog.com/entry/20180130/p1
 pub fn sa_is(a: &Vec<usize>) -> Vec<usize> {
     assert!(a.len() > 0);
     let mn = *a.iter().min().unwrap();

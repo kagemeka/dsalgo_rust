@@ -2,10 +2,6 @@ use crate::algebra::{bit::bit_length, abstract_::structure::structs::Semigroup};
 
 
 
-
-/// Sparse Table 
-/// references
-/// - https://cp-algorithms.com/data_structures/sparse-table.html
 pub struct SparseTable<'a, S> {
     sg: Semigroup<'a, S>,
     data: Vec<Vec<S>>, 
@@ -41,11 +37,7 @@ impl<'a, S: Default + Clone> SparseTable<'a, S> {
 
 
 
-
-/// Disjoint Sparse Table 
-/// references
-/// - https://noshi91.hatenablog.com/entry/2018/05/08/183946
-/// - https://github.com/noshi91/NoshiMochiLibrary/blob/master/SparseTable/DisjointSparseTable.noshi.cpp
+DisjointSparseTable.noshi.cpp
 pub struct DisjointSparseTable<'a, S> {
     sg: Semigroup<'a, S>,
     data: Vec<Vec<S>>, 

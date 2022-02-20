@@ -1,12 +1,4 @@
 
-/// Max Cardinal match on bipartite graph, ford fulkerson.
-/// O(VE)
-/// references
-/// - https://en.wikipedia.org/wiki/Maximum_cardinality_matching
-/// - https://ei1333.github.io/luzhiled/snippets/graph/bipartite-matching.html
-/// - https://ei1333.github.io/algorithm/bipartite-matching.html
-/// - https://onlinejudge.u-aizu.ac.jp/solutions/problem/GRL_7_A/review/5630283/ngtkana/Rust
-/// - https://onlinejudge.u-aizu.ac.jp/solutions/problem/GRL_7_A/review/4329190/sansen/Rust
 pub fn ford_fulkerson(size_a: usize, size_b: usize, g: &[(usize, usize)]) -> Vec<Option<usize>> {
     fn dfs(g: &[Vec<usize>], pair: &mut [Option<usize>], visited: &mut [bool], u: usize) -> bool {
         visited[u] = true;
@@ -33,15 +25,7 @@ pub fn ford_fulkerson(size_a: usize, size_b: usize, g: &[(usize, usize)]) -> Vec
 }
 
 
-/// Max Cardinal match on bipartite graph, hopcroft karp.
-/// O((E + V)\sqrt{V})
-/// references
-/// - https://en.wikipedia.org/wiki/Maximum_cardinality_matching
-/// - https://misteer.hatenablog.com/entry/hopcroft-karp 
-/// - https://tjkendev.github.io/procon-library/python/max_flow/hopcroft-karp.html
-/// - https://ei1333.github.io/algorithm/bipartite-matching.html
-/// - https://www.youtube.com/watch?v=lM5eIpF0xjA
-/// - https://judge.yosupo.jp/submission/6963
+
 pub fn hopcroft_karp(size_a: usize, size_b: usize, g: &[(usize, usize)]) -> Vec<Option<usize>> {
     let bfs = |g: &[Vec<usize>], matched: &[bool], pair_a: &[Option<usize>]| -> Vec<usize> {
         let mut que = std::collections::VecDeque::new();
@@ -101,10 +85,5 @@ pub fn hopcroft_karp(size_a: usize, size_b: usize, g: &[(usize, usize)]) -> Vec<
 }
 
 
-/// Max Cardinal match on arbitral graph, blossom algorithm.
-/// O(V^2E)
-/// references
-/// - https://en.wikipedia.org/wiki/Maximum_cardinality_matching
-/// - https://en.wikipedia.org/wiki/Blossom_algorithm
 pub fn blossom() {
 }

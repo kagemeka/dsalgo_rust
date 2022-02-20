@@ -1,7 +1,4 @@
 /// Tensor NDIM >= 1
-/// references
-/// - https://github.com/okayplanet/tensor/blob/master/src/tensor/mod.rs
-/// - https://github.com/ecnerwala/cp-book/blob/master/src/tensor.hpp
 #[derive(Clone)]
 pub struct Tensor<T, const NDIM: usize> {
     shape: [usize; NDIM],

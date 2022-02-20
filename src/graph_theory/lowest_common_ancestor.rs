@@ -7,12 +7,6 @@ use crate::algebra::abstract_::structure::structs::*;
 
 
 
-/// Lowest Common Ancestor with Tarjan's offline algorithm.
-/// O(V + Q) preprocessing, O(1) per query.
-/// references
-/// - https://cp-algorithms.com/graph/lca_tarjan.html 
-/// - https://en.wikipedia.org/wiki/Tarjan%27s_off-line_lowest_common_ancestors_algorithm
-/// - https://tjkendev.github.io/procon-library/python/graph/lca-tarjan.html
 pub fn tarjan_offline(g: &Vec<(usize, usize)>, uv: &Vec<(usize, usize)>, root: usize) -> Vec<usize> {
     fn dfs(
         g: &Vec<Vec<usize>>, 
@@ -56,9 +50,7 @@ pub fn tarjan_offline(g: &Vec<(usize, usize)>, uv: &Vec<(usize, usize)>, root: u
 
 
 
-/// Lowest Common Ancestor with Binary Lifting.
-/// references
-/// - https://cp-algorithms.com/graph/lca_binary_lifting.html 
+
 pub struct BinaryLifting {
     ancestor: Vec<Vec<usize>>,
     depth: Vec<usize>,    
@@ -66,7 +58,6 @@ pub struct BinaryLifting {
 
 
 impl BinaryLifting {
-    /// O(N\log{N})
     pub fn new(g: &Vec<(usize, usize)>, root: usize) -> Self {
         let n = g.len() + 1;
         let (parent, depth) = tree_bfs(g, root);
@@ -82,7 +73,6 @@ impl BinaryLifting {
         Self { ancestor: ancestor, depth: depth }
     }
 
-    /// O(\log{N})
     pub fn get(&self, mut u: usize, mut v: usize) -> usize {
         if self.depth[u] > self.depth[v] { std::mem::swap(&mut u, &mut v); }
         let d = self.depth[v] - self.depth[u];
@@ -172,7 +162,5 @@ pub mod eulertour_rmq {
 
 }
 
-/// references
-/// - https://ei1333.hateblo.jp/entry/2018/05/29/011140
-/// - https://www.slideshare.net/iwiwi/2-12188845
+
 pub struct WithHLD {}

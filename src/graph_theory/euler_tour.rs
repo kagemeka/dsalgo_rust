@@ -1,8 +1,4 @@
-/// references
-/// - https://codeforces.com/blog/entry/18369
-/// - https://en.wikipedia.org/wiki/Euler_tour_technique
-/// - https://cp-algorithms.com/graph/euler_path.html
-/// - https://maspypy.com/euler-tour-%E3%81%AE%E3%81%8A%E5%8B%89%E5%BC%B7
+
 pub fn euler_tour_edge(g: &Vec<(usize, usize)>, root: usize) -> (Vec<isize>, Vec<usize>, Vec<usize>) {
     let n = g.len() + 1;
     let mut t = vec![vec![]; n];
