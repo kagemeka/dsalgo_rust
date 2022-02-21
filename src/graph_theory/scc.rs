@@ -1,8 +1,6 @@
-
-
 pub fn path_based(g: &Vec<Vec<usize>>) -> Vec<usize> {
     fn dfs(
-        g: &Vec<Vec<usize>>, 
+        g: &Vec<Vec<usize>>,
         order: &mut Vec<usize>,
         label: &mut Vec<usize>,
         st_0: &mut Vec<usize>,
@@ -19,14 +17,18 @@ pub fn path_based(g: &Vec<Vec<usize>>) -> Vec<usize> {
             if order[v] == g.len() {
                 dfs(g, order, label, st_0, st_1, v, ord, l);
             } else if label[v] == g.len() {
-                while order[*st_0.last().unwrap()] > order[v] { st_0.pop(); }
+                while order[*st_0.last().unwrap()] > order[v] {
+                    st_0.pop();
+                }
             }
         }
         if *st_0.last().unwrap() == u {
             loop {
                 let v = st_1.pop().unwrap();
                 label[v] = *l;
-                if v == u { break; }
+                if v == u {
+                    break;
+                }
             }
             *l += 1;
             st_0.pop();
@@ -40,16 +42,19 @@ pub fn path_based(g: &Vec<Vec<usize>>) -> Vec<usize> {
     let mut ord = 0;
     let mut l = 0;
     for i in 0..n {
-        if order[i] == n { dfs(g, &mut order, &mut label, &mut st_0, &mut st_1, i, &mut ord, &mut l); }
+        if order[i] == n {
+            dfs(
+                g, &mut order, &mut label, &mut st_0, &mut st_1, i, &mut ord,
+                &mut l,
+            );
+        }
     }
     label
 }
 
-
-
 pub fn tarjan(g: &Vec<Vec<usize>>) -> Vec<usize> {
     fn dfs(
-        g: &Vec<Vec<usize>>, 
+        g: &Vec<Vec<usize>>,
         order: &mut Vec<usize>,
         low: &mut Vec<usize>,
         label: &mut Vec<usize>,
@@ -67,7 +72,9 @@ pub fn tarjan(g: &Vec<Vec<usize>>) -> Vec<usize> {
         for v in g[u].iter().map(|x| *x) {
             if order[v] == g.len() {
                 dfs(g, order, low, label, on_stack, st, v, ord, l);
-                if low[v] < low[u] { low[u] = low[v]; }
+                if low[v] < low[u] {
+                    low[u] = low[v];
+                }
             } else if on_stack[v] && order[v] < low[u] {
                 low[u] = order[v];
             }
@@ -77,7 +84,9 @@ pub fn tarjan(g: &Vec<Vec<usize>>) -> Vec<usize> {
                 let v = st.pop().unwrap();
                 on_stack[v] = false;
                 label[v] = *l;
-                if v == u { break; }
+                if v == u {
+                    break;
+                }
             }
             *l += 1;
         }
@@ -91,25 +100,49 @@ pub fn tarjan(g: &Vec<Vec<usize>>) -> Vec<usize> {
     let mut ord = 0;
     let mut l = 0;
     for i in 0..n {
-        if order[i] == n { dfs(g, &mut order, &mut low, &mut label, &mut on_stack, &mut st, i, &mut ord, &mut l); }
+        if order[i] == n {
+            dfs(
+                g,
+                &mut order,
+                &mut low,
+                &mut label,
+                &mut on_stack,
+                &mut st,
+                i,
+                &mut ord,
+                &mut l,
+            );
+        }
     }
     label
 }
 
-
-
 pub fn kosaraju(g: &Vec<Vec<usize>>) -> Vec<usize> {
-    fn dfs(g: &Vec<Vec<usize>>, visited: &mut Vec<bool>, que: &mut Vec<usize>, u: usize) {
+    fn dfs(
+        g: &Vec<Vec<usize>>,
+        visited: &mut Vec<bool>,
+        que: &mut Vec<usize>,
+        u: usize,
+    ) {
         visited[u] = true;
         for v in g[u].iter() {
-            if !visited[*v] { dfs(g, visited, que, *v); }
+            if !visited[*v] {
+                dfs(g, visited, que, *v);
+            }
         }
         que.push(u);
     }
-    fn rev_dfs(g: &Vec<Vec<usize>>, label: &mut Vec<usize>, l: usize, u: usize) {
+    fn rev_dfs(
+        g: &Vec<Vec<usize>>,
+        label: &mut Vec<usize>,
+        l: usize,
+        u: usize,
+    ) {
         label[u] = l;
         for v in g[u].iter() {
-            if label[*v] == g.len() { rev_dfs(g, label, l, *v); }
+            if label[*v] == g.len() {
+                rev_dfs(g, label, l, *v);
+            }
         }
     }
     let n = g.len();
@@ -118,16 +151,22 @@ pub fn kosaraju(g: &Vec<Vec<usize>>) -> Vec<usize> {
     let mut label = vec![n; n];
     let mut l = 0usize;
     for i in 0..n {
-        if !visited[i] { dfs(g, &mut visited, &mut que, i); }
+        if !visited[i] {
+            dfs(g, &mut visited, &mut que, i);
+        }
     }
     let mut t = vec![vec![]; n];
     for u in 0..n {
-        for v in g[u].iter() { t[*v].push(u); }
+        for v in g[u].iter() {
+            t[*v].push(u);
+        }
     }
     for i in que.iter().rev() {
-        if label[*i] != n { continue; }
+        if label[*i] != n {
+            continue;
+        }
         rev_dfs(&t, &mut label, l, *i);
         l += 1;
     }
-    label 
+    label
 }

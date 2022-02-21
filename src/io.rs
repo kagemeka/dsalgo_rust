@@ -23,7 +23,7 @@ pub struct StdinScanner<'a> {
 
 impl<'a> StdinScanner<'a> {
     /// let mut sc = StdinScanner::new();
-    pub fn new() -> Self { 
+    pub fn new() -> Self {
         let stdin = Box::leak(Box::new(std::io::stdin()));
         Self { reader: stdin.lock() }
     }
@@ -63,7 +63,7 @@ use std::io::Write;
 /// let stdout = std::io::stdout();
 /// let out = &mut std::io::BufWriter::new(stdout.lock());
 /// writeln!(out, "{}", 1).unwrap()
- 
+
 
 pub struct Writer<W: std::io::Write> {
     writer: W,

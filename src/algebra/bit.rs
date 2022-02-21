@@ -1,14 +1,28 @@
 /// O(1)
-pub fn msb(n: usize) -> isize { 0usize.leading_zeros() as isize - n.leading_zeros() as isize - 1 }
+pub fn msb(n: usize) -> isize {
+    0usize.leading_zeros() as isize - n.leading_zeros() as isize - 1
+}
 
 /// O(1)
 pub fn msb_number_binary_search(mut n: usize) -> usize {
-    if n & 0xffffffff00000000 > 0 { n &= 0xffffffff00000000; }
-    if n & 0xffff0000ffff0000 > 0 { n &= 0xffff0000ffff0000; }
-    if n & 0xff00ff00ff00ff00 > 0 { n &= 0xff00ff00ff00ff00; }
-    if n & 0xf0f0f0f0f0f0f0f0 > 0 { n &= 0xf0f0f0f0f0f0f0f0; }
-    if n & 0xcccccccccccccccc > 0 { n &= 0xcccccccccccccccc; }
-    if n & 0xaaaaaaaaaaaaaaaa > 0 { n &= 0xaaaaaaaaaaaaaaaa; }
+    if n & 0xffffffff00000000 > 0 {
+        n &= 0xffffffff00000000;
+    }
+    if n & 0xffff0000ffff0000 > 0 {
+        n &= 0xffff0000ffff0000;
+    }
+    if n & 0xff00ff00ff00ff00 > 0 {
+        n &= 0xff00ff00ff00ff00;
+    }
+    if n & 0xf0f0f0f0f0f0f0f0 > 0 {
+        n &= 0xf0f0f0f0f0f0f0f0;
+    }
+    if n & 0xcccccccccccccccc > 0 {
+        n &= 0xcccccccccccccccc;
+    }
+    if n & 0xaaaaaaaaaaaaaaaa > 0 {
+        n &= 0xaaaaaaaaaaaaaaaa;
+    }
     n
 }
 
@@ -32,10 +46,15 @@ pub fn bit_length(n: usize) -> usize {
 
 /// O(1)
 pub fn bit_length_v2(mut n: usize) -> usize {
-    if n == 0 { return 0; }
+    if n == 0 {
+        return 0;
+    }
     let mut l = 1;
     for i in (0..6usize).rev() {
-        if n >> (1 << i) > 0 { n >>= 1 << i; l += 1 << i; }
+        if n >> (1 << i) > 0 {
+            n >>= 1 << i;
+            l += 1 << i;
+        }
     }
     l
 }
@@ -43,14 +62,18 @@ pub fn bit_length_v2(mut n: usize) -> usize {
 /// O(\log{N})
 pub fn bit_length_v3(n: usize) -> usize {
     let mut l = 0usize;
-    while 1 << l <= n { l += 1; }
+    while 1 << l <= n {
+        l += 1;
+    }
     l
-}  
+}
 
 /// O(N)
 pub fn bit_length_table(n: usize) -> Vec<usize> {
     let mut l = vec![0; n];
-    for i in 1..n { l[i] = l[i >> 1] + 1; }
+    for i in 1..n {
+        l[i] = l[i >> 1] + 1;
+    }
     l
 }
 
@@ -81,16 +104,16 @@ pub fn popcount(mut n: usize) -> usize {
     n = n + (n >> 8);
     n = n + (n >> 16);
     n = n + (n >> 32);
-    return n & 0x0000007f
+    return n & 0x0000007f;
 }
 
 /// O(1)
 pub fn popcount_v2(n: usize) -> usize { n.count_ones() as usize }
 
 /// O(\log{N})
-pub fn popcount_v3(mut n: usize) -> usize { 
+pub fn popcount_v3(mut n: usize) -> usize {
     let mut cnt = 0usize;
-    while n > 0 { 
+    while n > 0 {
         cnt += n & 1;
         n >>= 1
     }
@@ -100,6 +123,8 @@ pub fn popcount_v3(mut n: usize) -> usize {
 /// O(N)
 pub fn popcount_table(n: usize) -> Vec<usize> {
     let mut cnt = vec![0; n];
-    for i in 1..n { cnt[i] = cnt[i >> 1] + (i & 1); }
+    for i in 1..n {
+        cnt[i] = cnt[i >> 1] + (i & 1);
+    }
     cnt
 }
