@@ -10,6 +10,7 @@ pub mod longest_common_prefix;
 pub mod number_theory;
 pub mod sort;
 pub mod sparse_table;
+pub mod string;
 pub mod suffix_array;
 pub mod union_find;
 pub mod vector;
