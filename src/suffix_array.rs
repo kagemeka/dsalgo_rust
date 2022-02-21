@@ -1,6 +1,6 @@
 use crate::vector::compress_array;
 
-pub fn sa_doubling(a: &Vec<usize>) -> Vec<usize> {
+pub fn doubling(a: &Vec<usize>) -> Vec<usize> {
     let n = a.len();
     let (mut rank, _) = compress_array(&a);
     let mut k = 1usize;
@@ -30,7 +30,7 @@ pub fn sa_doubling(a: &Vec<usize>) -> Vec<usize> {
     sa
 }
 
-pub fn sa_doubling_with_countsort(a: &Vec<usize>) -> Vec<usize> {
+pub fn doubling_counting_sort(a: &Vec<usize>) -> Vec<usize> {
     let n = a.len();
     let counting_sort_key = |a: &Vec<usize>| -> Vec<usize> {
         let mut cnt = vec![0; n + 2];
@@ -84,7 +84,7 @@ pub fn sa_doubling_with_countsort(a: &Vec<usize>) -> Vec<usize> {
     sa
 }
 
-pub fn sa_is(a: &Vec<usize>) -> Vec<usize> {
+pub fn sais_recurse(a: &Vec<usize>) -> Vec<usize> {
     assert!(a.len() > 0);
     let mn = *a.iter().min().unwrap();
     let mut a = a.iter().map(|x| x - mn + 1).collect::<Vec<usize>>();
@@ -192,7 +192,7 @@ pub fn sa_is(a: &Vec<usize>) -> Vec<usize> {
             lms_order[rank[i]] = i;
         }
     } else {
-        lms_order = sa_is(&rank);
+        lms_order = sais_recurse(&rank);
     }
     lms = lms_order.iter().map(|&i| lms[i]).collect();
     let sa = induce(&lms);
@@ -202,46 +202,16 @@ pub fn sa_is(a: &Vec<usize>) -> Vec<usize> {
 #[cfg(test)]
 mod tests {
 
-    use super::*;
     #[test]
-    fn test_sa_is() {
+    fn suffix_array() {
         let s = vec![
             1, 1, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 2, 2, 0, 0,
         ];
-        let sa = sa_is(&s);
-        assert_eq!(
-            sa,
-            vec![
-                15, 14, 10, 6, 2, 11, 7, 3, 1, 0, 13, 12, 9, 5, 8, 4
-            ],
-        );
-    }
-
-    #[test]
-    fn test_sa_doubling_with_countsort() {
-        let s = vec![
-            1, 1, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 2, 2, 0, 0,
+        let answer = vec![
+            15, 14, 10, 6, 2, 11, 7, 3, 1, 0, 13, 12, 9, 5, 8, 4,
         ];
-        let sa = sa_doubling_with_countsort(&s);
-        assert_eq!(
-            sa,
-            vec![
-                15, 14, 10, 6, 2, 11, 7, 3, 1, 0, 13, 12, 9, 5, 8, 4
-            ],
-        );
-    }
-
-    #[test]
-    fn test_sa_doubling() {
-        let s = vec![
-            1, 1, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 2, 2, 0, 0,
-        ];
-        let sa = sa_doubling(&s);
-        assert_eq!(
-            sa,
-            vec![
-                15, 14, 10, 6, 2, 11, 7, 3, 1, 0, 13, 12, 9, 5, 8, 4
-            ],
-        );
+        assert_eq!(super::sais_recurse(&s), answer,);
+        assert_eq!(super::doubling_counting_sort(&s), answer,);
+        assert_eq!(super::doubling(&s), answer,);
     }
 }
