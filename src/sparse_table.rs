@@ -1,12 +1,12 @@
-use crate::algebra::{bit::bit_length, abstract_::structure::structs::Semigroup};
-
-
+use crate::algebra::{
+    abstract_::structure::structs::Semigroup,
+    bit::bit_length,
+};
 
 pub struct SparseTable<'a, S> {
     sg: Semigroup<'a, S>,
-    data: Vec<Vec<S>>, 
+    data: Vec<Vec<S>>,
 }
-
 
 impl<'a, S: Default + Clone> SparseTable<'a, S> {
     /// O(N\log{N})
@@ -22,27 +22,28 @@ impl<'a, S: Default + Clone> SparseTable<'a, S> {
             for j in 0..n - (1 << i) {
                 data[i + 1][j] = (sg.op)(&data[i][j], &data[i][j + (1 << i)])
             }
-        }   
-        Self { sg: sg, data: data }     
+        }
+        Self {
+            sg: sg,
+            data: data,
+        }
     }
 
     /// O(1)
     pub fn get(&self, l: usize, r: usize) -> S {
         assert!(l < r && r <= self.data[0].len());
-        if r - l == 1 { return self.data[0][l].clone(); }
+        if r - l == 1 {
+            return self.data[0][l].clone();
+        }
         let k = bit_length(r - 1 - l) - 1;
         (self.sg.op)(&self.data[k][l], &self.data[k][r - (1 << k)])
     }
 }
 
-
-
-DisjointSparseTable.noshi.cpp
 pub struct DisjointSparseTable<'a, S> {
     sg: Semigroup<'a, S>,
-    data: Vec<Vec<S>>, 
+    data: Vec<Vec<S>>,
 }
-
 
 impl<'a, S: Default + Clone> DisjointSparseTable<'a, S> {
     pub fn new(sg: Semigroup<'a, S>, a: &Vec<S>) -> Self {
@@ -55,28 +56,33 @@ impl<'a, S: Default + Clone> DisjointSparseTable<'a, S> {
             data[i] = a.clone();
             for j in (1 << i..n + 1).step_by(2 << i) {
                 for k in 1..(1 << i) {
-                    data[i][j - k - 1] = (sg.op)(&data[i][j - k - 1], &data[i][j - k]);
+                    data[i][j - k - 1] =
+                        (sg.op)(&data[i][j - k - 1], &data[i][j - k]);
                 }
                 for k in 0..(1 << i) - 1 {
-                    if j + k + 1 >= n { break; }
-                    data[i][j + k + 1] = (sg.op)(&data[i][j + k], &data[i][j + k + 1]);
+                    if j + k + 1 >= n {
+                        break;
+                    }
+                    data[i][j + k + 1] =
+                        (sg.op)(&data[i][j + k], &data[i][j + k + 1]);
                 }
             }
         }
-        Self { sg: sg, data: data }
+        Self {
+            sg: sg,
+            data: data,
+        }
     }
 
     pub fn get(&self, l: usize, r: usize) -> S {
         assert!(l < r && r <= self.data[0].len());
-        if r - l == 1 { return self.data[0][l].clone(); }
+        if r - l == 1 {
+            return self.data[0][l].clone();
+        }
         let k = bit_length(l ^ (r - 1)) - 1;
         (self.sg.op)(&self.data[k][l], &self.data[k][r - 1])
     }
 }
-
-
-
-
 
 #[cfg(test)]
 mod tests {
@@ -92,10 +98,9 @@ mod tests {
         let a = vec![0, 4, 2, 8, 5, 1];
         let sp = SparseTable::new(sg, &a);
         assert_eq!(sp.get(0, 4), 0);
-        assert_eq!(sp.get(3, 4), 8); 
-        assert_eq!(sp.get(1, 6), 1);    
+        assert_eq!(sp.get(3, 4), 8);
+        assert_eq!(sp.get(1, 6), 1);
     }
-
 
     #[test]
     fn test_disjoint_sparse_table() {
@@ -107,7 +112,7 @@ mod tests {
         let a = vec![0, 4, 2, 8, 5, 1];
         let sp = DisjointSparseTable::new(sg, &a);
         assert_eq!(sp.get(0, 4), 0);
-        assert_eq!(sp.get(3, 4), 8); 
-        assert_eq!(sp.get(1, 6), 1);    
+        assert_eq!(sp.get(3, 4), 8);
+        assert_eq!(sp.get(1, 6), 1);
     }
 }

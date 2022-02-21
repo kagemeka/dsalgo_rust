@@ -1,19 +1,17 @@
 version: '3.9'
 
-
 services:
-  main:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: kagemeka/dsalgo-rust
+  development:
+    image: rust:latest
+    env_file:
+      - rust.env
     restart: on-failure
     tty: true
     volumes:
       - type: bind
-        source: $ROOT
-        target: /root/$PROJECT
-        volume: 
+        source: $PROJECT_ROOT
+        target: /root/$PROJECT_NAME
+        volume:
           nocopy: true
-    working_dir: /root/$PROJECT
-  
+        read_only: false
+    working_dir: /root/$PROJECT_NAME

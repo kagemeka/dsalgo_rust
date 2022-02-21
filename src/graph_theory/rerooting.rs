@@ -1,21 +1,26 @@
 use crate::algebra::abstract_::structure::structs::Monoid;
 
-
 /// Monoid<S> is Commutative.
 /// map: F x S -> S is homomorphism.
-pub fn rerooting<S: Clone, F>(g: &Vec<(usize, usize, F)>, m: &Monoid<S>, map: Box<dyn Fn(&F, &S) -> S>) -> Vec<S> {
+pub fn rerooting<S: Clone, F>(
+    g: &Vec<(usize, usize, F)>,
+    m: &Monoid<S>,
+    map: Box<dyn Fn(&F, &S) -> S>,
+) -> Vec<S> {
     fn tree_dp<S, F>(
-        g: &Vec<Vec<(usize, &F)>>, 
-        dp: &mut Vec<S>, 
-        m: &Monoid<S>, 
-        map: &Box<dyn Fn(&F, &S) -> S>, 
+        g: &Vec<Vec<(usize, &F)>>,
+        dp: &mut Vec<S>,
+        m: &Monoid<S>,
+        map: &Box<dyn Fn(&F, &S) -> S>,
         u: usize,
         parent: usize,
     ) {
         for &(v, x) in g[u].iter() {
-            if v == parent { continue; }
+            if v == parent {
+                continue;
+            }
             tree_dp(g, dp, m, map, v, u);
-            dp[u] = (m.op)(&dp[u], &map(x, &dp[v]));       
+            dp[u] = (m.op)(&dp[u], &map(x, &dp[v]));
         }
     }
     fn reroot<S: Clone, F>(
@@ -28,7 +33,11 @@ pub fn rerooting<S: Clone, F>(g: &Vec<(usize, usize, F)>, m: &Monoid<S>, map: Bo
         parent: usize,
     ) {
         let mut childs = Vec::new();
-        for &e in g[u].iter() {if e.0 != parent { childs.push(e); }}
+        for &e in g[u].iter() {
+            if e.0 != parent {
+                childs.push(e);
+            }
+        }
         let deg = childs.len();
         let mut dp_l = vec![(m.e)(); deg + 1];
         let mut dp_r = vec![(m.e)(); deg + 1];
@@ -41,15 +50,14 @@ pub fn rerooting<S: Clone, F>(g: &Vec<(usize, usize, F)>, m: &Monoid<S>, map: Bo
         for (i, &(v, x)) in childs.iter().enumerate() {
             dp1[v] = map(x, &(m.op)(&dp1[u], &(m.op)(&dp_l[i], &dp_r[i + 1])));
             reroot(g, dp0, dp1, m, map, v, u);
-        } 
-        
+        }
     }
     assert_eq!(m.commutative, true);
     let n = g.len() + 1;
     let mut t = vec![vec![]; n];
     for (u, v, x) in g.iter() {
         t[*u].push((*v, x));
-        t[*v].push((*u, x)); 
+        t[*v].push((*u, x));
     }
     let mut dp0: Vec<S> = vec![(m.e)(); n];
     let mut dp1: Vec<S> = vec![(m.e)(); n];

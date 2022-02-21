@@ -3,7 +3,11 @@ pub fn bisect<T>(is_ok: &dyn Fn(&T) -> bool, a: &[T]) -> usize {
     let mut hi = a.len();
     while lo < hi {
         let i = (lo + hi) >> 1;
-        if is_ok(&a[i]) { hi = i; } else { lo = i + 1; }        
+        if is_ok(&a[i]) {
+            hi = i;
+        } else {
+            lo = i + 1;
+        }
     }
     lo
 }

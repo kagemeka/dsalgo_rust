@@ -1,5 +1,7 @@
-
-pub fn tree_bfs(g: &Vec<(usize, usize)>, root: usize) -> (Vec<usize>, Vec<usize>) {
+pub fn tree_bfs(
+    g: &Vec<(usize, usize)>,
+    root: usize,
+) -> (Vec<usize>, Vec<usize>) {
     let n = g.len() + 1;
     let mut t = vec![vec![]; n];
     for &(u, v) in g.iter() {
@@ -12,7 +14,9 @@ pub fn tree_bfs(g: &Vec<(usize, usize)>, root: usize) -> (Vec<usize>, Vec<usize>
     que.push_back(root);
     while let Some(u) = que.pop_front() {
         for &v in t[u].iter() {
-            if v == parent[u] { continue; }
+            if v == parent[u] {
+                continue;
+            }
             parent[v] = u;
             depth[v] = depth[u] + 1;
             que.push_back(v);

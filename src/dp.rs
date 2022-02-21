@@ -1,8 +1,8 @@
-use crate::analysis::binary_search::lower_bound;
-use crate::cmp::Inf;
+use crate::{analysis::binary_search::lower_bound, cmp::Inf};
 
-
-pub fn longest_increasing_sequence<T: Ord + Inf + Clone + Copy>(a: &[T]) -> Vec<T> {
+pub fn longest_increasing_sequence<T: Ord + Inf + Clone + Copy>(
+    a: &[T],
+) -> Vec<T> {
     let n = a.len();
     let mut lis = vec![T::INF; n];
     for &x in a.iter() {
@@ -12,4 +12,3 @@ pub fn longest_increasing_sequence<T: Ord + Inf + Clone + Copy>(a: &[T]) -> Vec<
     let i = lower_bound(&lis, &T::INF);
     lis[..i].to_vec()
 }
-
