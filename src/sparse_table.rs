@@ -1,20 +1,16 @@
-use crate::algebra::{
-    abstract_::structure::structs::Semigroup,
-    bit::bit_length,
-};
+use crate::{abstract_structs, bitset};
 
 pub struct SparseTable<'a, S> {
-    sg: Semigroup<'a, S>,
+    sg: abstract_structs::Semigroup<'a, S>,
     data: Vec<Vec<S>>,
 }
 
 impl<'a, S: Default + Clone> SparseTable<'a, S> {
-    /// O(N\log{N})
-    pub fn new(sg: Semigroup<'a, S>, a: &Vec<S>) -> Self {
+    pub fn new(sg: abstract_structs::Semigroup<'a, S>, a: &Vec<S>) -> Self {
         assert!(sg.idempotent && sg.commutative);
         let n = a.len();
         assert!(n > 0);
-        let k = std::cmp::max(1, bit_length(n - 1));
+        let k = std::cmp::max(1, bitset::bit_length(n - 1));
         let mut data = vec![vec![S::default(); n]; k];
         data[0] = a.clone();
         for i in 0..k - 1 {
@@ -29,27 +25,26 @@ impl<'a, S: Default + Clone> SparseTable<'a, S> {
         }
     }
 
-    /// O(1)
     pub fn get(&self, l: usize, r: usize) -> S {
         assert!(l < r && r <= self.data[0].len());
         if r - l == 1 {
             return self.data[0][l].clone();
         }
-        let k = bit_length(r - 1 - l) - 1;
+        let k = bitset::bit_length(r - 1 - l) - 1;
         (self.sg.op)(&self.data[k][l], &self.data[k][r - (1 << k)])
     }
 }
 
 pub struct DisjointSparseTable<'a, S> {
-    sg: Semigroup<'a, S>,
+    sg: abstract_structs::Semigroup<'a, S>,
     data: Vec<Vec<S>>,
 }
 
 impl<'a, S: Default + Clone> DisjointSparseTable<'a, S> {
-    pub fn new(sg: Semigroup<'a, S>, a: &Vec<S>) -> Self {
+    pub fn new(sg: abstract_structs::Semigroup<'a, S>, a: &Vec<S>) -> Self {
         let n = a.len();
         assert!(n > 0);
-        let k = std::cmp::max(1, bit_length(n - 1));
+        let k = std::cmp::max(1, bitset::bit_length(n - 1));
         let mut data = vec![vec![S::default(); n]; k];
         data[0] = a.clone();
         for i in 1..k {
@@ -79,7 +74,7 @@ impl<'a, S: Default + Clone> DisjointSparseTable<'a, S> {
         if r - l == 1 {
             return self.data[0][l].clone();
         }
-        let k = bit_length(l ^ (r - 1)) - 1;
+        let k = bitset::bit_length(l ^ (r - 1)) - 1;
         (self.sg.op)(&self.data[k][l], &self.data[k][r - 1])
     }
 }
@@ -90,7 +85,7 @@ mod tests {
 
     #[test]
     fn test_sparse_table() {
-        let sg = Semigroup::<i64> {
+        let sg = abstract_structs::Semigroup::<i64> {
             op: &|x, y| std::cmp::min(*x, *y),
             commutative: true,
             idempotent: true,
@@ -104,7 +99,7 @@ mod tests {
 
     #[test]
     fn test_disjoint_sparse_table() {
-        let sg = Semigroup::<i64> {
+        let sg = abstract_structs::Semigroup::<i64> {
             op: &|x, y| std::cmp::min(*x, *y),
             commutative: true,
             idempotent: true,
