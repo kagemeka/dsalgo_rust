@@ -1,5 +1,5 @@
 /// O(1)
-pub fn msb(n: usize) -> isize {
+pub fn most_significant_bit(n: usize) -> isize {
     0usize.leading_zeros() as isize - n.leading_zeros() as isize - 1
 }
 
@@ -26,10 +26,10 @@ pub fn msb_number_binary_search(mut n: usize) -> usize {
     n
 }
 
-/// O(1)
-pub fn lsb(n: usize) -> usize { n.reverse_bits().leading_zeros() as usize }
+pub fn least_significant_bit(n: usize) -> usize {
+    n.reverse_bits().leading_zeros() as usize
+}
 
-/// O(1)
 pub fn lsb_number(n: usize) -> usize {
     let n = n as isize;
     (n & -n) as usize
@@ -127,4 +127,12 @@ pub fn popcount_table(n: usize) -> Vec<usize> {
         cnt[i] = cnt[i >> 1] + (i & 1);
     }
     cnt
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn bitset() {
+        println!("{}", super::least_significant_bit(0));
+    }
 }

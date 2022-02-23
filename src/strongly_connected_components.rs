@@ -52,7 +52,7 @@ pub fn path_based(g: &Vec<Vec<usize>>) -> Vec<usize> {
     label
 }
 
-pub fn tarjan(g: &Vec<Vec<usize>>) -> Vec<usize> {
+pub fn tarjan_offline(g: &Vec<Vec<usize>>) -> Vec<usize> {
     fn dfs(
         g: &Vec<Vec<usize>>,
         order: &mut Vec<usize>,

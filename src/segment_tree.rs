@@ -1,9 +1,8 @@
-use crate::algebra::abstract_::structure::structs::Monoid;
-
+use crate::abstraction;
 /// explicit lifetime for Monoid<S>.
 /// S implements Copy trait for convenience.
 pub struct SegmentTree<'a, S: Copy> {
-    m: Monoid<'a, S>,
+    m: abstraction::structure::structs::Monoid<'a, S>,
     data: Vec<S>,
     size: usize,
 }
@@ -15,12 +14,18 @@ impl<'a, S: std::fmt::Debug + Copy> std::fmt::Debug for SegmentTree<'a, S> {
 }
 
 impl<'a, S: Copy> SegmentTree<'a, S> {
-    pub fn new(m: Monoid<'a, S>, n: usize) -> Self {
+    pub fn new(
+        m: abstraction::structure::structs::Monoid<'a, S>,
+        n: usize,
+    ) -> Self {
         let a = vec![(m.e)(); n];
         Self::from_vec(m, &a)
     }
 
-    pub fn from_vec(m: Monoid<'a, S>, a: &Vec<S>) -> Self {
+    pub fn from_vec(
+        m: abstraction::structure::structs::Monoid<'a, S>,
+        a: &Vec<S>,
+    ) -> Self {
         let size = a.len();
         let n = size.next_power_of_two();
         let mut data = vec![(m.e)(); n << 1];
@@ -117,7 +122,7 @@ mod tests {
     fn test_segment_tree() {
         let op = |x: &i32, y: &i32| x + y;
         let e = || 0;
-        let m = Monoid::<i32> {
+        let m = abstraction::structure::structs::Monoid::<i32> {
             op: &op,
             e: &e,
             commutative: true,

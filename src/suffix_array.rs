@@ -1,4 +1,4 @@
-use crate::vector::compress_array;
+use crate::vector_util::compress_array;
 
 pub fn doubling(a: &Vec<usize>) -> Vec<usize> {
     let n = a.len();

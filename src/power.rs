@@ -1,6 +1,6 @@
-use crate::algebra::abstract_::structure::{structs, traits::Monoid};
+use crate::{abstract_structs, abstract_traits};
 
-pub fn pow<T: Monoid>(x: &T, n: usize) -> T {
+pub fn pow<T: abstract_traits::Monoid>(x: &T, n: usize) -> T {
     if n == 0 {
         return T::e();
     }
@@ -13,11 +13,11 @@ pub fn pow<T: Monoid>(x: &T, n: usize) -> T {
 }
 
 pub struct Power<'a, T> {
-    m: structs::Monoid<'a, T>,
+    m: abstract_structs::Monoid<'a, T>,
 }
 
 impl<'a, T> Power<'a, T> {
-    pub fn new(m: structs::Monoid<'a, T>) -> Self { Self { m } }
+    pub fn new(m: abstract_structs::Monoid<'a, T>) -> Self { Self { m } }
 
     pub fn r#do(&self, x: &T, n: usize) -> T {
         if n == 0 {

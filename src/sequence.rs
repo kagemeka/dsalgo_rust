@@ -1,4 +1,4 @@
-use crate::{analysis::binary_search::lower_bound, cmp::Inf};
+use crate::{binary_search::lower_bound, cmp::Inf};
 
 pub fn longest_increasing_sequence<T: Ord + Inf + Clone + Copy>(
     a: &[T],

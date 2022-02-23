@@ -1,4 +1,4 @@
-use super::{abstract_::structure::traits::*, pow::pow};
+use crate::{abstract_traits, power::pow};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Modular<const MOD: usize> {
@@ -19,22 +19,22 @@ impl<const MOD: usize> Modular<MOD> {
     pub fn inverse(&self) -> Modular<MOD> { pow(self, MOD - 2) }
 }
 
-impl<const MOD: usize> MulIdentity for Modular<MOD> {
+impl<const MOD: usize> abstract_traits::MulIdentity for Modular<MOD> {
     fn e() -> Self { Self { value: 1 } }
 }
 
-impl<const MOD: usize> Identity for Modular<MOD> {
+impl<const MOD: usize> abstract_traits::Identity for Modular<MOD> {
     fn e() -> Self { Self { value: 1 } }
 }
 
-impl<const MOD: usize> Semigroup for Modular<MOD> {
+impl<const MOD: usize> abstract_traits::Semigroup for Modular<MOD> {
     const COMMUTATIVE: bool = true;
     const IDEMPOTENT: bool = false;
 
     fn op(x: &Self, y: &Self) -> Self { *x * *y }
 }
 
-impl<const MOD: usize> Monoid for Modular<MOD> {}
+impl<const MOD: usize> abstract_traits::Monoid for Modular<MOD> {}
 
 impl<const MOD: usize> std::ops::AddAssign for Modular<MOD> {
     fn add_assign(&mut self, rhs: Self) { *self = *self + rhs; }

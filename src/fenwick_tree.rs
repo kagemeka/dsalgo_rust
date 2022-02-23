@@ -1,7 +1,7 @@
-use crate::algebra::abstract_::structure::structs::Monoid;
-
+// use crate::algebra::abstract_::structure::structs::Monoid;
+use crate::abstraction;
 pub struct FenwickTree<'a, S: Copy> {
-    m: Monoid<'a, S>,
+    m: abstraction::structure::structs::Monoid<'a, S>,
     data: Vec<S>,
 }
 
@@ -12,12 +12,18 @@ impl<'a, S: std::fmt::Debug + Copy> std::fmt::Debug for FenwickTree<'a, S> {
 }
 
 impl<'a, S: Copy> FenwickTree<'a, S> {
-    pub fn new(m: Monoid<'a, S>, n: usize) -> Self {
+    pub fn new(
+        m: abstraction::structure::structs::Monoid<'a, S>,
+        n: usize,
+    ) -> Self {
         let a = vec![(m.e)(); n];
         Self::from_vec(m, &a)
     }
 
-    pub fn from_vec(m: Monoid<'a, S>, a: &Vec<S>) -> Self {
+    pub fn from_vec(
+        m: abstraction::structure::structs::Monoid<'a, S>,
+        a: &Vec<S>,
+    ) -> Self {
         let n = a.len();
         let mut data = vec![(m.e)(); n + 1];
         for i in 0..n {
@@ -78,7 +84,7 @@ mod tests {
     fn test_fenwick_tree() {
         let op = |x: &i32, y: &i32| x + y;
         let e = || 0;
-        let m = Monoid::<i32> {
+        let m = abstraction::structure::structs::Monoid::<i32> {
             op: &op,
             e: &e,
             commutative: true,

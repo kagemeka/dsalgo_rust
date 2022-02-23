@@ -1,3 +1,5 @@
+use crate::abstract_traits;
+
 /// Tensor NDIM >= 1
 #[derive(Clone)]
 pub struct Tensor<T, const NDIM: usize> {
@@ -89,18 +91,17 @@ where
     }
 }
 
-use super::abstract_::structure::traits::*;
-impl<T: Copy + Default + Semiring> Tensor<T, 2> {
+impl<T: Copy + Default + abstract_traits::Semiring> Tensor<T, 2> {
     pub fn e(&self) -> Self {
         let (h, w) = (self.shape[0], self.shape[1]);
         let mut e = Self::new(self.shape);
         for i in 0..h {
             for j in 0..w {
-                e[[i, j]] = self::AddIdentity::e();
+                e[[i, j]] = self::abstract_traits::AddIdentity::e();
             }
         }
         for i in 0..h {
-            e[[i, i]] = self::MulIdentity::e();
+            e[[i, i]] = self::abstract_traits::MulIdentity::e();
         }
         e
     }
