@@ -4,14 +4,28 @@ pub trait Identity {
 pub trait Inverse {
     fn invert(&self) -> Self;
 }
+
+pub trait Idempotent {
+    const IDEMPOTENT: bool = true;
+}
+
+pub trait Commutative {
+    const COMMUTATIVE: bool = true;
+}
+
 pub trait Semigroup {
     fn operate(_: &Self, _: &Self) -> Self;
-    const COMMUTATIVE: bool;
-    const IDEMPOTENT: bool;
 }
 
 pub trait Monoid: Semigroup + Identity {}
+impl<S: Semigroup + Identity> Monoid for S {}
+
 pub trait Group: Monoid + Inverse {}
+impl<S: Monoid + Inverse> Group for S {}
+
+pub trait AbelianGroup: Group + Commutative {}
+impl<S: Group + Commutative> AbelianGroup for S {}
+
 pub trait MulIdentity {
     fn identity() -> Self;
 }

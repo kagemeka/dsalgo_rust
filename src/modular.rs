@@ -28,13 +28,8 @@ impl<const MOD: usize> abstract_traits::Identity for Modular<MOD> {
 }
 
 impl<const MOD: usize> abstract_traits::Semigroup for Modular<MOD> {
-    const COMMUTATIVE: bool = true;
-    const IDEMPOTENT: bool = false;
-
     fn operate(x: &Self, y: &Self) -> Self { *x * *y }
 }
-
-impl<const MOD: usize> abstract_traits::Monoid for Modular<MOD> {}
 
 impl<const MOD: usize> std::ops::AddAssign for Modular<MOD> {
     fn add_assign(&mut self, rhs: Self) { *self = *self + rhs; }
