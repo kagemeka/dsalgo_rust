@@ -1,11 +1,11 @@
 pub trait Identity {
-    fn e() -> Self;
+    fn identity() -> Self;
 }
 pub trait Inverse {
-    fn inv(&self) -> Self;
+    fn invert(&self) -> Self;
 }
 pub trait Semigroup {
-    fn op(_: &Self, _: &Self) -> Self;
+    fn operate(_: &Self, _: &Self) -> Self;
     const COMMUTATIVE: bool;
     const IDEMPOTENT: bool;
 }
@@ -13,17 +13,17 @@ pub trait Semigroup {
 pub trait Monoid: Semigroup + Identity {}
 pub trait Group: Monoid + Inverse {}
 pub trait MulIdentity {
-    fn e() -> Self;
+    fn identity() -> Self;
 }
 
 pub trait AddIdentity {
-    fn e() -> Self;
+    fn identity() -> Self;
 }
 pub trait AddInverse {
-    fn inv(&self) -> Self;
+    fn invert(&self) -> Self;
 }
 pub trait MulInverse {
-    fn inv(&self) -> Self;
+    fn invert(&self) -> Self;
 }
 pub trait Semiring:
     Sized

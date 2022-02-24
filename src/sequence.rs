@@ -13,7 +13,7 @@ pub fn longest_increasing_sequence<T: Ord + Infinity + Clone + Copy>(
     lis[..i].to_vec()
 }
 
-// pub fn longest_non_decreasing_sequence<T: Ord + Infinity + Clone + Copy>(
-//     arr: &[T],
+// pub fn longest_non_decreasing_sequence<T: Ord + Infinity +
+// Clone + Copy>(     arr: &[T],
 // ) -> Vec<T> {
 // }

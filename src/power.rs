@@ -2,12 +2,12 @@ use crate::{abstract_structs, abstract_traits};
 
 pub fn pow<T: abstract_traits::Monoid>(x: &T, n: usize) -> T {
     if n == 0 {
-        return T::e();
+        return T::identity();
     }
     let mut y = pow(x, n >> 1);
-    y = T::op(&y, &y);
+    y = T::operate(&y, &y);
     if n & 1 == 1 {
-        y = T::op(&y, &x);
+        y = T::operate(&y, &x);
     }
     y
 }
