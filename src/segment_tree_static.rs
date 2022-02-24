@@ -1,23 +1,16 @@
-use crate::abstract_traits;
+use crate::abstract_traits::Monoid;
 
-pub trait Monoid {
-    type S: Clone;
-
-    fn operate(x: &Self::S, y: &Self::S) -> Self::S;
-    fn identity() -> Self::S;
-}
-
-pub struct SegmentTree<M: Monoid> {
+pub struct SegmentTree<S: Monoid> {
     size: usize,
-    data: Vec<M::S>,
+    data: Vec<S>,
 }
 
-impl<M: Monoid> From<&Vec<M::S>> for SegmentTree<M> {
-    fn from(arr: &Vec<M::S>) -> Self {
+impl<S: Clone + Monoid> From<&Vec<S>> for SegmentTree<S> {
+    fn from(arr: &Vec<S>) -> Self {
         let size = arr.len();
         assert!(size > 0);
         let n = size.next_power_of_two();
-        let mut data = vec![M::identity(); n << 1];
+        let mut data = vec![S::identity(); n << 1];
         data[n..(n + size)].clone_from_slice(arr);
         let mut seg = Self { size, data };
         for i in (1..n).rev() {
@@ -27,14 +20,16 @@ impl<M: Monoid> From<&Vec<M::S>> for SegmentTree<M> {
     }
 }
 
-impl<M: Monoid> SegmentTree<M> {
-    pub fn new(size: usize) -> Self { (&vec![M::identity(); size]).into() }
+impl<S: Clone + Monoid> SegmentTree<S> {
+    pub fn new(size: usize) -> Self { (&vec![S::identity(); size]).into() }
+}
 
+impl<S: Monoid> SegmentTree<S> {
     fn merge(&mut self, i: usize) {
-        self.data[i] = M::operate(&self.data[i << 1], &self.data[i << 1 | 1]);
+        self.data[i] = S::operate(&self.data[i << 1], &self.data[i << 1 | 1]);
     }
 
-    pub fn set(&mut self, mut i: usize, x: M::S) {
+    pub fn set(&mut self, mut i: usize, x: S) {
         assert!(i < self.size);
         i += self.data.len() >> 1;
         self.data[i] = x;
@@ -44,41 +39,41 @@ impl<M: Monoid> SegmentTree<M> {
         }
     }
 
-    pub fn get(&self, mut l: usize, mut r: usize) -> M::S {
+    pub fn get(&self, mut l: usize, mut r: usize) -> S {
         assert!(l <= r && r <= self.size);
         let n = self.data.len() >> 1;
         l += n;
         r += n;
-        let mut vl = M::identity();
-        let mut vr = M::identity();
+        let mut vl = S::identity();
+        let mut vr = S::identity();
         while l < r {
             if l & 1 == 1 {
-                vl = M::operate(&vl, &self.data[l]);
+                vl = S::operate(&vl, &self.data[l]);
                 l += 1;
             }
             if r & 1 == 1 {
                 r -= 1;
-                vr = M::operate(&self.data[r], &vr);
+                vr = S::operate(&self.data[r], &vr);
             }
             l >>= 1;
             r >>= 1;
         }
-        M::operate(&vl, &vr)
+        S::operate(&vl, &vr)
     }
 
     pub fn max_right(
         &self,
-        is_ok: Box<dyn Fn(&M::S) -> bool>,
+        is_ok: Box<dyn Fn(&S) -> bool>,
         left: usize,
     ) -> usize {
         assert!(left < self.size);
         let n = self.data.len() >> 1;
-        let mut v = M::identity();
+        let mut v = S::identity();
         let mut i = (left + n) as i32;
         loop {
             i /= i & -i;
-            if is_ok(&M::operate(&v, &self.data[i as usize])) {
-                v = M::operate(&v, &self.data[i as usize]);
+            if is_ok(&S::operate(&v, &self.data[i as usize])) {
+                v = S::operate(&v, &self.data[i as usize]);
                 i += 1;
                 if i & -i == i {
                     return self.size;
@@ -87,8 +82,8 @@ impl<M: Monoid> SegmentTree<M> {
             }
             while i < n as i32 {
                 i <<= 1;
-                if is_ok(&M::operate(&v, &self.data[i as usize])) {
-                    v = M::operate(&v, &self.data[i as usize]);
+                if is_ok(&S::operate(&v, &self.data[i as usize])) {
+                    v = S::operate(&v, &self.data[i as usize]);
                 }
             }
             return i as usize - n;
@@ -96,8 +91,8 @@ impl<M: Monoid> SegmentTree<M> {
     }
 }
 
-impl<M: Monoid> std::ops::Index<usize> for SegmentTree<M> {
-    type Output = M::S;
+impl<S: Monoid> std::ops::Index<usize> for SegmentTree<S> {
+    type Output = S;
 
     fn index(&self, i: usize) -> &Self::Output {
         assert!(i < self.size);
@@ -109,13 +104,20 @@ impl<M: Monoid> std::ops::Index<usize> for SegmentTree<M> {
 mod tests {
     #[test]
     fn test() {
-        impl super::Monoid for usize {
-            type S = usize;
+        use crate::abstract_traits::{Identity, Semigroup};
 
-            fn operate(x: &Self::S, y: &Self::S) -> Self::S { x + y }
-
-            fn identity() -> Self::S { 0 }
+        impl Semigroup for usize {
+            fn operate(x: &Self, y: &Self) -> Self { x + y }
         }
+        impl Identity for usize {
+            fn identity() -> Self { 0 }
+        }
+
+        // impl super::Monoid for usize {
+        //     fn operate(x: &Self, y: &Self) -> Self { x + y }
+
+        //     fn identity() -> Self { 0 }
+        // }
 
         let mut seg = super::SegmentTree::<usize>::new(10);
         assert_eq!(seg.get(0, 10), 0);
