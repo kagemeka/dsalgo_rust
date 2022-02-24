@@ -12,12 +12,12 @@ pub fn binary_search<T>(is_ok: &dyn Fn(&T) -> bool, arr: &[T]) -> usize {
     hi
 }
 
-pub fn lower_bound<T: Ord>(arr: &[T], x: &T) -> usize {
+pub fn lower_bound<T: PartialOrd>(arr: &[T], x: &T) -> usize {
     let is_ok = |y: &T| y >= x;
     binary_search(&is_ok, arr)
 }
 
-pub fn upper_bound<T: Ord>(arr: &[T], x: &T) -> usize {
+pub fn upper_bound<T: PartialOrd>(arr: &[T], x: &T) -> usize {
     let is_ok = |y: &T| y > x;
     binary_search(&is_ok, arr)
 }
