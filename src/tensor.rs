@@ -97,11 +97,11 @@ impl<T: Copy + Default + abstract_traits::Semiring> Tensor<T, 2> {
         let mut e = Self::new(self.shape);
         for i in 0..h {
             for j in 0..w {
-                e[[i, j]] = self::abstract_traits::AddIdentity::e();
+                e[[i, j]] = self::abstract_traits::AddIdentity::identity();
             }
         }
         for i in 0..h {
-            e[[i, i]] = self::abstract_traits::MulIdentity::e();
+            e[[i, i]] = self::abstract_traits::MulIdentity::identity();
         }
         e
     }

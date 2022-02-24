@@ -16,7 +16,8 @@ impl<'a, S: Default + Clone> SparseTable<'a, S> {
         for i in 0..k - 1 {
             data[i + 1] = data[i].clone();
             for j in 0..n - (1 << i) {
-                data[i + 1][j] = (sg.op)(&data[i][j], &data[i][j + (1 << i)])
+                data[i + 1][j] =
+                    (sg.operate)(&data[i][j], &data[i][j + (1 << i)])
             }
         }
         Self {
@@ -31,7 +32,7 @@ impl<'a, S: Default + Clone> SparseTable<'a, S> {
             return self.data[0][l].clone();
         }
         let k = bitset::bit_length(r - 1 - l) - 1;
-        (self.sg.op)(&self.data[k][l], &self.data[k][r - (1 << k)])
+        (self.sg.operate)(&self.data[k][l], &self.data[k][r - (1 << k)])
     }
 }
 
@@ -52,14 +53,14 @@ impl<'a, S: Default + Clone> DisjointSparseTable<'a, S> {
             for j in (1 << i..n + 1).step_by(2 << i) {
                 for k in 1..(1 << i) {
                     data[i][j - k - 1] =
-                        (sg.op)(&data[i][j - k - 1], &data[i][j - k]);
+                        (sg.operate)(&data[i][j - k - 1], &data[i][j - k]);
                 }
                 for k in 0..(1 << i) - 1 {
                     if j + k + 1 >= n {
                         break;
                     }
                     data[i][j + k + 1] =
-                        (sg.op)(&data[i][j + k], &data[i][j + k + 1]);
+                        (sg.operate)(&data[i][j + k], &data[i][j + k + 1]);
                 }
             }
         }
@@ -75,7 +76,7 @@ impl<'a, S: Default + Clone> DisjointSparseTable<'a, S> {
             return self.data[0][l].clone();
         }
         let k = bitset::bit_length(l ^ (r - 1)) - 1;
-        (self.sg.op)(&self.data[k][l], &self.data[k][r - 1])
+        (self.sg.operate)(&self.data[k][l], &self.data[k][r - 1])
     }
 }
 
@@ -86,7 +87,7 @@ mod tests {
     #[test]
     fn test_sparse_table() {
         let sg = abstract_structs::Semigroup::<i64> {
-            op: &|x, y| std::cmp::min(*x, *y),
+            operate: &|x, y| std::cmp::min(*x, *y),
             commutative: true,
             idempotent: true,
         };
@@ -100,7 +101,7 @@ mod tests {
     #[test]
     fn test_disjoint_sparse_table() {
         let sg = abstract_structs::Semigroup::<i64> {
-            op: &|x, y| std::cmp::min(*x, *y),
+            operate: &|x, y| std::cmp::min(*x, *y),
             commutative: true,
             idempotent: true,
         };

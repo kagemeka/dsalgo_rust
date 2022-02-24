@@ -2,31 +2,33 @@ use crate::{abstract_structs, abstract_traits};
 
 pub fn pow<T: abstract_traits::Monoid>(x: &T, n: usize) -> T {
     if n == 0 {
-        return T::e();
+        return T::identity();
     }
     let mut y = pow(x, n >> 1);
-    y = T::op(&y, &y);
+    y = T::operate(&y, &y);
     if n & 1 == 1 {
-        y = T::op(&y, &x);
+        y = T::operate(&y, &x);
     }
     y
 }
 
 pub struct Power<'a, T> {
-    m: abstract_structs::Monoid<'a, T>,
+    monoid: abstract_structs::Monoid<'a, T>,
 }
 
 impl<'a, T> Power<'a, T> {
-    pub fn new(m: abstract_structs::Monoid<'a, T>) -> Self { Self { m } }
+    pub fn new(monoid: abstract_structs::Monoid<'a, T>) -> Self {
+        Self { monoid }
+    }
 
     pub fn r#do(&self, x: &T, n: usize) -> T {
         if n == 0 {
-            return (self.m.e)();
+            return (self.monoid.identity)();
         }
         let mut y = self.r#do(x, n >> 1);
-        y = (self.m.op)(&y, &y);
+        y = (self.monoid.operate)(&y, &y);
         if n & 1 == 1 {
-            y = (self.m.op)(&y, &x);
+            y = (self.monoid.operate)(&y, &x);
         }
         y
     }

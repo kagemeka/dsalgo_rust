@@ -1,8 +1,9 @@
-use crate::abstraction;
+use crate::abstract_structs;
+
 /// explicit lifetime for Monoid<S>.
 /// S implements Copy trait for convenience.
 pub struct SegmentTree<'a, S: Copy> {
-    m: abstraction::structure::structs::Monoid<'a, S>,
+    monoid: abstract_structs::Monoid<'a, S>,
     data: Vec<S>,
     size: usize,
 }
@@ -14,25 +15,26 @@ impl<'a, S: std::fmt::Debug + Copy> std::fmt::Debug for SegmentTree<'a, S> {
 }
 
 impl<'a, S: Copy> SegmentTree<'a, S> {
-    pub fn new(
-        m: abstraction::structure::structs::Monoid<'a, S>,
-        n: usize,
-    ) -> Self {
-        let a = vec![(m.e)(); n];
-        Self::from_vec(m, &a)
+    pub fn new(monoid: abstract_structs::Monoid<'a, S>, n: usize) -> Self {
+        let arr = vec![(monoid.identity)(); n];
+        Self::from_vec(monoid, &arr)
     }
 
     pub fn from_vec(
-        m: abstraction::structure::structs::Monoid<'a, S>,
+        monoid: abstract_structs::Monoid<'a, S>,
         a: &Vec<S>,
     ) -> Self {
         let size = a.len();
         let n = size.next_power_of_two();
-        let mut data = vec![(m.e)(); n << 1];
+        let mut data = vec![(monoid.identity)(); n << 1];
         for i in 0..size {
             data[n + i] = a[i];
         }
-        let mut seg = Self { m, data, size };
+        let mut seg = Self {
+            monoid,
+            data,
+            size,
+        };
         for i in (0..n).rev() {
             seg.merge(i);
         }
@@ -40,7 +42,8 @@ impl<'a, S: Copy> SegmentTree<'a, S> {
     }
 
     fn merge(&mut self, i: usize) {
-        self.data[i] = (self.m.op)(&self.data[i << 1], &self.data[i << 1 | 1]);
+        self.data[i] =
+            (self.monoid.operate)(&self.data[i << 1], &self.data[i << 1 | 1]);
     }
 
     pub fn set(&mut self, mut i: usize, x: S) {
@@ -58,21 +61,21 @@ impl<'a, S: Copy> SegmentTree<'a, S> {
         let n = self.data.len() >> 1;
         l += n;
         r += n;
-        let mut vl = (self.m.e)();
-        let mut vr = (self.m.e)();
+        let mut vl = (self.monoid.identity)();
+        let mut vr = (self.monoid.identity)();
         while l < r {
             if l & 1 == 1 {
-                vl = (self.m.op)(&vl, &self.data[l]);
+                vl = (self.monoid.operate)(&vl, &self.data[l]);
                 l += 1;
             }
             if r & 1 == 1 {
                 r -= 1;
-                vr = (self.m.op)(&self.data[r], &vr);
+                vr = (self.monoid.operate)(&self.data[r], &vr);
             }
             l >>= 1;
             r >>= 1;
         }
-        (self.m.op)(&vl, &vr)
+        (self.monoid.operate)(&vl, &vr)
     }
 
     pub fn max_right(
@@ -82,12 +85,12 @@ impl<'a, S: Copy> SegmentTree<'a, S> {
     ) -> usize {
         assert!(l < self.size);
         let n = self.data.len() >> 1;
-        let mut v = (self.m.e)();
+        let mut v = (self.monoid.identity)();
         let mut i = (l + n) as i32;
         loop {
             i /= i & -i;
-            if is_ok(&(self.m.op)(&v, &self.data[i as usize])) {
-                v = (self.m.op)(&v, &self.data[i as usize]);
+            if is_ok(&(self.monoid.operate)(&v, &self.data[i as usize])) {
+                v = (self.monoid.operate)(&v, &self.data[i as usize]);
                 i += 1;
                 if i & -i == i {
                     return self.size;
@@ -96,8 +99,8 @@ impl<'a, S: Copy> SegmentTree<'a, S> {
             }
             while i < n as i32 {
                 i <<= 1;
-                if is_ok(&(self.m.op)(&v, &self.data[i as usize])) {
-                    v = (self.m.op)(&v, &self.data[i as usize]);
+                if is_ok(&(self.monoid.operate)(&v, &self.data[i as usize])) {
+                    v = (self.monoid.operate)(&v, &self.data[i as usize]);
                 }
             }
             return i as usize - n;
@@ -122,9 +125,9 @@ mod tests {
     fn test_segment_tree() {
         let op = |x: &i32, y: &i32| x + y;
         let e = || 0;
-        let m = abstraction::structure::structs::Monoid::<i32> {
-            op: &op,
-            e: &e,
+        let m = abstract_structs::Monoid::<i32> {
+            operate: &op,
+            identity: &e,
             commutative: true,
             idempotent: false,
         };
