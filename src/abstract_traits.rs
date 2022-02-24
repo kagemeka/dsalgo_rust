@@ -1,52 +1,43 @@
-pub trait Identity {
+pub trait Identity<T> {
     fn identity() -> Self;
 }
-pub trait Inverse {
-    fn invert(&self) -> Self;
+pub trait Inverse<T> {
+    fn invert(_: &Self) -> Self;
 }
 
-pub trait Idempotent {
+pub trait Idempotent<T> {
     const IDEMPOTENT: bool = true;
 }
 
-pub trait Commutative {
+pub trait Commutative<T> {
     const COMMUTATIVE: bool = true;
 }
 
-pub trait Semigroup {
+pub trait Semigroup<T> {
     fn operate(_: &Self, _: &Self) -> Self;
 }
 
-pub trait Monoid: Semigroup + Identity {}
-impl<S: Semigroup + Identity> Monoid for S {}
+pub trait Monoid<T>: Semigroup<T> + Identity<T> {}
+impl<T, S: Semigroup<T> + Identity<T>> Monoid<T> for S {}
 
-pub trait Group: Monoid + Inverse {}
-impl<S: Monoid + Inverse> Group for S {}
+pub trait Group<T>: Monoid<T> + Inverse<T> {}
+impl<T, S: Monoid<T> + Inverse<T>> Group<T> for S {}
 
-pub trait AbelianGroup: Group + Commutative {}
-impl<S: Group + Commutative> AbelianGroup for S {}
+pub trait AbelianGroup<T>: Group<T> + Commutative<T> {}
+impl<T, S: Group<T> + Commutative<T>> AbelianGroup<T> for S {}
 
-pub trait MulIdentity {
-    fn identity() -> Self;
-}
-
-pub trait AddIdentity {
-    fn identity() -> Self;
-}
-pub trait AddInverse {
-    fn invert(&self) -> Self;
-}
-pub trait MulInverse {
-    fn invert(&self) -> Self;
-}
-pub trait Semiring:
-    Sized
-    + std::ops::Add<Output = Self>
-    + std::ops::Mul<Output = Self>
-    + AddIdentity
-    + MulIdentity
+pub trait Semiring<Add, Mul>:
+    Monoid<Add> + Monoid<Mul> + Commutative<Add>
 {
-    const MUL_COMMUTATIVE: bool;
-    const ADD_IDEMPOTNET: bool;
 }
-pub trait Ring: Semiring + AddInverse {}
+impl<Add, Mul, S> Semiring<Add, Mul> for S where
+    S: Monoid<Add> + Monoid<Mul> + Commutative<Add>
+{
+}
+
+pub trait Ring<Add, Mul>: Semiring<Add, Mul> + Inverse<Add> {}
+impl<Add, Mul, S: Semiring<Add, Mul> + Inverse<Add>> Ring<Add, Mul> for S {}
+
+pub trait Default<T> {
+    fn default() -> Self;
+}

@@ -1,18 +1,23 @@
 use crate::abstract_traits::Monoid;
 
-pub struct SegmentTree<S: Monoid> {
+pub struct SegmentTree<S: Monoid<T>, T> {
+    phantom: std::marker::PhantomData<T>,
     size: usize,
     data: Vec<S>,
 }
 
-impl<S: Clone + Monoid> From<&Vec<S>> for SegmentTree<S> {
+impl<S: Clone + Monoid<T>, T> From<&Vec<S>> for SegmentTree<S, T> {
     fn from(arr: &Vec<S>) -> Self {
         let size = arr.len();
         assert!(size > 0);
         let n = size.next_power_of_two();
         let mut data = vec![S::identity(); n << 1];
         data[n..(n + size)].clone_from_slice(arr);
-        let mut seg = Self { size, data };
+        let mut seg = Self {
+            phantom: std::marker::PhantomData,
+            size,
+            data,
+        };
         for i in (1..n).rev() {
             seg.merge(i);
         }
@@ -20,11 +25,11 @@ impl<S: Clone + Monoid> From<&Vec<S>> for SegmentTree<S> {
     }
 }
 
-impl<S: Clone + Monoid> SegmentTree<S> {
+impl<S: Clone + Monoid<T>, T> SegmentTree<S, T> {
     pub fn new(size: usize) -> Self { (&vec![S::identity(); size]).into() }
 }
 
-impl<S: Monoid> SegmentTree<S> {
+impl<S: Monoid<T>, T> SegmentTree<S, T> {
     fn merge(&mut self, i: usize) {
         self.data[i] = S::operate(&self.data[i << 1], &self.data[i << 1 | 1]);
     }
@@ -91,7 +96,7 @@ impl<S: Monoid> SegmentTree<S> {
     }
 }
 
-impl<S: Monoid> std::ops::Index<usize> for SegmentTree<S> {
+impl<S: Monoid<T>, T> std::ops::Index<usize> for SegmentTree<S, T> {
     type Output = S;
 
     fn index(&self, i: usize) -> &Self::Output {
@@ -105,21 +110,16 @@ mod tests {
     #[test]
     fn test() {
         use crate::abstract_traits::{Identity, Semigroup};
+        struct Add;
 
-        impl Semigroup for usize {
+        impl Semigroup<Add> for usize {
             fn operate(x: &Self, y: &Self) -> Self { x + y }
         }
-        impl Identity for usize {
+        impl Identity<Add> for usize {
             fn identity() -> Self { 0 }
         }
 
-        // impl super::Monoid for usize {
-        //     fn operate(x: &Self, y: &Self) -> Self { x + y }
-
-        //     fn identity() -> Self { 0 }
-        // }
-
-        let mut seg = super::SegmentTree::<usize>::new(10);
+        let mut seg = super::SegmentTree::<usize, Add>::new(10);
         assert_eq!(seg.get(0, 10), 0);
         seg.set(0, 5);
         assert_eq!(seg.get(0, 10), 5);
