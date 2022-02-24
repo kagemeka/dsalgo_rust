@@ -1,3 +1,4 @@
+pub mod aa_tree;
 pub mod abstract_structs;
 pub mod abstract_traits;
 pub mod argsort;
@@ -13,6 +14,7 @@ pub mod segment_tree_static;
 pub mod sequence;
 pub mod sort;
 pub mod sparse_table;
+pub mod sparse_table_static;
 pub mod string;
 pub mod suffix_array;
 pub mod tensor;

@@ -1,162 +1,142 @@
-use crate::{abstract_traits, power::pow};
+use crate::{abstract_traits, power::Power};
+
+pub trait IsPrime {}
+
+pub trait Modulo {
+    const VALUE: usize;
+}
+
+pub struct Add;
+pub struct Mul;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Modular<const MOD: usize> {
+pub struct Modular<M> {
+    phantom: std::marker::PhantomData<M>,
     value: usize,
 }
 
-impl<const MOD: usize> std::fmt::Display for Modular<MOD> {
+impl<M> std::fmt::Display for Modular<M> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.value)
     }
 }
-
-impl<const MOD: usize> Modular<MOD> {
-    pub fn new(n: usize) -> Self { Self { value: n % MOD } }
-
-    pub const fn value(&self) -> usize { self.value % MOD }
-
-    pub fn inverse(&self) -> Modular<MOD> { pow(self, MOD - 2) }
+impl<M> Modular<M> {
+    pub const fn value(&self) -> usize { self.value }
 }
 
-impl<const MOD: usize> abstract_traits::MulIdentity for Modular<MOD> {
-    fn identity() -> Self { Self { value: 1 } }
+impl<M: Modulo> Modular<M> {
+    pub fn new(n: usize) -> Self {
+        Self {
+            phantom: std::marker::PhantomData,
+            value: n % M::VALUE,
+        }
+    }
 }
 
-impl<const MOD: usize> abstract_traits::Identity for Modular<MOD> {
-    fn identity() -> Self { Self { value: 1 } }
+impl<M: Modulo> From<usize> for Modular<M> {
+    fn from(value: usize) -> Self { Self::new(value) }
 }
 
-impl<const MOD: usize> abstract_traits::Semigroup for Modular<MOD> {
-    fn operate(x: &Self, y: &Self) -> Self { *x * *y }
+impl<M: Modulo> abstract_traits::Identity<Add> for Modular<M> {
+    fn identity() -> Self { 0.into() }
 }
 
-impl<const MOD: usize> std::ops::AddAssign for Modular<MOD> {
+impl<M: Modulo> abstract_traits::Identity<Mul> for Modular<M> {
+    fn identity() -> Self { 1.into() }
+}
+
+impl<M: Modulo> abstract_traits::Semigroup<Add> for Modular<M> {
+    fn operate(lhs: &Self, rhs: &Self) -> Self {
+        (lhs.value + rhs.value).into()
+    }
+}
+
+impl<M: Modulo> abstract_traits::Semigroup<Mul> for Modular<M> {
+    fn operate(lhs: &Self, rhs: &Self) -> Self {
+        (lhs.value * rhs.value).into()
+    }
+}
+
+impl<M: Modulo + Copy> std::ops::AddAssign<Self> for Modular<M> {
     fn add_assign(&mut self, rhs: Self) { *self = *self + rhs; }
 }
 
-impl<const MOD: usize> std::ops::Add for Modular<MOD> {
+impl<M: Modulo> std::ops::Add<Self> for Modular<M> {
     type Output = Self;
 
-    fn add(self, rhs: Self) -> Self {
-        Self {
-            value: (self.value + rhs.value) % MOD,
-        }
-    }
+    fn add(self, rhs: Self) -> Self::Output { (self.value + rhs.value).into() }
 }
 
-impl<const MOD: usize> std::ops::Neg for Modular<MOD> {
+impl<M: Modulo> std::ops::Neg for Modular<M> {
     type Output = Self;
 
-    fn neg(self) -> Self {
-        Self {
-            value: MOD - self.value,
-        }
-    }
+    fn neg(self) -> Self::Output { (M::VALUE - self.value).into() }
 }
 
-impl<const MOD: usize> std::ops::SubAssign for Modular<MOD> {
+impl<M: Modulo + Copy> std::ops::SubAssign<Self> for Modular<M> {
     fn sub_assign(&mut self, rhs: Self) { *self += -rhs; }
 }
 
-impl<const MOD: usize> std::ops::Sub for Modular<MOD> {
+impl<M: Modulo> std::ops::Sub<Self> for Modular<M> {
     type Output = Self;
 
     fn sub(self, rhs: Self) -> Self { self + -rhs }
 }
 
-impl<const MOD: usize> std::ops::Mul for Modular<MOD> {
+impl<M: Modulo> std::ops::Mul<Self> for Modular<M> {
     type Output = Self;
 
-    fn mul(self, rhs: Self) -> Self {
-        Self {
-            value: self.value * rhs.value % MOD,
-        }
-    }
+    fn mul(self, rhs: Self) -> Self { (self.value * rhs.value).into() }
 }
 
-impl<const MOD: usize> std::ops::MulAssign for Modular<MOD> {
+impl<M: Modulo + Copy> std::ops::MulAssign<Self> for Modular<M> {
     fn mul_assign(&mut self, rhs: Self) { *self = *self * rhs; }
 }
 
-impl<const MOD: usize> std::ops::Div for Modular<MOD> {
-    type Output = Self;
-
-    fn div(self, rhs: Self) -> Self { self * rhs.inverse() }
+impl<M: Modulo + IsPrime> Modular<M>
+where
+    Self: Power<Self, Mul>,
+{
+    pub fn invert(&self) -> Self { Self::pow(self, M::VALUE - 2) }
 }
 
-impl<const MOD: usize> std::ops::DivAssign for Modular<MOD> {
+impl<M: Modulo + IsPrime> std::ops::Div<Self> for Modular<M> {
+    type Output = Self;
+
+    fn div(self, rhs: Self) -> Self { self * rhs.invert() }
+}
+
+impl<M: Modulo + IsPrime + Copy> std::ops::DivAssign<Self> for Modular<M> {
     fn div_assign(&mut self, rhs: Self) { *self = *self / rhs; }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct MOD998_244_353;
+impl Modulo for MOD998_244_353 {
+    const VALUE: usize = 998_244_353;
+}
+impl IsPrime for MOD998_244_353 {}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct MOD1_000_000_007;
+impl Modulo for MOD1_000_000_007 {
+    const VALUE: usize = 1_000_000_007;
+}
+impl IsPrime for MOD1_000_000_007 {}
+
 #[cfg(test)]
 mod tests {
-    use super::*;
-    type Mint = Modular<1_000_000_007>;
-
     #[test]
-    fn test_new() {
-        assert_eq!(Mint::new(1_000_000_008), Mint::new(1));
-    }
+    fn test() {
+        type Mint = super::Modular<super::MOD998_244_353>;
 
-    #[test]
-    fn test_add() {
-        let a = Mint::new(1);
-        let b = Mint::new(1_000_000_007);
-        assert_eq!(a + b, Mint::new(1));
-        assert_eq!(b, Mint::new(0));
-    }
-
-    #[test]
-    fn test_add_assign() {
-        let mut a = Mint::new(1);
-        let b = Mint::new(1_000_000_007);
-        a += b;
-        assert_eq!(a, Mint::new(1));
-        assert_eq!(b, Mint::new(0));
-    }
-
-    #[test]
-    fn test_neg() {
-        let a = Mint::new(1);
-        assert_eq!(-a, Mint::new(1_000_000_006));
-    }
-
-    #[test]
-    fn test_sub() {
-        let a = Mint::new(1);
-        let b = Mint::new(1_000_000_007);
-        assert_eq!(a - b, Mint::new(1));
-    }
-
-    #[test]
-    fn test_sub_assign() {
-        let mut a = Mint::new(1);
-        let b = Mint::new(1_000_000_007);
-        a -= b;
-        assert_eq!(a, Mint::new(1));
-    }
-
-    #[test]
-    fn test_mul() {
-        let a = Mint::new(2);
-        let b = Mint::new(1_000_000_006);
-        assert_eq!(a * b, Mint::new(1_000_000_005));
-        assert_eq!(b, Mint::new(1_000_000_006));
-    }
-
-    #[test]
-    fn test_mul_assign() {
-        let mut a = Mint::new(2);
-        let b = Mint::new(1_000_000_006);
-        a *= b;
-        assert_eq!(a, Mint::new(1_000_000_005));
-        assert_eq!(b, Mint::new(1_000_000_006));
-    }
-
-    #[test]
-    fn test_inverse() {
-        let a = Mint::new(2);
-        assert_eq!(a.inverse(), Mint::new(500000004));
+        let mut x = Mint::new(998_244_353);
+        assert_eq!(x.value(), 0);
+        x += Mint::new(10);
+        assert_eq!(x.value(), 10);
+        x -= Mint::new(9);
+        assert_eq!(x.value(), 1);
+        x /= Mint::new(2);
+        assert_eq!(x.value(), 499122177);
     }
 }

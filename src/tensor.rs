@@ -91,47 +91,43 @@ where
     }
 }
 
-impl<T: Copy + Default + abstract_traits::Semiring> Tensor<T, 2> {
-    pub fn e(&self) -> Self {
-        let (h, w) = (self.shape[0], self.shape[1]);
-        let mut e = Self::new(self.shape);
-        for i in 0..h {
-            for j in 0..w {
-                e[[i, j]] = self::abstract_traits::AddIdentity::identity();
-            }
-        }
-        for i in 0..h {
-            e[[i, i]] = self::abstract_traits::MulIdentity::identity();
-        }
-        e
-    }
+// impl<T: Copy + Default + abstract_traits::Semiring>
+// Tensor<T, 2> {     pub fn e(&self) -> Self {
+//         let (h, w) = (self.shape[0], self.shape[1]);
+//         let mut e = Self::new(self.shape);
+//         for i in 0..h {
+//             for j in 0..w {
+//                 e[[i, j]] =
+// self::abstract_traits::AddIdentity::identity();
+// }         }
+//         for i in 0..h {
+//             e[[i, i]] =
+// self::abstract_traits::MulIdentity::identity();         }
+//         e
+//     }
 
-    pub fn op(lhs: &Self, rhs: &Self) -> Self {
-        assert_eq!(lhs.shape[1], rhs.shape[0]);
-        let h = lhs.shape[0];
-        let w = rhs.shape[1];
-        let n = lhs.shape[1];
-        let mut res = Self::new([h, w]);
-        for i in 0..h {
-            for j in 0..w {
-                for k in 0..n {
-                    res[[i, j]] = res[[i, j]] + lhs[[i, k]] * rhs[[k, j]];
-                }
-            }
-        }
-        res
-    }
+//     pub fn op(lhs: &Self, rhs: &Self) -> Self {
+//         assert_eq!(lhs.shape[1], rhs.shape[0]);
+//         let h = lhs.shape[0];
+//         let w = rhs.shape[1];
+//         let n = lhs.shape[1];
+//         let mut res = Self::new([h, w]);
+//         for i in 0..h {
+//             for j in 0..w {
+//                 for k in 0..n {
+//                     res[[i, j]] = res[[i, j]] + lhs[[i, k]]
+// * rhs[[k, j]];                 } } } res }
 
-    pub fn pow(&self, n: usize) -> Self {
-        assert_eq!(self.shape[0], self.shape[1]);
-        if n == 0 {
-            return self.e();
-        }
-        let mut x = self.pow(n >> 1);
-        x = Self::op(&x, &x);
-        if n & 1 == 1 {
-            x = Self::op(&x, self);
-        }
-        x
-    }
-}
+//     pub fn pow(&self, n: usize) -> Self {
+//         assert_eq!(self.shape[0], self.shape[1]);
+//         if n == 0 {
+//             return self.e();
+//         }
+//         let mut x = self.pow(n >> 1);
+//         x = Self::op(&x, &x);
+//         if n & 1 == 1 {
+//             x = Self::op(&x, self);
+//         }
+//         x
+//     }
+// }
