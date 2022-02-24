@@ -8,6 +8,7 @@ pub mod combinatorics;
 pub mod longest_common_prefix;
 pub mod modular;
 pub mod power;
+pub mod segment_tree;
 pub mod sequence;
 pub mod sort;
 pub mod sparse_table;
