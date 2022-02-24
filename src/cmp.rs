@@ -1,7 +1,7 @@
-pub trait Inf {
-    const INF: Self;
+pub trait Infinity {
+    const INFINITY: Self;
 }
 
-impl Inf for usize {
-    const INF: usize = std::usize::MAX;
+impl Infinity for usize {
+    const INFINITY: usize = std::usize::MAX;
 }
