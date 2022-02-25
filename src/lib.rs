@@ -8,7 +8,7 @@ pub mod bitset;
 pub mod cmp;
 pub mod combinatorics;
 pub mod longest_common_prefix;
-pub mod modular;
+pub mod modular_static;
 pub mod power;
 pub mod power_2;
 pub mod segment_tree;
