@@ -21,3 +21,4 @@ pub mod suffix_array;
 pub mod tensor;
 pub mod union_find;
 pub mod vector_util;
+pub mod power_2;

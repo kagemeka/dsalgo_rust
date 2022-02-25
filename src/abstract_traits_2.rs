@@ -4,6 +4,11 @@ pub struct Multiplicative;
 pub trait Identity<S = Self, T = Additive> {
     fn identity() -> S;
 }
+
+pub trait BinaryOperation<S = Self, T = Additive> {
+    fn operate(_: &S, _: &S) -> S;
+}
+
 pub trait Inverse<S = Self, T = Additive> {
     fn invert(_: &S) -> S;
 }
@@ -12,9 +17,8 @@ pub trait Idempotent<S = Self, T = Additive> {}
 
 pub trait Commutative<S = Self, T = Additive> {}
 
-pub trait Semigroup<S = Self, T = Additive> {
-    fn operate(_: &S, _: &S) -> S;
-}
+pub trait Semigroup<S = Self, T = Additive>: BinaryOperation<S, T> {}
+impl<S, T, U: BinaryOperation<S, T>> Semigroup<S, T> for U {}
 
 pub trait Monoid<S = Self, T = Additive>:
     Semigroup<S, T> + Identity<S, T>
@@ -66,11 +70,11 @@ mod tests {
         fn identity() -> usize { 1 }
     }
 
-    impl super::Semigroup<usize, super::Additive> for UsizeAddMul {
+    impl super::BinaryOperation<usize, super::Additive> for UsizeAddMul {
         fn operate(a: &usize, b: &usize) -> usize { a + b }
     }
 
-    impl super::Semigroup<usize, super::Multiplicative> for UsizeAddMul {
+    impl super::BinaryOperation<usize, super::Multiplicative> for UsizeAddMul {
         fn operate(a: &usize, b: &usize) -> usize { a * b }
     }
 
@@ -83,12 +87,12 @@ mod tests {
     {
         let add_e = <U as super::Identity<S, Add>>::identity();
         let value_add =
-            <U as super::Semigroup<S, Add>>::operate(&add_e, &add_e);
+            <U as super::BinaryOperation<S, Add>>::operate(&add_e, &add_e);
         assert_eq!(value_add, add_e);
 
         let mul_e = <U as super::Identity<S, Mul>>::identity();
         let value_mul =
-            <U as super::Semigroup<S, Mul>>::operate(&mul_e, &mul_e);
+            <U as super::BinaryOperation<S, Mul>>::operate(&mul_e, &mul_e);
         assert_eq!(value_mul, mul_e);
         eprintln!("{:?}", value_add);
     }

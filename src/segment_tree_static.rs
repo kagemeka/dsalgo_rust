@@ -109,11 +109,10 @@ impl<M: Monoid<S, T>, S, T> std::ops::Index<usize> for SegmentTree<M, S, T> {
 
 #[cfg(test)]
 mod tests {
+    use crate::abstract_traits_2::{BinaryOperation, Identity};
     #[test]
     fn test_as_monoid() {
-        use crate::abstract_traits_2::{Identity, Semigroup};
-
-        impl Semigroup for usize {
+        impl BinaryOperation for usize {
             fn operate(x: &Self, y: &Self) -> Self { x + y }
         }
         impl Identity for usize {
@@ -130,10 +129,9 @@ mod tests {
 
     #[test]
     fn test_wrapping_monoid() {
-        use crate::abstract_traits_2::{Identity, Semigroup};
         struct UsizeAdd;
 
-        impl Semigroup<usize> for UsizeAdd {
+        impl BinaryOperation<usize> for UsizeAdd {
             fn operate(x: &usize, y: &usize) -> usize { x + y }
         }
         impl Identity<usize> for UsizeAdd {
