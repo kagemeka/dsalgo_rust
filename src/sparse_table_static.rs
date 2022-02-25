@@ -1,36 +1,132 @@
-// use crate::{abstract_traits, bitset};
-// pub struct SparseTable<S> {
-//     data: Vec<Vec<S>>,
-// }
+use crate::{
+    abstract_traits::{Additive, Commutative, Idempotent, Semigroup},
+    bitset,
+};
+pub struct SparseTable<Sg, S = Sg, T = Additive>
+where
+    Sg: Semigroup<S, T> + Idempotent<S, T> + Commutative<S, T>,
+{
+    phantom_sg: std::marker::PhantomData<Sg>,
+    phantom_t: std::marker::PhantomData<T>,
+    data: Vec<Vec<S>>,
+}
 
-// impl<S: abstract_traits::Semigroup + Idempotent>
-// SparseTable<S> where S::Identity: Clone {
-//     pub fn new(arr: &Vec<S>) -> Self {
-//         assert!(sg.idempotent && sg.commutative);
-//         let n = a.len();
-//         assert!(n > 0);
-//         let k = std::cmp::max(1, bitset::bit_length(n - 1));
-//         let mut data = vec![vec![S::default(); n]; k];
-//         data[0] = a.clone();
-//         for i in 0..k - 1 {
-//             data[i + 1] = data[i].clone();
-//             for j in 0..n - (1 << i) {
-//                 data[i + 1][j] =
-//                     (sg.operate)(&data[i][j], &data[i][j +
-// (1 << i)])             }
-//         }
-//         Self {
-//             sg: sg,
-//             data: data,
-//         }
-//     }
+impl<Sg, S, T> SparseTable<Sg, S, T>
+where
+    Sg: Semigroup<S, T> + Idempotent<S, T> + Commutative<S, T>,
+    S: Copy,
+{
+    pub fn new(arr: &Vec<S>) -> Self {
+        let n = arr.len();
+        assert!(n > 0);
+        let height = bitset::bit_length(n - 1);
+        let mut data = vec![arr.clone()];
+        for log in 1..height {
+            let row_size = n - (1 << log) + 1;
+            data.push(data[log - 1][..row_size].to_vec());
+            for i in 0..row_size {
+                data[log][log] = Sg::operate(
+                    &data[log - 1][i],
+                    &data[log - 1][i + (1 << (log - 1))],
+                );
+            }
+        }
+        Self {
+            phantom_sg: std::marker::PhantomData,
+            phantom_t: std::marker::PhantomData,
+            data: data,
+        }
+    }
 
-//     pub fn get(&self, l: usize, r: usize) -> S {
-//         assert!(l < r && r <= self.data[0].len());
-//         if r - l == 1 {
-//             return self.data[0][l].clone();
-//         }
-//         let k = bitset::bit_length(r - 1 - l) - 1;
-//         (self.sg.operate)(&self.data[k][l], &self.data[k][r
-// - (1 << k)])     }
-// }
+    pub fn get(&self, left: usize, right: usize) -> S {
+        assert!(left < right && right <= self.data[0].len());
+        if right - left == 1 {
+            return self.data[0][left];
+        }
+        let log = bitset::bit_length(right - 1 - left) - 1;
+        Sg::operate(&self.data[log][left], &self.data[log][right - (1 << log)])
+    }
+}
+
+pub struct DisjointSparseTable<Sg, S = Sg, T = Additive>
+where
+    Sg: Semigroup<S, T> + Commutative<S, T>,
+{
+    phantom_sg: std::marker::PhantomData<Sg>,
+    phantom_t: std::marker::PhantomData<T>,
+    data: Vec<Vec<S>>,
+}
+
+impl<Sg, S, T> DisjointSparseTable<Sg, S, T>
+where
+    Sg: Semigroup<S, T> + Commutative<S, T>,
+    S: Copy,
+{
+    pub fn new(arr: &Vec<S>) -> Self {
+        let n = arr.len();
+        assert!(n > 0);
+        let height = bitset::bit_length(n - 1);
+        let mut data = vec![arr.clone()];
+        for log in 1..height {
+            data.push(arr.clone());
+            for border in (1 << log..n + 1).step_by(2 << log) {
+                for delta in 1..(1 << log) {
+                    data[log][border - delta - 1] = Sg::operate(
+                        &data[log][border - delta - 1],
+                        &data[log][border - delta],
+                    );
+                }
+                for delta in 0..(1 << log) - 1 {
+                    if border + delta + 1 >= n {
+                        break;
+                    }
+                    data[log][border + delta + 1] = Sg::operate(
+                        &data[log][border + delta],
+                        &data[log][border + delta + 1],
+                    );
+                }
+            }
+        }
+        Self {
+            phantom_sg: std::marker::PhantomData,
+            phantom_t: std::marker::PhantomData,
+            data: data,
+        }
+    }
+
+    pub fn get(&self, left: usize, right: usize) -> S {
+        assert!(left < right && right <= self.data[0].len());
+        if right - left == 1 {
+            return self.data[0][left];
+        }
+        let log = bitset::bit_length(left ^ (right - 1)) - 1;
+        Sg::operate(&self.data[log][left], &self.data[log][right - 1])
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::abstract_traits;
+
+    #[test]
+    fn test_self_as_min() {
+        let arr: Vec<usize> = vec![0, 4, 2, 8, 5, 1];
+
+        struct Min;
+        impl abstract_traits::BinaryOperation<usize, Min> for usize {
+            fn operate(lhs: &Self, rhs: &Self) -> Self {
+                std::cmp::min(*lhs, *rhs)
+            }
+        }
+        impl abstract_traits::Idempotent<usize, Min> for usize {}
+        impl abstract_traits::Commutative<usize, Min> for usize {}
+        let sp = super::SparseTable::<usize, _, Min>::new(&arr);
+        assert_eq!(sp.get(0, 4), 0);
+        assert_eq!(sp.get(3, 4), 8);
+        assert_eq!(sp.get(1, 6), 1);
+        let sp = super::DisjointSparseTable::<usize, _, Min>::new(&arr);
+        assert_eq!(sp.get(0, 4), 0);
+        assert_eq!(sp.get(3, 4), 8);
+        assert_eq!(sp.get(1, 6), 1);
+    }
+}

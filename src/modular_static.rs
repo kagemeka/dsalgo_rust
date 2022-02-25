@@ -37,21 +37,21 @@ impl<M: Modulo> From<usize> for Modular<M> {
     fn from(value: usize) -> Self { Self::new(value) }
 }
 
-impl<M: Modulo> abstract_traits::Identity<Add> for Modular<M> {
+impl<M: Modulo> abstract_traits::Identity<Self, Add> for Modular<M> {
     fn identity() -> Self { 0.into() }
 }
 
-impl<M: Modulo> abstract_traits::Identity<Mul> for Modular<M> {
+impl<M: Modulo> abstract_traits::Identity<Self, Mul> for Modular<M> {
     fn identity() -> Self { 1.into() }
 }
 
-impl<M: Modulo> abstract_traits::Semigroup<Add> for Modular<M> {
+impl<M: Modulo> abstract_traits::BinaryOperation<Self, Add> for Modular<M> {
     fn operate(lhs: &Self, rhs: &Self) -> Self {
         (lhs.value + rhs.value).into()
     }
 }
 
-impl<M: Modulo> abstract_traits::Semigroup<Mul> for Modular<M> {
+impl<M: Modulo> abstract_traits::BinaryOperation<Self, Mul> for Modular<M> {
     fn operate(lhs: &Self, rhs: &Self) -> Self {
         (lhs.value * rhs.value).into()
     }
@@ -93,11 +93,10 @@ impl<M: Modulo + Copy> std::ops::MulAssign<Self> for Modular<M> {
     fn mul_assign(&mut self, rhs: Self) { *self = *self * rhs; }
 }
 
-impl<M: Modulo + IsPrime> Modular<M>
-where
-    Self: Power<Self, Mul>,
-{
-    pub fn invert(&self) -> Self { Self::pow(self, M::VALUE - 2) }
+impl<M: Modulo + IsPrime> Modular<M> {
+    pub fn invert(&self) -> Self {
+        <Self as Power<Self, Mul>>::pow(self, M::VALUE - 2)
+    }
 }
 
 impl<M: Modulo + IsPrime> std::ops::Div<Self> for Modular<M> {

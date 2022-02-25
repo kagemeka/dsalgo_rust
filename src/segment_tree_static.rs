@@ -1,20 +1,22 @@
-use crate::abstract_traits::Monoid;
+use crate::abstract_traits::{Additive, Monoid};
 
-pub struct SegmentTree<S: Monoid<T>, T> {
+pub struct SegmentTree<M: Monoid<S, T>, S = M, T = Additive> {
     phantom: std::marker::PhantomData<T>,
+    phantom_m: std::marker::PhantomData<M>,
     size: usize,
     data: Vec<S>,
 }
 
-impl<S: Clone + Monoid<T>, T> From<&Vec<S>> for SegmentTree<S, T> {
+impl<M: Monoid<S, T>, S: Clone, T> From<&Vec<S>> for SegmentTree<M, S, T> {
     fn from(arr: &Vec<S>) -> Self {
         let size = arr.len();
         assert!(size > 0);
         let n = size.next_power_of_two();
-        let mut data = vec![S::identity(); n << 1];
+        let mut data = vec![M::identity(); n << 1];
         data[n..(n + size)].clone_from_slice(arr);
         let mut seg = Self {
             phantom: std::marker::PhantomData,
+            phantom_m: std::marker::PhantomData,
             size,
             data,
         };
@@ -25,13 +27,13 @@ impl<S: Clone + Monoid<T>, T> From<&Vec<S>> for SegmentTree<S, T> {
     }
 }
 
-impl<S: Clone + Monoid<T>, T> SegmentTree<S, T> {
-    pub fn new(size: usize) -> Self { (&vec![S::identity(); size]).into() }
+impl<M: Monoid<S, T>, S: Clone, T> SegmentTree<M, S, T> {
+    pub fn new(size: usize) -> Self { (&vec![M::identity(); size]).into() }
 }
 
-impl<S: Monoid<T>, T> SegmentTree<S, T> {
+impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
     fn merge(&mut self, i: usize) {
-        self.data[i] = S::operate(&self.data[i << 1], &self.data[i << 1 | 1]);
+        self.data[i] = M::operate(&self.data[i << 1], &self.data[i << 1 | 1]);
     }
 
     pub fn set(&mut self, mut i: usize, x: S) {
@@ -49,21 +51,21 @@ impl<S: Monoid<T>, T> SegmentTree<S, T> {
         let n = self.data.len() >> 1;
         l += n;
         r += n;
-        let mut vl = S::identity();
-        let mut vr = S::identity();
+        let mut vl = M::identity();
+        let mut vr = M::identity();
         while l < r {
             if l & 1 == 1 {
-                vl = S::operate(&vl, &self.data[l]);
+                vl = M::operate(&vl, &self.data[l]);
                 l += 1;
             }
             if r & 1 == 1 {
                 r -= 1;
-                vr = S::operate(&self.data[r], &vr);
+                vr = M::operate(&self.data[r], &vr);
             }
             l >>= 1;
             r >>= 1;
         }
-        S::operate(&vl, &vr)
+        M::operate(&vl, &vr)
     }
 
     pub fn max_right(
@@ -73,12 +75,12 @@ impl<S: Monoid<T>, T> SegmentTree<S, T> {
     ) -> usize {
         assert!(left < self.size);
         let n = self.data.len() >> 1;
-        let mut v = S::identity();
+        let mut v = M::identity();
         let mut i = (left + n) as i32;
         loop {
             i /= i & -i;
-            if is_ok(&S::operate(&v, &self.data[i as usize])) {
-                v = S::operate(&v, &self.data[i as usize]);
+            if is_ok(&M::operate(&v, &self.data[i as usize])) {
+                v = M::operate(&v, &self.data[i as usize]);
                 i += 1;
                 if i & -i == i {
                     return self.size;
@@ -87,8 +89,8 @@ impl<S: Monoid<T>, T> SegmentTree<S, T> {
             }
             while i < n as i32 {
                 i <<= 1;
-                if is_ok(&S::operate(&v, &self.data[i as usize])) {
-                    v = S::operate(&v, &self.data[i as usize]);
+                if is_ok(&M::operate(&v, &self.data[i as usize])) {
+                    v = M::operate(&v, &self.data[i as usize]);
                 }
             }
             return i as usize - n;
@@ -96,7 +98,7 @@ impl<S: Monoid<T>, T> SegmentTree<S, T> {
     }
 }
 
-impl<S: Monoid<T>, T> std::ops::Index<usize> for SegmentTree<S, T> {
+impl<M: Monoid<S, T>, S, T> std::ops::Index<usize> for SegmentTree<M, S, T> {
     type Output = S;
 
     fn index(&self, i: usize) -> &Self::Output {
@@ -107,19 +109,36 @@ impl<S: Monoid<T>, T> std::ops::Index<usize> for SegmentTree<S, T> {
 
 #[cfg(test)]
 mod tests {
+    use crate::abstract_traits::{BinaryOperation, Identity};
     #[test]
-    fn test() {
-        use crate::abstract_traits::{Identity, Semigroup};
-        struct Add;
-
-        impl Semigroup<Add> for usize {
+    fn test_as_monoid() {
+        impl BinaryOperation for usize {
             fn operate(x: &Self, y: &Self) -> Self { x + y }
         }
-        impl Identity<Add> for usize {
+        impl Identity for usize {
             fn identity() -> Self { 0 }
         }
 
-        let mut seg = super::SegmentTree::<usize, Add>::new(10);
+        let mut seg = super::SegmentTree::<usize>::new(10);
+        assert_eq!(seg.get(0, 10), 0);
+        seg.set(0, 5);
+        assert_eq!(seg.get(0, 10), 5);
+        seg.set(0, 5);
+        assert_eq!(seg[0], 5);
+    }
+
+    #[test]
+    fn test_wrapping_monoid() {
+        struct UsizeAdd;
+
+        impl BinaryOperation<usize> for UsizeAdd {
+            fn operate(x: &usize, y: &usize) -> usize { x + y }
+        }
+        impl Identity<usize> for UsizeAdd {
+            fn identity() -> usize { 0 }
+        }
+
+        let mut seg = super::SegmentTree::<UsizeAdd, usize>::new(10);
         assert_eq!(seg.get(0, 10), 0);
         seg.set(0, 5);
         assert_eq!(seg.get(0, 10), 5);
