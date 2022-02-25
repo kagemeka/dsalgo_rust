@@ -1,28 +1,37 @@
-pub trait Identity<S, T> {
+pub struct Additive;
+pub struct Multiplicative;
+
+pub trait Identity<S = Self, T = Additive> {
     fn identity() -> S;
 }
-pub trait Inverse<S, T> {
+pub trait Inverse<S = Self, T = Additive> {
     fn invert(_: &S) -> S;
 }
 
-pub trait Idempotent<S, T> {}
+pub trait Idempotent<S = Self, T = Additive> {}
 
-pub trait Commutative<S, T> {}
+pub trait Commutative<S = Self, T = Additive> {}
 
-pub trait Semigroup<S, T> {
+pub trait Semigroup<S = Self, T = Additive> {
     fn operate(_: &S, _: &S) -> S;
 }
 
-pub trait Monoid<S, T>: Semigroup<S, T> + Identity<S, T> {}
+pub trait Monoid<S = Self, T = Additive>:
+    Semigroup<S, T> + Identity<S, T>
+{
+}
 impl<S, T, U: Semigroup<S, T> + Identity<S, T>> Monoid<S, T> for U {}
 
-pub trait Group<S, T>: Monoid<S, T> + Inverse<S, T> {}
+pub trait Group<S = Self, T = Additive>: Monoid<S, T> + Inverse<S, T> {}
 impl<S, T, U: Monoid<S, T> + Inverse<S, T>> Group<S, T> for U {}
 
-pub trait AbelianGroup<S, T>: Group<S, T> + Commutative<S, T> {}
+pub trait AbelianGroup<S = Self, T = Additive>:
+    Group<S, T> + Commutative<S, T>
+{
+}
 impl<S, T, U: Group<S, T> + Commutative<S, T>> AbelianGroup<S, T> for U {}
 
-pub trait Semiring<S, Add, Mul>:
+pub trait Semiring<S = Self, Add = Additive, Mul = Multiplicative>:
     Monoid<S, Add> + Monoid<S, Mul> + Commutative<S, Add>
 {
 }
@@ -31,18 +40,18 @@ impl<S, Add, Mul, U> Semiring<S, Add, Mul> for U where
 {
 }
 
-pub trait Ring<S, Add, Mul>: Semiring<S, Add, Mul> + Inverse<S, Add> {}
+pub trait Ring<S = Self, Add = Additive, Mul = Multiplicative>:
+    Semiring<S, Add, Mul> + Inverse<S, Add>
+{
+}
 impl<S, Add, Mul, U> Ring<S, Add, Mul> for U where
     U: Semiring<S, Add, Mul> + Inverse<S, Add>
 {
 }
 
-pub trait Default<S, T> {
+pub trait Default<S = Self, T = Additive> {
     fn default() -> S;
 }
-
-pub struct Additive;
-pub struct Multiplicative;
 
 #[cfg(test)]
 mod tests {

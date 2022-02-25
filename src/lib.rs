@@ -1,6 +1,7 @@
 pub mod aa_tree;
 pub mod abstract_structs;
 pub mod abstract_traits;
+pub mod abstract_traits_2;
 pub mod argsort;
 pub mod binary_search;
 pub mod bitset;
@@ -20,4 +21,3 @@ pub mod suffix_array;
 pub mod tensor;
 pub mod union_find;
 pub mod vector_util;
-pub mod abstract_traits_2;
