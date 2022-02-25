@@ -1,12 +1,12 @@
-use crate::abstract_traits_2;
+use crate::abstract_traits;
 
-pub trait Power<S = Self, T = abstract_traits_2::Multiplicative>:
-    abstract_traits_2::Monoid<S, T>
+pub trait Power<S = Self, T = abstract_traits::Multiplicative>:
+    abstract_traits::Monoid<S, T>
 {
     fn pow(value: &S, expontent: usize) -> S;
 }
 
-impl<S, T, M: abstract_traits_2::Monoid<S, T>> Power<S, T> for M {
+impl<S, T, M: abstract_traits::Monoid<S, T>> Power<S, T> for M {
     fn pow(value: &S, exponent: usize) -> S {
         if exponent == 0 {
             return M::identity();

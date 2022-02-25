@@ -1,5 +1,3 @@
-use crate::abstract_traits;
-
 /// Tensor NDIM >= 1
 #[derive(Clone)]
 pub struct Tensor<T, const NDIM: usize> {

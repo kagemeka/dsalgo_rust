@@ -1,4 +1,4 @@
-use crate::{abstract_traits_2, power::Power};
+use crate::{abstract_traits, power::Power};
 
 pub trait IsPrime {}
 
@@ -37,21 +37,21 @@ impl<M: Modulo> From<usize> for Modular<M> {
     fn from(value: usize) -> Self { Self::new(value) }
 }
 
-impl<M: Modulo> abstract_traits_2::Identity<Self, Add> for Modular<M> {
+impl<M: Modulo> abstract_traits::Identity<Self, Add> for Modular<M> {
     fn identity() -> Self { 0.into() }
 }
 
-impl<M: Modulo> abstract_traits_2::Identity<Self, Mul> for Modular<M> {
+impl<M: Modulo> abstract_traits::Identity<Self, Mul> for Modular<M> {
     fn identity() -> Self { 1.into() }
 }
 
-impl<M: Modulo> abstract_traits_2::BinaryOperation<Self, Add> for Modular<M> {
+impl<M: Modulo> abstract_traits::BinaryOperation<Self, Add> for Modular<M> {
     fn operate(lhs: &Self, rhs: &Self) -> Self {
         (lhs.value + rhs.value).into()
     }
 }
 
-impl<M: Modulo> abstract_traits_2::BinaryOperation<Self, Mul> for Modular<M> {
+impl<M: Modulo> abstract_traits::BinaryOperation<Self, Mul> for Modular<M> {
     fn operate(lhs: &Self, rhs: &Self) -> Self {
         (lhs.value * rhs.value).into()
     }

@@ -1,4 +1,4 @@
-use crate::abstract_traits_2::{Additive, Monoid};
+use crate::abstract_traits::{Additive, Monoid};
 
 pub struct SegmentTree<M: Monoid<S, T>, S = M, T = Additive> {
     phantom: std::marker::PhantomData<T>,
@@ -109,7 +109,7 @@ impl<M: Monoid<S, T>, S, T> std::ops::Index<usize> for SegmentTree<M, S, T> {
 
 #[cfg(test)]
 mod tests {
-    use crate::abstract_traits_2::{BinaryOperation, Identity};
+    use crate::abstract_traits::{BinaryOperation, Identity};
     #[test]
     fn test_as_monoid() {
         impl BinaryOperation for usize {

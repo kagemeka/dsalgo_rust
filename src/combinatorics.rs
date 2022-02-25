@@ -1,14 +1,14 @@
-use crate::abstract_traits_2;
+use crate::abstract_traits;
 
-pub trait PascalTriangle<S = Self, T = abstract_traits_2::Additive>:
-    abstract_traits_2::Monoid<S, T> + abstract_traits_2::Default<S, T>
+pub trait PascalTriangle<S = Self, T = abstract_traits::Additive>:
+    abstract_traits::Monoid<S, T> + abstract_traits::Default<S, T>
 {
     fn pascal_triangle(n: usize) -> Vec<Vec<S>>;
 }
 
 impl<S, T, U> PascalTriangle<S, T> for U
 where
-    U: abstract_traits_2::Monoid<S, T> + abstract_traits_2::Default<S, T>,
+    U: abstract_traits::Monoid<S, T> + abstract_traits::Default<S, T>,
     S: Clone,
 {
     fn pascal_triangle(n: usize) -> Vec<Vec<S>> {
