@@ -1,12 +1,12 @@
-use crate::abstract_traits::Monoid;
+use crate::abstract_traits_2::{Additive, Monoid};
 
-pub struct SegmentTree<S: Monoid<T>, T> {
+pub struct SegmentTree<S: Monoid<S, T>, T = Additive> {
     phantom: std::marker::PhantomData<T>,
     size: usize,
     data: Vec<S>,
 }
 
-impl<S: Clone + Monoid<T>, T> From<&Vec<S>> for SegmentTree<S, T> {
+impl<S: Clone + Monoid<S, T>, T> From<&Vec<S>> for SegmentTree<S, T> {
     fn from(arr: &Vec<S>) -> Self {
         let size = arr.len();
         assert!(size > 0);
@@ -25,11 +25,11 @@ impl<S: Clone + Monoid<T>, T> From<&Vec<S>> for SegmentTree<S, T> {
     }
 }
 
-impl<S: Clone + Monoid<T>, T> SegmentTree<S, T> {
+impl<S: Clone + Monoid<S, T>, T> SegmentTree<S, T> {
     pub fn new(size: usize) -> Self { (&vec![S::identity(); size]).into() }
 }
 
-impl<S: Monoid<T>, T> SegmentTree<S, T> {
+impl<S: Monoid<S, T>, T> SegmentTree<S, T> {
     fn merge(&mut self, i: usize) {
         self.data[i] = S::operate(&self.data[i << 1], &self.data[i << 1 | 1]);
     }
@@ -96,7 +96,7 @@ impl<S: Monoid<T>, T> SegmentTree<S, T> {
     }
 }
 
-impl<S: Monoid<T>, T> std::ops::Index<usize> for SegmentTree<S, T> {
+impl<S: Monoid<S, T>, T> std::ops::Index<usize> for SegmentTree<S, T> {
     type Output = S;
 
     fn index(&self, i: usize) -> &Self::Output {
@@ -109,17 +109,17 @@ impl<S: Monoid<T>, T> std::ops::Index<usize> for SegmentTree<S, T> {
 mod tests {
     #[test]
     fn test() {
-        use crate::abstract_traits::{Identity, Semigroup};
-        struct Add;
+        use crate::abstract_traits_2::{Identity, Semigroup};
+        // struct Add;
 
-        impl Semigroup<Add> for usize {
+        impl Semigroup for usize {
             fn operate(x: &Self, y: &Self) -> Self { x + y }
         }
-        impl Identity<Add> for usize {
+        impl Identity for usize {
             fn identity() -> Self { 0 }
         }
 
-        let mut seg = super::SegmentTree::<usize, Add>::new(10);
+        let mut seg = super::SegmentTree::<usize>::new(10);
         assert_eq!(seg.get(0, 10), 0);
         seg.set(0, 5);
         assert_eq!(seg.get(0, 10), 5);
