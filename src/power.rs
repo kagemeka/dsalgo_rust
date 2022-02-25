@@ -1,33 +1,24 @@
-use crate::abstract_traits;
+use crate::abstract_traits_2;
 
-pub trait Power<S: abstract_traits::Monoid<T>, T> {
+pub trait Power<S = Self, T = abstract_traits_2::Multiplicative>:
+    abstract_traits_2::Monoid<S, T>
+{
+    fn pow(value: &S, expontent: usize) -> S;
+}
+
+impl<S, T, M: abstract_traits_2::Monoid<S, T>> Power<S, T> for M {
     fn pow(value: &S, exponent: usize) -> S {
         if exponent == 0 {
-            return S::identity();
+            return M::identity();
         }
         let mut y = Self::pow(value, exponent >> 1);
-        y = S::operate(&y, &y);
+        y = M::operate(&y, &y);
         if exponent & 1 == 1 {
-            y = S::operate(&y, &value);
+            y = M::operate(&y, &value);
         }
         y
     }
 }
-impl<S: abstract_traits::Monoid<T>, T> Power<S, T> for S {}
-
-// pub struct Mul;
-
-// pub fn pow<T: abstract_traits::Monoid<Mul>>(x: &T, n: usize)
-// -> T {     if n == 0 {
-//         return T::identity();
-//     }
-//     let mut y = pow(x, n >> 1);
-//     y = T::operate(&y, &y);
-//     if n & 1 == 1 {
-//         y = T::operate(&y, &x);
-//     }
-//     y
-// }
 
 // pub struct Power<'a, T> {
 //     monoid: abstract_structs::Monoid<'a, T>,

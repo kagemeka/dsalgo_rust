@@ -1,4 +1,4 @@
-use crate::{abstract_traits_2, power_2};
+use crate::{abstract_traits_2, power::Power};
 
 pub trait IsPrime {}
 
@@ -95,7 +95,7 @@ impl<M: Modulo + Copy> std::ops::MulAssign<Self> for Modular<M> {
 
 impl<M: Modulo + IsPrime> Modular<M> {
     pub fn invert(&self) -> Self {
-        <Self as power_2::Power<Self, Mul>>::pow(self, M::VALUE - 2)
+        <Self as Power<Self, Mul>>::pow(self, M::VALUE - 2)
     }
 }
 

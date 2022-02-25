@@ -10,7 +10,6 @@ pub mod combinatorics;
 pub mod longest_common_prefix;
 pub mod modular_static;
 pub mod power;
-pub mod power_2;
 pub mod segment_tree;
 pub mod segment_tree_static;
 pub mod sequence;
