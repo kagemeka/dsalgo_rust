@@ -25,10 +25,8 @@ where
             let row_size = n - (1 << log) + 1;
             data.push(data[log - 1][..row_size].to_vec());
             for i in 0..row_size {
-                data[log][log] = Sg::operate(
-                    &data[log - 1][i],
-                    &data[log - 1][i + (1 << (log - 1))],
-                );
+                data[log][log] =
+                    Sg::operate(&data[log - 1][i], &data[log - 1][i + (1 << (log - 1))]);
             }
         }
         Self {
@@ -71,19 +69,15 @@ where
             data.push(arr.clone());
             for border in (1 << log..n + 1).step_by(2 << log) {
                 for delta in 1..(1 << log) {
-                    data[log][border - delta - 1] = Sg::operate(
-                        &data[log][border - delta - 1],
-                        &data[log][border - delta],
-                    );
+                    data[log][border - delta - 1] =
+                        Sg::operate(&data[log][border - delta - 1], &data[log][border - delta]);
                 }
                 for delta in 0..(1 << log) - 1 {
                     if border + delta + 1 >= n {
                         break;
                     }
-                    data[log][border + delta + 1] = Sg::operate(
-                        &data[log][border + delta],
-                        &data[log][border + delta + 1],
-                    );
+                    data[log][border + delta + 1] =
+                        Sg::operate(&data[log][border + delta], &data[log][border + delta + 1]);
                 }
             }
         }
@@ -114,9 +108,7 @@ mod tests {
 
         struct Min;
         impl abstract_traits::BinaryOperation<usize, Min> for usize {
-            fn operate(lhs: &Self, rhs: &Self) -> Self {
-                std::cmp::min(*lhs, *rhs)
-            }
+            fn operate(lhs: &Self, rhs: &Self) -> Self { std::cmp::min(*lhs, *rhs) }
         }
         impl abstract_traits::Idempotent<usize, Min> for usize {}
         impl abstract_traits::Commutative<usize, Min> for usize {}

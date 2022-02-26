@@ -7,9 +7,7 @@ pub struct Tensor<T, const NDIM: usize> {
     data: Vec<T>,
 }
 
-impl<T: std::fmt::Debug, const NDIM: usize> std::fmt::Debug
-    for Tensor<T, NDIM>
-{
+impl<T: std::fmt::Debug, const NDIM: usize> std::fmt::Debug for Tensor<T, NDIM> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Tensor")
             .field("shape", &self.shape)
@@ -51,15 +49,11 @@ impl<T, const NDIM: usize> Tensor<T, NDIM> {
 impl<T, const NDIM: usize> std::ops::Index<[usize; NDIM]> for Tensor<T, NDIM> {
     type Output = T;
 
-    fn index(&self, index: [usize; NDIM]) -> &Self::Output {
-        &self.data[self.flat_index(index)]
-    }
+    fn index(&self, index: [usize; NDIM]) -> &Self::Output { &self.data[self.flat_index(index)] }
 }
 
 /// https://doc.rust-lang.org/std/ops/trait.IndexMut.html
-impl<T, const NDIM: usize> std::ops::IndexMut<[usize; NDIM]>
-    for Tensor<T, NDIM>
-{
+impl<T, const NDIM: usize> std::ops::IndexMut<[usize; NDIM]> for Tensor<T, NDIM> {
     fn index_mut(&mut self, index: [usize; NDIM]) -> &mut Self::Output {
         let idx = self.flat_index(index);
         &mut self.data[idx]
