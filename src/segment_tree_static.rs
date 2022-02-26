@@ -193,27 +193,37 @@ impl<M: Monoid<S, T>, S, T> SegmentTreeDFS<M, S, T> {
         set::<M, S, T>(&mut self.data, i, x);
     }
 
-    // pub fn get(&self, mut left: usize, mut right: usize) -> S {
-    //     assert!(left <= right && right <= self.size);
-    //     let n = self.data.len() >> 1;
-    //     left += n;
-    //     right += n;
-    //     let mut value_left = M::identity();
-    //     let mut value_right = M::identity();
-    //     while left < right {
-    //         if left & 1 == 1 {
-    //             value_left = M::operate(&value_left,
-    // &self.data[left]);             left += 1;
-    //         }
-    //         if right & 1 == 1 {
-    //             right -= 1;
-    //             value_right = M::operate(&self.data[right],
-    // &value_right);         }
-    //         left >>= 1;
-    //         right >>= 1;
-    //     }
-    //     M::operate(&value_left, &value_right)
-    // }
+    pub fn get(&self, left: usize, right: usize) -> S
+    where
+        S: Copy,
+    {
+        assert!(left <= right && right <= self.size);
+        return self.get_recurse(left, right, 0, self.data.len() >> 1, 1);
+    }
+
+    fn get_recurse(
+        &self,
+        left: usize,
+        right: usize,
+        current_left: usize,
+        current_right: usize,
+        node_index: usize,
+    ) -> S
+    where
+        S: Copy,
+    {
+        if current_right <= left || right <= current_left {
+            return M::identity();
+        }
+        if left <= current_left && current_right <= right {
+            return self.data[node_index];
+        }
+        let center = (current_left + current_right) >> 1;
+        return M::operate(
+            &self.get_recurse(left, right, current_left, center, node_index << 1),
+            &self.get_recurse(left, right, center, current_right, node_index << 1 | 1),
+        );
+    }
 
     // pub fn max_right<F>(&self, is_ok: F, left: usize) -> usize
     // where
@@ -284,6 +294,20 @@ mod tests {
         assert_eq!(seg.min_left(is_ok, 10), 6);
         assert_eq!(seg.min_left(is_ok, 5), 0);
         assert_eq!(seg.min_left(is_ok, 6), 6);
+
+        let mut seg = super::SegmentTreeDFS::<usize>::new(10);
+        assert_eq!(seg.get(0, 10), 0);
+        seg.set(5, 5);
+        assert_eq!(seg.get(0, 10), 5);
+        seg.set(5, 10);
+        assert_eq!(seg[5], 10);
+        assert_eq!(seg[0], 0);
+        let is_ok = |sum: &usize| *sum < 10;
+        // assert_eq!(seg.max_right(is_ok, 0), 5);
+        // assert_eq!(seg.max_right(is_ok, 5), 5);
+        // assert_eq!(seg.min_left(is_ok, 10), 6);
+        // assert_eq!(seg.min_left(is_ok, 5), 0);
+        // assert_eq!(seg.min_left(is_ok, 6), 6);
     }
 
     #[test]
