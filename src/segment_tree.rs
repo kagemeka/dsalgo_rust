@@ -20,10 +20,7 @@ impl<'a, S: Copy> SegmentTree<'a, S> {
         Self::from_vec(monoid, &arr)
     }
 
-    pub fn from_vec(
-        monoid: abstract_structs::Monoid<'a, S>,
-        a: &Vec<S>,
-    ) -> Self {
+    pub fn from_vec(monoid: abstract_structs::Monoid<'a, S>, a: &Vec<S>) -> Self {
         let size = a.len();
         let n = size.next_power_of_two();
         let mut data = vec![(monoid.identity)(); n << 1];
@@ -42,8 +39,7 @@ impl<'a, S: Copy> SegmentTree<'a, S> {
     }
 
     fn merge(&mut self, i: usize) {
-        self.data[i] =
-            (self.monoid.operate)(&self.data[i << 1], &self.data[i << 1 | 1]);
+        self.data[i] = (self.monoid.operate)(&self.data[i << 1], &self.data[i << 1 | 1]);
     }
 
     pub fn set(&mut self, mut i: usize, x: S) {
@@ -78,11 +74,7 @@ impl<'a, S: Copy> SegmentTree<'a, S> {
         (self.monoid.operate)(&vl, &vr)
     }
 
-    pub fn max_right(
-        &self,
-        is_ok: Box<dyn Fn(&S) -> bool>,
-        l: usize,
-    ) -> usize {
+    pub fn max_right(&self, is_ok: Box<dyn Fn(&S) -> bool>, l: usize) -> usize {
         assert!(l < self.size);
         let n = self.data.len() >> 1;
         let mut v = (self.monoid.identity)();
@@ -140,8 +132,8 @@ mod tests {
         assert_eq!(
             seg.data,
             [
-                45, 45, 28, 17, 6, 22, 17, 0, 1, 5, 9, 13, 17, 0, 0, 0, 0, 1,
-                2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0
+                45, 45, 28, 17, 6, 22, 17, 0, 1, 5, 9, 13, 17, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8,
+                9, 0, 0, 0, 0, 0, 0
             ],
         );
         println!("{:?}", seg);

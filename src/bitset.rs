@@ -26,9 +26,7 @@ pub fn msb_number_binary_search(mut n: usize) -> usize {
     n
 }
 
-pub fn least_significant_bit(n: usize) -> usize {
-    n.reverse_bits().leading_zeros() as usize
-}
+pub fn least_significant_bit(n: usize) -> usize { n.reverse_bits().leading_zeros() as usize }
 
 pub fn lsb_number(n: usize) -> usize {
     let n = n as isize;
@@ -40,9 +38,7 @@ pub fn delete_least_bit(n: usize) -> usize { n - lsb_number(n) }
 pub fn delete_least_bit_v2(n: usize) -> usize { n & (n - 1) }
 
 /// O(1)
-pub fn bit_length(n: usize) -> usize {
-    (0usize.leading_zeros() - n.leading_zeros()) as usize
-}
+pub fn bit_length(n: usize) -> usize { (0usize.leading_zeros() - n.leading_zeros()) as usize }
 
 /// O(1)
 pub fn bit_length_v2(mut n: usize) -> usize {

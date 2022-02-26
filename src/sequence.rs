@@ -1,8 +1,6 @@
 use crate::{binary_search::lower_bound, cmp::Infinity};
 
-pub fn longest_increasing_sequence<T: Ord + Infinity + Clone + Copy>(
-    a: &[T],
-) -> Vec<T> {
+pub fn longest_increasing_sequence<T: Ord + Infinity + Clone + Copy>(a: &[T]) -> Vec<T> {
     let n = a.len();
     let mut lis = vec![T::INFINITY; n];
     for &x in a.iter() {

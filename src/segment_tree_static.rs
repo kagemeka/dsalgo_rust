@@ -1,7 +1,7 @@
 use crate::abstract_traits::{Additive, Monoid};
 
-fn merge<M: Monoid<S, T>, S, T>(data: &mut Vec<S>, i: usize) {
-    data[i] = M::operate(&data[i << 1], &data[i << 1 | 1]);
+fn merge<M: Monoid<S, T>, S, T>(data: &mut Vec<S>, node_index: usize) {
+    data[node_index] = M::operate(&data[node_index << 1], &data[node_index << 1 | 1]);
 }
 
 fn make_data<M: Monoid<S, T>, S: Clone, T>(arr: &Vec<S>) -> Vec<S> {
@@ -10,19 +10,18 @@ fn make_data<M: Monoid<S, T>, S: Clone, T>(arr: &Vec<S>) -> Vec<S> {
     let n = size.next_power_of_two();
     let mut data = vec![M::identity(); n << 1];
     data[n..(n + size)].clone_from_slice(arr);
-    for i in (1..n).rev() {
-        merge::<M, S, T>(&mut data, i);
+    for node_index in (1..n).rev() {
+        merge::<M, S, T>(&mut data, node_index);
     }
     data
 }
 
-fn set<M: Monoid<S, T>, S, T>(data: &mut Vec<S>, mut i: usize, x: S) {
-    assert!(i < data.len() >> 1);
-    i += data.len() >> 1;
-    data[i] = x;
-    while i > 1 {
-        i >>= 1;
-        merge::<M, S, T>(data, i);
+fn set<M: Monoid<S, T>, S, T>(data: &mut Vec<S>, array_index: usize, x: S) {
+    let mut node_index = array_index + (data.len() >> 1);
+    data[node_index] = x;
+    while node_index > 1 {
+        node_index >>= 1;
+        merge::<M, S, T>(data, node_index);
     }
 }
 
@@ -58,27 +57,28 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
     }
 
     pub fn set(&mut self, i: usize, x: S) {
+        assert!(i < self.size);
         set::<M, S, T>(&mut self.data, i, x);
     }
 
-    pub fn get(&self, mut left: usize, mut right: usize) -> S {
+    pub fn get(&self, left: usize, right: usize) -> S {
         assert!(left <= right && right <= self.size);
         let n = self.data.len() >> 1;
-        left += n;
-        right += n;
+        let mut left_node_index = n + left;
+        let mut right_node_index = n + right;
         let mut value_left = M::identity();
         let mut value_right = M::identity();
-        while left < right {
-            if left & 1 == 1 {
-                value_left = M::operate(&value_left, &self.data[left]);
-                left += 1;
+        while left_node_index < right_node_index {
+            if left_node_index & 1 == 1 {
+                value_left = M::operate(&value_left, &self.data[left_node_index]);
+                left_node_index += 1;
             }
-            if right & 1 == 1 {
-                right -= 1;
-                value_right = M::operate(&self.data[right], &value_right);
+            if right_node_index & 1 == 1 {
+                right_node_index -= 1;
+                value_right = M::operate(&self.data[right_node_index], &value_right);
             }
-            left >>= 1;
-            right >>= 1;
+            left_node_index >>= 1;
+            right_node_index >>= 1;
         }
         M::operate(&value_left, &value_right)
     }
@@ -132,10 +132,7 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
         let mut node_index = (n + right) as i32;
         loop {
             node_index /= node_index & -node_index;
-            if !is_ok(&M::operate(
-                &self.data[(node_index - 1) as usize],
-                &value,
-            )) {
+            if !is_ok(&M::operate(&self.data[(node_index - 1) as usize], &value)) {
                 break;
             }
             // up one stair from right
@@ -148,10 +145,7 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
         }
         while node_index < n as i32 {
             node_index <<= 1;
-            if !is_ok(&M::operate(
-                &self.data[(node_index - 1) as usize],
-                &value,
-            )) {
+            if !is_ok(&M::operate(&self.data[(node_index - 1) as usize], &value)) {
                 continue;
             }
             node_index -= 1;
@@ -197,6 +191,7 @@ impl<M: Monoid<S, T>, S, T> SegmentTreeDFS<M, S, T> {
     }
 
     pub fn set(&mut self, i: usize, x: S) {
+        assert!(i < self.size);
         set::<M, S, T>(&mut self.data, i, x);
     }
 
@@ -257,9 +252,7 @@ impl<M: Monoid<S, T>, S, T> SegmentTreeDFS<M, S, T> {
     //     }
     // }
 }
-impl<M: Monoid<S, T>, S, T> std::ops::Index<usize>
-    for SegmentTreeDFS<M, S, T>
-{
+impl<M: Monoid<S, T>, S, T> std::ops::Index<usize> for SegmentTreeDFS<M, S, T> {
     type Output = S;
 
     fn index(&self, i: usize) -> &Self::Output {

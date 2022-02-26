@@ -24,19 +24,13 @@ pub trait Commutative<S = Self, T = Additive> {}
 pub trait Semigroup<S = Self, T = Additive>: BinaryOperation<S, T> {}
 impl<S, T, U: BinaryOperation<S, T>> Semigroup<S, T> for U {}
 
-pub trait Monoid<S = Self, T = Additive>:
-    Semigroup<S, T> + Identity<S, T>
-{
-}
+pub trait Monoid<S = Self, T = Additive>: Semigroup<S, T> + Identity<S, T> {}
 impl<S, T, U: Semigroup<S, T> + Identity<S, T>> Monoid<S, T> for U {}
 
 pub trait Group<S = Self, T = Additive>: Monoid<S, T> + Inverse<S, T> {}
 impl<S, T, U: Monoid<S, T> + Inverse<S, T>> Group<S, T> for U {}
 
-pub trait AbelianGroup<S = Self, T = Additive>:
-    Group<S, T> + Commutative<S, T>
-{
-}
+pub trait AbelianGroup<S = Self, T = Additive>: Group<S, T> + Commutative<S, T> {}
 impl<S, T, U: Group<S, T> + Commutative<S, T>> AbelianGroup<S, T> for U {}
 
 pub trait Semiring<S = Self, Add = Additive, Mul = Multiplicative>:
@@ -52,10 +46,7 @@ pub trait Ring<S = Self, Add = Additive, Mul = Multiplicative>:
     Semiring<S, Add, Mul> + Inverse<S, Add>
 {
 }
-impl<S, Add, Mul, U> Ring<S, Add, Mul> for U where
-    U: Semiring<S, Add, Mul> + Inverse<S, Add>
-{
-}
+impl<S, Add, Mul, U> Ring<S, Add, Mul> for U where U: Semiring<S, Add, Mul> + Inverse<S, Add> {}
 
 pub trait Default<S = Self, T = Additive> {
     fn default() -> S;
@@ -90,24 +81,15 @@ mod tests {
         S: std::fmt::Debug + PartialEq,
     {
         let add_e = <U as super::Identity<S, Add>>::identity();
-        let value_add =
-            <U as super::BinaryOperation<S, Add>>::operate(&add_e, &add_e);
+        let value_add = <U as super::BinaryOperation<S, Add>>::operate(&add_e, &add_e);
         assert_eq!(value_add, add_e);
 
         let mul_e = <U as super::Identity<S, Mul>>::identity();
-        let value_mul =
-            <U as super::BinaryOperation<S, Mul>>::operate(&mul_e, &mul_e);
+        let value_mul = <U as super::BinaryOperation<S, Mul>>::operate(&mul_e, &mul_e);
         assert_eq!(value_mul, mul_e);
         eprintln!("{:?}", value_add);
     }
 
     #[test]
-    fn test() {
-        need_semiring::<
-            usize,
-            super::Additive,
-            super::Multiplicative,
-            UsizeAddMul,
-        >();
-    }
+    fn test() { need_semiring::<usize, super::Additive, super::Multiplicative, UsizeAddMul>(); }
 }

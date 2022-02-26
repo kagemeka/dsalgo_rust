@@ -16,8 +16,7 @@ impl<'a, S: Default + Clone> SparseTable<'a, S> {
         for i in 0..k - 1 {
             data[i + 1] = data[i].clone();
             for j in 0..n - (1 << i) {
-                data[i + 1][j] =
-                    (sg.operate)(&data[i][j], &data[i][j + (1 << i)])
+                data[i + 1][j] = (sg.operate)(&data[i][j], &data[i][j + (1 << i)])
             }
         }
         Self {
@@ -52,15 +51,13 @@ impl<'a, S: Default + Clone> DisjointSparseTable<'a, S> {
             data[i] = a.clone();
             for j in (1 << i..n + 1).step_by(2 << i) {
                 for k in 1..(1 << i) {
-                    data[i][j - k - 1] =
-                        (sg.operate)(&data[i][j - k - 1], &data[i][j - k]);
+                    data[i][j - k - 1] = (sg.operate)(&data[i][j - k - 1], &data[i][j - k]);
                 }
                 for k in 0..(1 << i) - 1 {
                     if j + k + 1 >= n {
                         break;
                     }
-                    data[i][j + k + 1] =
-                        (sg.operate)(&data[i][j + k], &data[i][j + k + 1]);
+                    data[i][j + k + 1] = (sg.operate)(&data[i][j + k], &data[i][j + k + 1]);
                 }
             }
         }
