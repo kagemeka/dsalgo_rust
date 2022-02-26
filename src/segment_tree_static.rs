@@ -158,10 +158,7 @@ impl<M: Monoid<S, T>, S, T> std::ops::Index<usize> for SegmentTree<M, S, T> {
 
 /// Recursive Implementations for bench mark.
 impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
-    pub fn get_recurse(&self, left: usize, right: usize) -> S
-    where
-        S: Copy,
-    {
+    pub fn get_recurse(&self, left: usize, right: usize) -> S {
         assert!(left <= right && right <= self.size);
         self._get_recurse(left, right, 0, self.data.len() >> 1, 1)
     }
@@ -173,15 +170,12 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
         current_left: usize,
         current_right: usize,
         node_index: usize,
-    ) -> S
-    where
-        S: Copy,
-    {
+    ) -> S {
         if current_right <= left || right <= current_left {
             return M::identity();
         }
         if left <= current_left && current_right <= right {
-            return self.data[node_index];
+            return M::operate(&M::identity(), &self.data[node_index]);
         }
         let center = (current_left + current_right) >> 1;
         M::operate(
@@ -193,7 +187,6 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
     pub fn max_right_recurse<F>(&self, is_ok: &F, left: usize) -> usize
     where
         F: Fn(&S) -> bool,
-        S: Copy,
     {
         assert!(left <= self.size);
         self._max_right_recurse(is_ok, left, 0, self.data.len() >> 1, &mut M::identity(), 1)
@@ -213,11 +206,7 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
     ) -> usize
     where
         F: Fn(&S) -> bool,
-        S: Copy,
     {
-        if node_index >= self.data.len() {
-            return current_left;
-        }
         if current_right <= left {
             return left;
         }
@@ -230,6 +219,9 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
         {
             *current_value = M::operate(current_value, &self.data[node_index]);
             return current_right;
+        }
+        if current_right - current_left == 1 {
+            return current_left;
         }
         let center = (current_left + current_right) >> 1;
         let right = self._max_right_recurse(
@@ -250,6 +242,61 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
             current_right,
             current_value,
             node_index << 1 | 1,
+        )
+    }
+
+    pub fn min_left_recurse<F>(&self, is_ok: &F, right: usize) -> usize
+    where
+        F: Fn(&S) -> bool,
+    {
+        assert!(right <= self.size);
+        self._min_left_recurse(is_ok, right, 0, self.data.len() >> 1, &mut M::identity(), 1)
+    }
+
+    fn _min_left_recurse<F>(
+        &self,
+        is_ok: &F,
+        right: usize,
+        current_left: usize,
+        current_right: usize,
+        current_value: &mut S,
+        node_index: usize,
+    ) -> usize
+    where
+        F: Fn(&S) -> bool,
+    {
+        if current_right == 0 {
+            return 0;
+        }
+        if current_left >= right {
+            return right;
+        }
+        if current_right <= right && is_ok(&M::operate(&self.data[node_index], current_value)) {
+            *current_value = M::operate(&self.data[node_index], current_value);
+            return current_left;
+        }
+        if current_right - current_left == 1 {
+            return current_right;
+        }
+        let center = (current_left + current_right) >> 1;
+        let left = self._min_left_recurse(
+            is_ok,
+            right,
+            center,
+            current_right,
+            current_value,
+            node_index << 1 | 1,
+        );
+        if left > center || left == 0 {
+            return left;
+        }
+        self._min_left_recurse(
+            is_ok,
+            right,
+            current_left,
+            center,
+            current_value,
+            node_index << 1,
         )
     }
 }
@@ -283,8 +330,11 @@ mod tests {
         assert_eq!(seg.max_right(is_ok, 5), 5);
         assert_eq!(seg.max_right_recurse(is_ok, 5), 5);
         assert_eq!(seg.min_left(is_ok, 10), 6);
+        assert_eq!(seg.min_left_recurse(is_ok, 10), 6);
         assert_eq!(seg.min_left(is_ok, 5), 0);
+        assert_eq!(seg.min_left_recurse(is_ok, 5), 0);
         assert_eq!(seg.min_left(is_ok, 6), 6);
+        assert_eq!(seg.min_left_recurse(is_ok, 6), 6);
     }
 
     #[test]
