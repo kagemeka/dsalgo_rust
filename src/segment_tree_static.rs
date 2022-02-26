@@ -77,7 +77,7 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
         M::operate(&value_left, &value_right)
     }
 
-    pub fn max_right<F>(&self, is_ok: F, left: usize) -> usize
+    pub fn max_right<F>(&self, is_ok: &F, left: usize) -> usize
     where
         F: Fn(&S) -> bool,
     {
@@ -110,10 +110,10 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
             value = M::operate(&value, &self.data[node_index as usize]);
             node_index += 1;
         }
-        return node_index as usize - n;
+        node_index as usize - n
     }
 
-    pub fn min_left<F>(&self, is_ok: F, right: usize) -> usize
+    pub fn min_left<F>(&self, is_ok: &F, right: usize) -> usize
     where
         F: Fn(&S) -> bool,
     {
@@ -143,7 +143,7 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
             node_index -= 1;
             value = M::operate(&self.data[node_index as usize], &value);
         }
-        return node_index as usize - n;
+        node_index as usize - n
     }
 }
 
@@ -156,14 +156,14 @@ impl<M: Monoid<S, T>, S, T> std::ops::Index<usize> for SegmentTree<M, S, T> {
     }
 }
 
-/// Recurse Implementations
+/// Recursive Implementations for bench mark.
 impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
     pub fn get_recurse(&self, left: usize, right: usize) -> S
     where
         S: Copy,
     {
         assert!(left <= right && right <= self.size);
-        return self._get_recurse(left, right, 0, self.data.len() >> 1, 1);
+        self._get_recurse(left, right, 0, self.data.len() >> 1, 1)
     }
 
     fn _get_recurse(
@@ -184,39 +184,73 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
             return self.data[node_index];
         }
         let center = (current_left + current_right) >> 1;
-        return M::operate(
+        M::operate(
             &self._get_recurse(left, right, current_left, center, node_index << 1),
             &self._get_recurse(left, right, center, current_right, node_index << 1 | 1),
-        );
+        )
     }
 
-    pub fn max_right_recurse<F>(&self, is_ok: F, left: usize) -> usize
+    pub fn max_right_recurse<F>(&self, is_ok: &F, left: usize) -> usize
     where
         F: Fn(&S) -> bool,
+        S: Copy,
     {
-        assert!(left < self.size);
-        let n = self.data.len() >> 1;
-        let mut value = M::identity();
-        let mut node_index = (n + left) as i32;
-        loop {
-            node_index /= node_index & -node_index; // up to
-            if is_ok(&M::operate(&value, &self.data[node_index as usize])) {
-                value = M::operate(&value, &self.data[node_index as usize]);
-                node_index += 1;
-                if node_index & -node_index == node_index {
-                    return self.size;
-                }
-                continue;
-            }
-            while node_index < n as i32 {
-                node_index <<= 1;
-                if is_ok(&M::operate(&value, &self.data[node_index as usize])) {
-                    value = M::operate(&value, &self.data[node_index as usize]);
-                    node_index += 1;
-                }
-            }
-            return node_index as usize - n;
+        assert!(left <= self.size);
+        self._max_right_recurse(is_ok, left, 0, self.data.len() >> 1, &mut M::identity(), 1)
+    }
+
+    /// find max right (current_left < right <= current_right)
+    /// if current_right <= left, return left
+    /// if current_left >= self.size, return self.size
+    fn _max_right_recurse<F>(
+        &self,
+        is_ok: &F,
+        left: usize,
+        current_left: usize,
+        current_right: usize,
+        current_value: &mut S,
+        node_index: usize,
+    ) -> usize
+    where
+        F: Fn(&S) -> bool,
+        S: Copy,
+    {
+        if node_index >= self.data.len() {
+            return current_left;
         }
+        if current_right <= left {
+            return left;
+        }
+        if current_left >= self.size {
+            return self.size;
+        }
+        if left <= current_left
+            && current_right <= self.size
+            && is_ok(&M::operate(current_value, &self.data[node_index]))
+        {
+            *current_value = M::operate(current_value, &self.data[node_index]);
+            return current_right;
+        }
+        let center = (current_left + current_right) >> 1;
+        let right = self._max_right_recurse(
+            is_ok,
+            left,
+            current_left,
+            center,
+            current_value,
+            node_index << 1,
+        );
+        if right < center || right == self.size {
+            return right;
+        }
+        self._max_right_recurse(
+            is_ok,
+            left,
+            center,
+            current_right,
+            current_value,
+            node_index << 1 | 1,
+        )
     }
 }
 
@@ -241,9 +275,13 @@ mod tests {
         seg.set(5, 10);
         assert_eq!(seg[5], 10);
         assert_eq!(seg[0], 0);
-        let is_ok = |sum: &usize| *sum < 10;
+        let is_ok = &|sum: &usize| *sum < 10;
         assert_eq!(seg.max_right(is_ok, 0), 5);
+        assert_eq!(seg.max_right_recurse(is_ok, 0), 5);
+        assert_eq!(seg.max_right(is_ok, 10), 10);
+        assert_eq!(seg.max_right_recurse(is_ok, 10), 10);
         assert_eq!(seg.max_right(is_ok, 5), 5);
+        assert_eq!(seg.max_right_recurse(is_ok, 5), 5);
         assert_eq!(seg.min_left(is_ok, 10), 6);
         assert_eq!(seg.min_left(is_ok, 5), 0);
         assert_eq!(seg.min_left(is_ok, 6), 6);
