@@ -4,12 +4,12 @@ fn merge<M: Monoid<S, T>, S, T>(data: &mut Vec<S>, node_index: usize) {
     data[node_index] = M::operate(&data[node_index << 1], &data[node_index << 1 | 1]);
 }
 
-fn make_data<M: Monoid<S, T>, S: Clone, T>(arr: &Vec<S>) -> Vec<S> {
-    let size = arr.len();
+fn make_data<M: Monoid<S, T>, S: Clone, T>(slice: &[S]) -> Vec<S> {
+    let size = slice.len();
     assert!(size > 0);
     let n = size.next_power_of_two();
     let mut data = vec![M::identity(); n << 1];
-    data[n..(n + size)].clone_from_slice(arr);
+    data[n..(n + size)].clone_from_slice(slice);
     for node_index in (1..n).rev() {
         merge::<M, S, T>(&mut data, node_index);
     }
@@ -37,13 +37,13 @@ pub struct SegmentTree<M: Monoid<S, T>, S = M, T = Additive> {
     data: Vec<S>,
 }
 
-impl<M: Monoid<S, T>, S: Clone, T> From<&Vec<S>> for SegmentTree<M, S, T> {
-    fn from(arr: &Vec<S>) -> Self {
+impl<M: Monoid<S, T>, S: Clone, T> From<&[S]> for SegmentTree<M, S, T> {
+    fn from(slice: &[S]) -> Self {
         Self {
             phantom_t: std::marker::PhantomData,
             phantom_m: std::marker::PhantomData,
-            size: arr.len(),
-            data: make_data::<M, S, T>(arr),
+            size: slice.len(),
+            data: make_data::<M, S, T>(slice),
         }
     }
 }
@@ -53,12 +53,12 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
     where
         S: Clone,
     {
-        (&vec![M::identity(); size]).into()
+        (&vec![M::identity(); size]).as_slice().into()
     }
 
-    pub fn set(&mut self, i: usize, x: S) {
-        assert!(i < self.size);
-        set::<M, S, T>(&mut self.data, i, x);
+    pub fn set(&mut self, array_index: usize, x: S) {
+        assert!(array_index < self.size);
+        set::<M, S, T>(&mut self.data, array_index, x);
     }
 
     pub fn get(&self, left: usize, right: usize) -> S {
@@ -135,11 +135,9 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
             if !is_ok(&M::operate(&self.data[(node_index - 1) as usize], &value)) {
                 break;
             }
-            // up one stair from right
             node_index -= 1;
             value = M::operate(&self.data[node_index as usize], &value);
             if node_index & -node_index == node_index {
-                // wall.
                 return 0;
             }
         }
