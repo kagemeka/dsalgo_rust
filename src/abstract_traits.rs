@@ -5,6 +5,10 @@ pub trait Identity<S = Self, T = Additive> {
     fn identity() -> S;
 }
 
+pub trait DynamicIdentity<S = Self, T = Additive> {
+    fn identity(&self) -> S;
+}
+
 pub trait BinaryOperation<S = Self, T = Additive> {
     fn operate(_: &S, _: &S) -> S;
 }

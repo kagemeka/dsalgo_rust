@@ -6,6 +6,7 @@ pub mod binary_search;
 pub mod bitset;
 pub mod cmp;
 pub mod combinatorics;
+pub mod fenwick_tree_static;
 pub mod longest_common_prefix;
 pub mod modular_static;
 pub mod power;
