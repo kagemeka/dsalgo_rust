@@ -265,9 +265,6 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
     where
         F: Fn(&S) -> bool,
     {
-        if current_right == 0 {
-            return 0;
-        }
         if current_left >= right {
             return right;
         }
