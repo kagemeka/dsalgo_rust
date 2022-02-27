@@ -1,5 +1,5 @@
 use crate::{
-    algebra::{abstract_::structure::structs::*, bitset::bit_length},
+    algebra::{abstract_::structure::structs::*, bitwise::bit_length},
     graph_theory::{
         euler_tour::euler_tour_node,
         tree::segment_tree::SegmentTree,
