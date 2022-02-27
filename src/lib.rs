@@ -15,7 +15,7 @@ pub mod segment_tree_dynamic;
 pub mod sequence;
 pub mod sort;
 pub mod sparse_table;
-pub mod sparse_table_static;
+pub mod sparse_table_dynamic;
 pub mod string;
 pub mod suffix_array;
 pub mod tensor;
