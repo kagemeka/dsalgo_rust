@@ -16,27 +16,32 @@ where
     Sg: Semigroup<S, T> + Idempotent<S, T> + Commutative<S, T>,
     S: Copy,
 {
-    pub fn new(arr: &Vec<S>) -> Self {
-        let n = arr.len();
-        assert!(n > 0);
-        let height = bitwise::bit_length(n - 1) as usize;
-        let mut data = vec![arr.clone()];
+    pub fn new(slice: &[S]) -> Self {
+        let max_width = slice.len();
+        let height = if max_width <= 1 {
+            1
+        } else {
+            bitwise::bit_length(max_width - 1) as usize
+        };
+        let mut data = vec![slice.to_vec()];
         for log in 1..height {
-            let row_size = n - (1 << log) + 1;
-            data.push(data[log - 1][..row_size].to_vec());
-            for i in 0..row_size {
-                data[log][log] =
-                    Sg::operate(&data[log - 1][i], &data[log - 1][i + (1 << (log - 1))]);
-            }
+            let row_size = max_width - (1 << log) + 1;
+            data.push(
+                (0..row_size)
+                    .map(|index| {
+                        Sg::operate(&data[log - 1][index], &data[log - 1][index + (1 << (log - 1))])
+                    })
+                    .collect(),
+            );
         }
         Self {
             phantom_sg: std::marker::PhantomData,
             phantom_t: std::marker::PhantomData,
-            data: data,
+            data,
         }
     }
 
-    pub fn get(&self, left: usize, right: usize) -> S {
+    pub fn get_range(&self, left: usize, right: usize) -> S {
         assert!(left < right && right <= self.data[0].len());
         if right - left == 1 {
             return self.data[0][left];
@@ -88,7 +93,7 @@ where
         }
     }
 
-    pub fn get(&self, left: usize, right: usize) -> S {
+    pub fn get_range(&self, left: usize, right: usize) -> S {
         assert!(left < right && right <= self.data[0].len());
         if right - left == 1 {
             return self.data[0][left];
@@ -113,12 +118,12 @@ mod tests {
         impl abstract_traits::Idempotent<usize, Min> for usize {}
         impl abstract_traits::Commutative<usize, Min> for usize {}
         let sp = super::SparseTable::<usize, _, Min>::new(&arr);
-        assert_eq!(sp.get(0, 4), 0);
-        assert_eq!(sp.get(3, 4), 8);
-        assert_eq!(sp.get(1, 6), 1);
+        assert_eq!(sp.get_range(0, 4), 0);
+        assert_eq!(sp.get_range(3, 4), 8);
+        assert_eq!(sp.get_range(1, 6), 1);
         let sp = super::DisjointSparseTable::<usize, _, Min>::new(&arr);
-        assert_eq!(sp.get(0, 4), 0);
-        assert_eq!(sp.get(3, 4), 8);
-        assert_eq!(sp.get(1, 6), 1);
+        assert_eq!(sp.get_range(0, 4), 0);
+        assert_eq!(sp.get_range(3, 4), 8);
+        assert_eq!(sp.get_range(1, 6), 1);
     }
 }
