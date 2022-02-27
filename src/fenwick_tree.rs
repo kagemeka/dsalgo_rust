@@ -97,6 +97,11 @@ impl<G: AbelianGroup<S, T>, S, T> FenwickTree<G, S, T> {
         )
     }
 
+    pub fn get_point(&self, array_index: usize) -> S {
+        assert!(array_index < self.size());
+        self.get_range(array_index, array_index + 1)
+    }
+
     pub fn find_max_right_with_left<F>(&self, is_ok: &F, left: usize) -> usize
     where
         F: Fn(&S) -> bool,
@@ -177,6 +182,7 @@ mod tests {
         assert_eq!(fw.get_range(6, 10), 30);
         assert_eq!(fw.get_half_range(5), 10);
         assert_eq!(fw.get_half_range(6), 25);
+        assert_eq!(fw.get_point(5), 15);
         let is_ok = |x: &i32| *x <= 25;
         assert_eq!(fw.find_max_right(&is_ok), 6);
         assert_eq!(fw.find_max_right_with_left(&is_ok, 0), 6);
