@@ -69,6 +69,8 @@ pub fn reset_least_bit_naive(n: usize) -> usize { n - lsb_number_direct(n) }
 /// ```
 pub fn reset_least_bit(n: usize) -> usize { if n == 0 { 0 } else { n & (n - 1) } }
 
+pub fn reset_bit(n: usize, bit: usize) -> usize { n & !(1 << bit) }
+
 /// O(\log{N})
 pub fn bit_length_naive(n: usize) -> u32 {
     let mut length = 0;

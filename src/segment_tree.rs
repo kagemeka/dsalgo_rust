@@ -28,7 +28,7 @@ impl<M: Monoid<S, T>, S: Clone, T> From<&[S]> for SegmentTree<M, S, T> {
             data,
         };
         for node_index in (1..n).rev() {
-            seg.merge(node_index);
+            seg.merge_childs(node_index);
         }
         seg
     }
@@ -44,22 +44,22 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
 
     pub fn size(&self) -> usize { self.size }
 
-    fn merge(&mut self, node_index: usize) {
+    fn merge_childs(&mut self, node_index: usize) {
         self.data[node_index] =
             M::operate(&self.data[node_index << 1], &self.data[node_index << 1 | 1]);
     }
 
-    pub fn set(&mut self, array_index: usize, x: S) {
+    pub fn set_point(&mut self, array_index: usize, x: S) {
         assert!(array_index < self.size);
         let mut node_index = array_index + (self.data.len() >> 1);
         self.data[node_index] = x;
         while node_index > 1 {
             node_index >>= 1;
-            self.merge(node_index);
+            self.merge_childs(node_index);
         }
     }
 
-    pub fn get(&self, left: usize, right: usize) -> S {
+    pub fn get_range(&self, left: usize, right: usize) -> S {
         assert!(left <= right && right <= self.size);
         let n = self.data.len() >> 1;
         let mut left_node_index = n + left;
@@ -81,7 +81,7 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
         M::operate(&value_left, &value_right)
     }
 
-    pub fn max_right<F>(&self, is_ok: &F, left: usize) -> usize
+    pub fn find_max_right<F>(&self, is_ok: &F, left: usize) -> usize
     where
         F: Fn(&S) -> bool,
     {
@@ -117,7 +117,7 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
         node_index - n
     }
 
-    pub fn min_left<F>(&self, is_ok: &F, right: usize) -> usize
+    pub fn find_min_left<F>(&self, is_ok: &F, right: usize) -> usize
     where
         F: Fn(&S) -> bool,
     {
@@ -164,7 +164,7 @@ impl<M: Monoid<S, T>, S, T> std::ops::Index<usize> for SegmentTree<M, S, T> {
 
 /// Recursive Implementations for bench mark.
 impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
-    pub fn get_recurse(&self, left: usize, right: usize) -> S {
+    pub fn get_range_recurse(&self, left: usize, right: usize) -> S {
         assert!(left <= right && right <= self.size);
         self._get_recurse(left, right, 0, self.data.len() >> 1, 1)
     }
@@ -190,7 +190,7 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
         )
     }
 
-    pub fn max_right_recurse<F>(&self, is_ok: &F, left: usize) -> usize
+    pub fn find_max_right_recurse<F>(&self, is_ok: &F, left: usize) -> usize
     where
         F: Fn(&S) -> bool,
     {
@@ -251,7 +251,7 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
         )
     }
 
-    pub fn min_left_recurse<F>(&self, is_ok: &F, right: usize) -> usize
+    pub fn find_min_left_recurse<F>(&self, is_ok: &F, right: usize) -> usize
     where
         F: Fn(&S) -> bool,
     {
@@ -317,30 +317,30 @@ mod tests {
         }
 
         let mut seg = super::SegmentTree::<usize>::new(10);
-        assert_eq!(seg.get(0, 10), 0);
-        assert_eq!(seg.get_recurse(0, 10), 0);
-        seg.set(5, 5);
-        assert_eq!(seg.get(0, 10), 5);
-        assert_eq!(seg.get_recurse(0, 10), 5);
-        seg.set(5, 10);
+        assert_eq!(seg.get_range(0, 10), 0);
+        assert_eq!(seg.get_range_recurse(0, 10), 0);
+        seg.set_point(5, 5);
+        assert_eq!(seg.get_range(0, 10), 5);
+        assert_eq!(seg.get_range_recurse(0, 10), 5);
+        seg.set_point(5, 10);
         assert_eq!(seg[5], 10);
         assert_eq!(seg[0], 0);
         let is_ok = &|sum: &usize| *sum < 10;
-        assert_eq!(seg.max_right(is_ok, 0), 5);
-        assert_eq!(seg.max_right_recurse(is_ok, 0), 5);
-        assert_eq!(seg.max_right(is_ok, 10), 10);
-        assert_eq!(seg.max_right_recurse(is_ok, 10), 10);
-        assert_eq!(seg.max_right(is_ok, 5), 5);
-        assert_eq!(seg.max_right_recurse(is_ok, 5), 5);
-        assert_eq!(seg.min_left(is_ok, 10), 6);
-        assert_eq!(seg.min_left_recurse(is_ok, 10), 6);
-        assert_eq!(seg.min_left(is_ok, 5), 0);
-        assert_eq!(seg.min_left_recurse(is_ok, 5), 0);
-        assert_eq!(seg.min_left(is_ok, 6), 6);
-        assert_eq!(seg.min_left_recurse(is_ok, 6), 6);
+        assert_eq!(seg.find_max_right(is_ok, 0), 5);
+        assert_eq!(seg.find_max_right_recurse(is_ok, 0), 5);
+        assert_eq!(seg.find_max_right(is_ok, 10), 10);
+        assert_eq!(seg.find_max_right_recurse(is_ok, 10), 10);
+        assert_eq!(seg.find_max_right(is_ok, 5), 5);
+        assert_eq!(seg.find_max_right_recurse(is_ok, 5), 5);
+        assert_eq!(seg.find_min_left(is_ok, 10), 6);
+        assert_eq!(seg.find_min_left_recurse(is_ok, 10), 6);
+        assert_eq!(seg.find_min_left(is_ok, 5), 0);
+        assert_eq!(seg.find_min_left_recurse(is_ok, 5), 0);
+        assert_eq!(seg.find_min_left(is_ok, 6), 6);
+        assert_eq!(seg.find_min_left_recurse(is_ok, 6), 6);
 
         seg = super::SegmentTree::<usize>::new(0);
-        assert_eq!(seg.get(0, 0), 0);
+        assert_eq!(seg.get_range(0, 0), 0);
     }
 
     #[test]
@@ -355,10 +355,10 @@ mod tests {
         }
 
         let mut seg = super::SegmentTree::<UsizeAdd, usize>::new(10);
-        assert_eq!(seg.get(0, 10), 0);
-        seg.set(0, 5);
-        assert_eq!(seg.get(0, 10), 5);
-        seg.set(0, 5);
+        assert_eq!(seg.get_range(0, 10), 0);
+        seg.set_point(0, 5);
+        assert_eq!(seg.get_range(0, 10), 5);
+        seg.set_point(0, 5);
         assert_eq!(seg[0], 5);
     }
 }

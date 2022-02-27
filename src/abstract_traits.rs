@@ -10,11 +10,11 @@ pub trait DynamicIdentity<S = Self, T = Additive> {
 }
 
 pub trait BinaryOperation<S = Self, T = Additive> {
-    fn operate(_: &S, _: &S) -> S;
+    fn operate(lhs: &S, rhs: &S) -> S;
 }
 
 pub trait Inverse<S = Self, T = Additive> {
-    fn invert(_: &S) -> S;
+    fn invert(element: &S) -> S;
 }
 
 pub trait Idempotent<S = Self, T = Additive> {}
