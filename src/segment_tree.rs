@@ -15,7 +15,6 @@ pub struct SegmentTree<M: Monoid<S, T>, S = M, T = Additive> {
 impl<M: Monoid<S, T>, S: Clone, T> From<&[S]> for SegmentTree<M, S, T> {
     fn from(slice: &[S]) -> Self {
         let size = slice.len();
-        assert!(size > 0);
         let n = size.next_power_of_two();
         let mut data = vec![M::identity(); n << 1];
         data[n..(n + size)].clone_from_slice(slice);
@@ -39,6 +38,8 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
     {
         (&vec![M::identity(); size]).as_slice().into()
     }
+
+    pub fn size(&self) -> usize { self.size }
 
     fn merge(&mut self, node_index: usize) {
         self.data[node_index] =
@@ -87,7 +88,7 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
         }
         let n = self.data.len() >> 1;
         let mut value = M::identity();
-        let mut node_index = (n + left) as i32;
+        let mut node_index = (n + left) as isize;
         loop {
             node_index /= node_index & -node_index; // up to ceil
             if !is_ok(&M::operate(&value, &self.data[node_index as usize])) {
@@ -102,7 +103,7 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
             }
         }
         // down stairs to right
-        while node_index < n as i32 {
+        while node_index < n as isize {
             node_index <<= 1;
             if !is_ok(&M::operate(&value, &self.data[node_index as usize])) {
                 continue;
@@ -123,7 +124,7 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
         }
         let n = self.data.len() >> 1;
         let mut value = M::identity();
-        let mut node_index = (n + right) as i32;
+        let mut node_index = (n + right) as isize;
         loop {
             node_index /= node_index & -node_index;
             if !is_ok(&M::operate(&self.data[(node_index - 1) as usize], &value)) {
@@ -135,7 +136,7 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
                 return 0;
             }
         }
-        while node_index < n as i32 {
+        while node_index < n as isize {
             node_index <<= 1;
             if !is_ok(&M::operate(&self.data[(node_index - 1) as usize], &value)) {
                 continue;
@@ -332,6 +333,9 @@ mod tests {
         assert_eq!(seg.min_left_recurse(is_ok, 5), 0);
         assert_eq!(seg.min_left(is_ok, 6), 6);
         assert_eq!(seg.min_left_recurse(is_ok, 6), 6);
+
+        seg = super::SegmentTree::<usize>::new(0);
+        assert_eq!(seg.get(0, 0), 0);
     }
 
     #[test]

@@ -1,61 +1,81 @@
-// use crate::abstract_traits;
-// pub struct FenwickTree<'a, S: Copy> {
-//     m: abstraction::structure::structs::Monoid<'a, S>,
-//     data: Vec<S>,
-// }
+use crate::abstract_traits::{AbelianGroup, Additive, Commutative, Monoid};
 
-// impl<'a, S: std::fmt::Debug + Copy> std::fmt::Debug for
-// FenwickTree<'a, S> {     fn fmt(&self, f: &mut
-// std::fmt::Formatter<'_>) -> std::fmt::Result {
-//         f.debug_tuple("FenwickTree").field(&self.data).
-// finish()     }
-// }
+/// Node Indices
+/// (case $|given array| = 8$,
+/// internally 1-indexed implemetation)
+/// |8              |
+/// |4      |       |
+/// |2  |   |6  |   |
+/// |1| |3| |5| |7| |
+pub struct FenwickTree<M: Monoid<S, T> + Commutative<S, T>, S = M, T = Additive> {
+    phantom_t: std::marker::PhantomData<T>,
+    phantom_m: std::marker::PhantomData<M>,
+    data: Vec<S>,
+}
 
-// impl<'a, S: Copy> FenwickTree<'a, S> {
-//     pub fn new(
-//         m: abstraction::structure::structs::Monoid<'a, S>,
-//         n: usize,
-//     ) -> Self {
-//         let a = vec![(m.e)(); n];
-//         Self::from_vec(m, &a)
-//     }
+impl<M: Monoid<S, T> + Commutative<S, T>, S: Clone, T> From<&[S]> for FenwickTree<M, S, T> {
+    fn from(slice: &[S]) -> Self {
+        let size = slice.len();
+        let mut data = vec![M::identity(); size + 1];
+        data[1..].clone_from_slice(slice);
+        for node_index in 1..size as isize {
+            let parent_node_index = (node_index + (node_index & -node_index)) as usize;
+            if parent_node_index <= size {
+                data[parent_node_index] =
+                    M::operate(&data[parent_node_index], &data[node_index as usize]);
+            }
+        }
+        Self {
+            phantom_t: std::marker::PhantomData,
+            phantom_m: std::marker::PhantomData,
+            data,
+        }
+    }
+}
 
-//     pub fn from_vec(
-//         m: abstraction::structure::structs::Monoid<'a, S>,
-//         a: &Vec<S>,
-//     ) -> Self {
-//         let n = a.len();
-//         let mut data = vec![(m.e)(); n + 1];
-//         for i in 0..n {
-//             data[i + 1] = a[i];
-//         }
-//         for i in 1..=n as i32 {
-//             let j = (i + (i & -i)) as usize;
-//             if j < n + 1 {
-//                 data[j] = (m.op)(&data[j], &data[i as
-// usize]);             }
-//         }
-//         Self { m, data }
-//     }
+impl<M: Monoid<S, T> + Commutative<S, T>, S, T> FenwickTree<M, S, T> {
+    pub fn new(size: usize) -> Self
+    where
+        S: Clone,
+    {
+        (&vec![M::identity(); size]).as_slice().into()
+    }
 
-//     pub fn set(&mut self, mut i: usize, x: &S) {
-//         assert!(i < self.data.len() - 1);
-//         i += 1;
-//         while i < self.data.len() {
-//             self.data[i] = (self.m.op)(&self.data[i], x);
-//             i += (i as i32 & -(i as i32)) as usize;
-//         }
-//     }
+    pub fn size(&self) -> usize { self.data.len() - 1 }
 
-//     pub fn get(&self, mut i: usize) -> S {
-//         assert!(i < self.data.len());
-//         let mut v = (self.m.e)();
-//         while i > 0 {
-//             v = (self.m.op)(&v, &self.data[i]);
-//             i -= (i as i32 & -(i as i32)) as usize;
-//         }
-//         v
-//     }
+    pub fn set(&mut self, array_index: usize, x: &S) {
+        assert!(array_index < self.size());
+        let mut node_index = array_index + 1;
+        while node_index <= self.size() {
+            self.data[node_index] = M::operate(&self.data[node_index], x);
+            node_index += (node_index as isize & -(node_index as isize)) as usize;
+        }
+    }
+
+    fn get(&self, right: usize) -> S {
+        assert!(right <= self.size());
+        let mut value = M::identity();
+        let mut node_index = right;
+        while node_index > 0 {
+            value = M::operate(&value, &self.data[node_index]);
+            node_index -= (node_index as isize & -(node_index as isize)) as usize;
+        }
+        value
+    }
+
+    // pub fn max_right<F>(&self, is_ok: &F) -> usize
+    // where
+    //     F: Fn(&S) -> bool,
+    // {
+    // }
+}
+
+impl<G: AbelianGroup<S, T>, S, T> FenwickTree<G, S, T> {
+    pub fn get_range(&self, left: usize, right: usize) -> S {
+        assert!(left <= right);
+        G::operate(&G::invert(&self.get(left)), &self.get(right))
+    }
+}
 
 //     pub fn max_right(&self, is_ok: Box<dyn Fn(&S) -> bool>)
 // -> usize {         let n = self.data.len();
