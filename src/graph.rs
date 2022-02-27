@@ -7,13 +7,18 @@ pub struct NodeData;
 
 pub trait Edge<E = EdgeData, V = NodeData> {}
 
-// #[derive(Debug)]
 pub struct Node<V = NodeData, E = EdgeData> {
     pub edges: Vec<Rc<RefCell<dyn Edge<E, V>>>>,
     pub data: Option<V>,
 }
 
-// #[derive(Debug)]
+impl<V: std::fmt::Debug, E> std::fmt::Debug for Node<V, E> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Node {{ data: {:?} }}", self.data)
+    }
+}
+
+#[derive(Debug)]
 pub struct DirectedEdge<E = EdgeData, V = NodeData> {
     pub from: Rc<RefCell<Node<V, E>>>,
     pub to: Rc<RefCell<Node<V, E>>>,
@@ -21,7 +26,7 @@ pub struct DirectedEdge<E = EdgeData, V = NodeData> {
 }
 
 impl<E, V> Edge<E, V> for DirectedEdge<E, V> {}
-// #[derive(Debug)]
+#[derive(Debug)]
 
 pub struct UndirectedEdge<E = EdgeData, V = NodeData> {
     pub left: Rc<RefCell<Node<V, E>>>,
@@ -51,6 +56,7 @@ mod tests {
             to: node_right.clone(),
             data: None,
         }));
-        node_left.clone().borrow_mut().edges.push(edge);
+        node_left.clone().borrow_mut().edges.push(edge.clone());
+        println!("{:?}", edge);
     }
 }
