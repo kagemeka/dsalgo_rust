@@ -7,10 +7,6 @@ pub struct FenwickTreeDual<M: Monoid<S, T> + Commutative<S, T>, S = M, T = Addit
     fenwick: fenwick_tree::FenwickTree<M, S, T>,
 }
 
-// impl<M: Monoid<S, T> + Commutative<S, T>, S: Clone, T>
-// From<&[S]> for FenwickTreeDual<M, S, T> {     fn from(slice:
-// &[S]) -> Self {} }
-
 impl<M: Monoid<S, T> + Commutative<S, T>, S, T> FenwickTreeDual<M, S, T> {
     pub fn from_deltas(deltas: &[S]) -> Self
     where
@@ -53,6 +49,28 @@ impl<M: Monoid<S, T> + Commutative<S, T>, S, T> FenwickTreeDual<M, S, T> {
         F: Fn(&S) -> bool,
     {
         self.fenwick.find_max_right(&|prod: &S| !is_ok(prod))
+    }
+}
+
+impl<G: AbelianGroup<S, T>, S: Clone, T> From<&[S]> for FenwickTreeDual<G, S, T> {
+    fn from(slice: &[S]) -> Self {
+        Self::from_deltas(
+            slice
+                .iter()
+                .enumerate()
+                .map(|(index, prod)| {
+                    G::operate(
+                        &(if index == 0 {
+                            G::identity()
+                        } else {
+                            G::invert(&slice[index - 1])
+                        }),
+                        prod,
+                    )
+                })
+                .collect::<Vec<_>>()
+                .as_slice(),
+        )
     }
 }
 
@@ -141,6 +159,23 @@ mod tests {
 
         let deltas = vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
         let mut fw = super::FenwickTreeDual::<i32, i32, Add>::from_deltas(&deltas);
+        assert_eq!(fw.get_point(1), 1);
+        assert_eq!(fw.get_point(5), 15);
+        assert_eq!(fw.get_point(9), 45);
+        fw.set_half_range(5, &2);
+        assert_eq!(fw.get_point(1), 1);
+        assert_eq!(fw.get_point(5), 17);
+        assert_eq!(fw.get_point(9), 47);
+        assert_eq!(fw.binary_search(&|value: &i32| *value >= 23), 6);
+        assert_eq!(fw.binary_search(&|value: &i32| *value >= 47), 9);
+        assert_eq!(fw.binary_search(&|value: &i32| *value > 47), 10);
+
+        let mut arr = deltas;
+        arr.iter_mut().fold(0, |acc, x| {
+            *x += acc;
+            *x
+        });
+        let mut fw = super::FenwickTreeDual::<i32, i32, Add>::from(arr.as_slice());
         assert_eq!(fw.get_point(1), 1);
         assert_eq!(fw.get_point(5), 15);
         assert_eq!(fw.get_point(9), 45);
