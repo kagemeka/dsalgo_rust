@@ -45,16 +45,16 @@ impl<M: Monoid<S, T> + Commutative<S, T>, S, T> FenwickTree<M, S, T> {
 
     pub fn size(&self) -> usize { self.data.len() - 1 }
 
-    pub fn set_point(&mut self, array_index: usize, x: &S) {
+    pub fn set_point(&mut self, array_index: usize, value_to_operate: &S) {
         assert!(array_index < self.size());
         let mut node_index = array_index + 1;
         while node_index <= self.size() {
-            self.data[node_index] = M::operate(&self.data[node_index], x);
+            self.data[node_index] = M::operate(&self.data[node_index], value_to_operate);
             node_index += bitwise::lsb_number(node_index);
         }
     }
 
-    fn get_half_range(&self, right: usize) -> S {
+    pub fn get_half_range(&self, right: usize) -> S {
         assert!(right <= self.size());
         let mut value = M::identity();
         let mut node_index = right;
