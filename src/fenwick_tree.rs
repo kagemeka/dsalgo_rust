@@ -120,6 +120,32 @@ impl<G: AbelianGroup<S, T>, S, T> FenwickTree<G, S, T> {
         }
         right
     }
+
+    pub fn find_min_left_with_right<F>(&self, is_ok: &F, right: usize) -> usize
+    where
+        F: Fn(&S) -> bool,
+    {
+        assert!(right <= self.size());
+        if right == 0 {
+            return 0;
+        }
+        let mut length = 1usize << bitwise::most_significant_bit(self.size()).unwrap();
+        let mut value = self.get_half_range(right);
+        if is_ok(&value) {
+            return 0;
+        }
+        let mut left = 1;
+        while length > 0 {
+            if left + length <= right
+                && !is_ok(&G::operate(&G::invert(&self.data[left - 1 + length]), &value))
+            {
+                left += length;
+                value = G::operate(&G::invert(&self.data[left - 1]), &value);
+            }
+            length >>= 1;
+        }
+        left
+    }
 }
 
 #[cfg(test)]
@@ -161,5 +187,15 @@ mod tests {
         assert_eq!(fw.find_max_right_with_left(&is_ok, 5), 7);
         assert_eq!(fw.find_max_right_with_left(&is_ok, 6), 9);
         assert_eq!(fw.find_max_right_with_left(&is_ok, 9), 10);
+        assert_eq!(fw.find_min_left_with_right(&is_ok, 10), 7);
+        assert_eq!(fw.find_min_left_with_right(&is_ok, 0), 0);
+        assert_eq!(fw.find_min_left_with_right(&is_ok, 6), 2);
+        assert_eq!(fw.find_min_left_with_right(&is_ok, 5), 0);
+        let is_ok = |x: &i32| *x < 15;
+        assert_eq!(fw.find_max_right_with_left(&is_ok, 5), 5);
+        assert_eq!(fw.find_min_left_with_right(&is_ok, 6), 6);
+        assert_eq!(fw.find_min_left_with_right(&is_ok, 10), 9);
+        let is_ok = |x: &i32| *x < 9;
+        assert_eq!(fw.find_min_left_with_right(&is_ok, 10), 10);
     }
 }
