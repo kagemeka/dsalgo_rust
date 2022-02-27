@@ -1,6 +1,10 @@
 /// O(1)
-pub fn most_significant_bit(n: usize) -> isize {
-    0usize.leading_zeros() as isize - n.leading_zeros() as isize - 1
+pub fn most_significant_bit(n: usize) -> Option<u32> {
+    if n == 0 {
+        None
+    } else {
+        Some(0usize.leading_zeros() - n.leading_zeros() - 1)
+    }
 }
 
 /// O(1)
@@ -26,58 +30,69 @@ pub fn msb_number_binary_search(mut n: usize) -> usize {
     n
 }
 
-pub fn least_significant_bit(n: usize) -> usize { n.reverse_bits().leading_zeros() as usize }
-
-pub fn lsb_number(n: usize) -> usize {
-    let n = n as isize;
-    (n & -n) as usize
+pub fn least_significant_bit(n: usize) -> Option<u32> {
+    if n == 0 {
+        None
+    } else {
+        Some(n.reverse_bits().leading_zeros())
+    }
 }
 
-pub fn delete_least_bit(n: usize) -> usize { n - lsb_number(n) }
+pub fn lsb_number_direct(n: usize) -> usize {
+    if n == 0 {
+        0
+    } else {
+        ((n as isize) & -(n as isize)) as usize
+    }
+}
 
-pub fn delete_least_bit_v2(n: usize) -> usize { n & (n - 1) }
+pub fn lsb_number(n: usize) -> usize { n - reset_least_bit(n) }
 
-/// O(1)
-pub fn bit_length(n: usize) -> usize { (0usize.leading_zeros() - n.leading_zeros()) as usize }
+pub fn reset_least_bit_naive(n: usize) -> usize { n - lsb_number_direct(n) }
 
-/// O(1)
-pub fn bit_length_v2(mut n: usize) -> usize {
+pub fn reset_least_bit(n: usize) -> usize { if n == 0 { 0 } else { n & (n - 1) } }
+
+/// O(\log{N})
+pub fn bit_length_naive(n: usize) -> u32 {
+    let mut length = 0;
+    while 1 << length <= n {
+        length += 1;
+    }
+    length
+}
+
+/// O(\log\log{N}})
+pub fn bit_length_binary_search(mut n: usize) -> u32 {
     if n == 0 {
         return 0;
     }
-    let mut l = 1;
+    let mut length = 1;
     for i in (0..6usize).rev() {
         if n >> (1 << i) > 0 {
             n >>= 1 << i;
-            l += 1 << i;
+            length += 1 << i;
         }
     }
-    l
+    length
 }
 
-/// O(\log{N})
-pub fn bit_length_v3(n: usize) -> usize {
-    let mut l = 0usize;
-    while 1 << l <= n {
-        l += 1;
-    }
-    l
-}
+/// O(1)
+pub fn bit_length(n: usize) -> u32 { 0usize.leading_zeros() - n.leading_zeros() }
 
 /// O(N)
 pub fn bit_length_table(n: usize) -> Vec<usize> {
-    let mut l = vec![0; n];
+    let mut length = vec![0; n];
     for i in 1..n {
-        l[i] = l[i >> 1] + 1;
+        length[i] = length[i >> 1] + 1;
     }
-    l
+    length
 }
 
 /// O(1)
 pub fn reverse_bits(n: usize) -> usize { n.reverse_bits() }
 
-/// O(1)
-pub fn reverse_bits_v2(mut n: usize) -> usize {
+/// O(\log\log{N}})
+pub fn reverse_bits_butterfly(mut n: usize) -> usize {
     n = ((n & 0xaaaaaaaaaaaaaaaa) >> 1) | ((n & 0x5555555555555555) << 1);
     n = ((n & 0xcccccccccccccccc) >> 2) | ((n & 0x3333333333333333) << 2);
     n = ((n & 0xf0f0f0f0f0f0f0f0) >> 4) | ((n & 0x0f0f0f0f0f0f0f0f) << 4);
@@ -87,12 +102,12 @@ pub fn reverse_bits_v2(mut n: usize) -> usize {
 }
 
 /// O(1)
-pub fn bit_inverse(n: usize) -> usize { !n }
+pub fn invert_bits_built_in(n: usize) -> usize { !n }
 
 /// O(1)
-pub fn bit_inverse_v2(n: usize) -> usize { (!0usize) ^ n }
+pub fn invert_bits(n: usize) -> usize { (!0usize) ^ n }
 
-/// O(1)
+/// O(\log\log{N})
 pub fn popcount(mut n: usize) -> usize {
     n -= (n >> 1) & 0x5555555555555555;
     n = (n & 0x3333333333333333) + ((n >> 2) & 0x3333333333333333);
@@ -104,31 +119,32 @@ pub fn popcount(mut n: usize) -> usize {
 }
 
 /// O(1)
-pub fn popcount_v2(n: usize) -> usize { n.count_ones() as usize }
+pub fn popcount_built_in(n: usize) -> u32 { n.count_ones() }
 
 /// O(\log{N})
-pub fn popcount_v3(mut n: usize) -> usize {
-    let mut cnt = 0usize;
+pub fn popcount_naive(mut n: usize) -> u32 {
+    let mut count = 0;
     while n > 0 {
-        cnt += n & 1;
+        count += (n & 1) as u32;
         n >>= 1
     }
-    cnt
+    count
 }
 
 /// O(N)
 pub fn popcount_table(n: usize) -> Vec<usize> {
-    let mut cnt = vec![0; n];
+    let mut count = vec![0; n];
     for i in 1..n {
-        cnt[i] = cnt[i >> 1] + (i & 1);
+        count[i] = count[i >> 1] + (i & 1);
     }
-    cnt
+    count
 }
 
 #[cfg(test)]
 mod tests {
     #[test]
     fn bitset() {
-        println!("{}", super::least_significant_bit(0));
+        assert_eq!(super::least_significant_bit(0), None);
+        assert_eq!(super::least_significant_bit(1), Some(0));
     }
 }

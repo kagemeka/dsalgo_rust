@@ -19,7 +19,7 @@ where
     pub fn new(arr: &Vec<S>) -> Self {
         let n = arr.len();
         assert!(n > 0);
-        let height = bitset::bit_length(n - 1);
+        let height = bitset::bit_length(n - 1) as usize;
         let mut data = vec![arr.clone()];
         for log in 1..height {
             let row_size = n - (1 << log) + 1;
@@ -41,7 +41,7 @@ where
         if right - left == 1 {
             return self.data[0][left];
         }
-        let log = bitset::bit_length(right - 1 - left) - 1;
+        let log = bitset::bit_length(right - 1 - left) as usize - 1;
         Sg::operate(&self.data[log][left], &self.data[log][right - (1 << log)])
     }
 }
@@ -63,7 +63,7 @@ where
     pub fn new(arr: &Vec<S>) -> Self {
         let n = arr.len();
         assert!(n > 0);
-        let height = bitset::bit_length(n - 1);
+        let height = bitset::bit_length(n - 1) as usize;
         let mut data = vec![arr.clone()];
         for log in 1..height {
             data.push(arr.clone());
@@ -93,7 +93,7 @@ where
         if right - left == 1 {
             return self.data[0][left];
         }
-        let log = bitset::bit_length(left ^ (right - 1)) - 1;
+        let log = bitset::bit_length(left ^ (right - 1)) as usize - 1;
         Sg::operate(&self.data[log][left], &self.data[log][right - 1])
     }
 }
