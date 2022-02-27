@@ -7,7 +7,11 @@ pub fn most_significant_bit(n: usize) -> Option<u32> {
     }
 }
 
-/// O(1)
+/// O(\log\log{N})
+/// ```
+/// use dsalgo::bitset::msb_number_binary_search;
+/// assert_eq!(msb_number_binary_search(0), 0);
+/// ```
 pub fn msb_number_binary_search(mut n: usize) -> usize {
     if n & 0xffffffff00000000 > 0 {
         n &= 0xffffffff00000000;
@@ -46,10 +50,23 @@ pub fn lsb_number_direct(n: usize) -> usize {
     }
 }
 
+/// ```
+/// use dsalgo::bitset::lsb_number;
+/// assert_eq!(lsb_number(0), 0);
+/// assert_eq!(lsb_number(1), 1);
+/// assert_eq!(lsb_number(2), 2);
+/// assert_eq!(lsb_number(3), 1);
+/// ```
 pub fn lsb_number(n: usize) -> usize { n - reset_least_bit(n) }
 
 pub fn reset_least_bit_naive(n: usize) -> usize { n - lsb_number_direct(n) }
 
+/// ```
+/// use dsalgo::bitset::reset_least_bit;
+/// assert_eq!(reset_least_bit(0), 0);
+/// assert_eq!(reset_least_bit(16), 0);
+/// assert_eq!(reset_least_bit(3), 2);
+/// ```
 pub fn reset_least_bit(n: usize) -> usize { if n == 0 { 0 } else { n & (n - 1) } }
 
 /// O(\log{N})
@@ -138,6 +155,21 @@ pub fn popcount_table(n: usize) -> Vec<usize> {
         count[i] = count[i >> 1] + (i & 1);
     }
     count
+}
+
+/// ```
+/// use dsalgo::bitset::shift_right_until_odd;
+/// assert_eq!(shift_right_until_odd(0), None);
+/// assert_eq!(shift_right_until_odd(1), Some(1));
+/// assert_eq!(shift_right_until_odd(2), Some(1));
+/// assert_eq!(shift_right_until_odd(12), Some(3));
+/// ```
+pub fn shift_right_until_odd(n: usize) -> Option<usize> {
+    if n == 0 {
+        None
+    } else {
+        Some(n / lsb_number(n))
+    }
 }
 
 #[cfg(test)]
