@@ -3,7 +3,7 @@ pub mod abstract_structs;
 pub mod abstract_traits;
 pub mod argsort;
 pub mod binary_search;
-pub mod bitset;
+pub mod bitwise;
 pub mod cmp;
 pub mod combinatorics;
 pub mod fenwick_tree;

@@ -9,7 +9,7 @@ pub fn most_significant_bit(n: usize) -> Option<u32> {
 
 /// O(\log\log{N})
 /// ```
-/// use dsalgo::bitset::msb_number_binary_search;
+/// use dsalgo::bitwise::msb_number_binary_search;
 /// assert_eq!(msb_number_binary_search(0), 0);
 /// ```
 pub fn msb_number_binary_search(mut n: usize) -> usize {
@@ -51,7 +51,7 @@ pub fn lsb_number_direct(n: usize) -> usize {
 }
 
 /// ```
-/// use dsalgo::bitset::lsb_number;
+/// use dsalgo::bitwise::lsb_number;
 /// assert_eq!(lsb_number(0), 0);
 /// assert_eq!(lsb_number(1), 1);
 /// assert_eq!(lsb_number(2), 2);
@@ -62,7 +62,7 @@ pub fn lsb_number(n: usize) -> usize { n - reset_least_bit(n) }
 pub fn reset_least_bit_naive(n: usize) -> usize { n - lsb_number_direct(n) }
 
 /// ```
-/// use dsalgo::bitset::reset_least_bit;
+/// use dsalgo::bitwise::reset_least_bit;
 /// assert_eq!(reset_least_bit(0), 0);
 /// assert_eq!(reset_least_bit(16), 0);
 /// assert_eq!(reset_least_bit(3), 2);
@@ -158,7 +158,7 @@ pub fn popcount_table(n: usize) -> Vec<usize> {
 }
 
 /// ```
-/// use dsalgo::bitset::shift_right_until_odd;
+/// use dsalgo::bitwise::shift_right_until_odd;
 /// assert_eq!(shift_right_until_odd(0), None);
 /// assert_eq!(shift_right_until_odd(1), Some(1));
 /// assert_eq!(shift_right_until_odd(2), Some(1));
@@ -175,7 +175,7 @@ pub fn shift_right_until_odd(n: usize) -> Option<usize> {
 #[cfg(test)]
 mod tests {
     #[test]
-    fn bitset() {
+    fn bitwise() {
         assert_eq!(super::least_significant_bit(0), None);
         assert_eq!(super::least_significant_bit(1), Some(0));
     }

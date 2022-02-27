@@ -1,6 +1,6 @@
 use crate::{
     abstract_traits::{Additive, Monoid},
-    bitset,
+    bitwise,
 };
 
 /// Node Indices (case $4 \lt |given array| \le 8$)
@@ -93,14 +93,14 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
         let mut value = M::identity();
         let mut node_index = n + left;
         loop {
-            node_index = bitset::shift_right_until_odd(node_index).unwrap(); // up to ceil
+            node_index = bitwise::shift_right_until_odd(node_index).unwrap(); // up to ceil
             if !is_ok(&M::operate(&value, &self.data[node_index])) {
                 break;
             }
             // up one stair from left
             value = M::operate(&value, &self.data[node_index]);
             node_index += 1;
-            if bitset::lsb_number(node_index) == node_index {
+            if bitwise::lsb_number(node_index) == node_index {
                 // wall.
                 return self.size;
             }
@@ -130,14 +130,14 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
         let mut node_index = n + right;
         loop {
             assert!(node_index >= 1);
-            node_index = bitset::shift_right_until_odd(node_index).unwrap();
+            node_index = bitwise::shift_right_until_odd(node_index).unwrap();
             assert!(node_index >= 1);
             if !is_ok(&M::operate(&self.data[node_index - 1], &value)) {
                 break;
             }
             node_index -= 1;
             value = M::operate(&self.data[node_index as usize], &value);
-            if bitset::lsb_number(node_index) == node_index {
+            if bitwise::lsb_number(node_index) == node_index {
                 return 0;
             }
         }
