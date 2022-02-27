@@ -7,6 +7,7 @@ pub mod bitwise;
 pub mod cmp;
 pub mod combinatorics;
 pub mod fenwick_tree;
+pub mod fenwick_tree_dual;
 pub mod longest_common_prefix;
 pub mod modular_static;
 pub mod power;
