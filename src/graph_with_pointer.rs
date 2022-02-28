@@ -1,7 +1,5 @@
 use std::{cell::RefCell, rc::Rc};
 
-pub struct Graph {}
-
 pub struct EdgeData;
 pub struct NodeData;
 
@@ -91,6 +89,21 @@ impl<T, U> UndirectedEdge<T, U> {
             left,
             right,
             data,
+        }
+    }
+}
+
+pub struct Graph<T, U> {
+    pub nodes: Vec<Rc<RefCell<Node<T, U>>>>,
+}
+
+impl<T, U> Graph<T, U> {
+    pub fn new(size: usize) -> Self
+    where
+        T: Default,
+    {
+        Self {
+            nodes: vec![Rc::new(RefCell::new(Node::default())); size],
         }
     }
 }
