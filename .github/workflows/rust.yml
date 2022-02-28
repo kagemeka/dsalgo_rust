@@ -16,7 +16,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - nams: CI
+    - name: CI
       run: ./scripts/ci.sh
     - name: Build
       run: cargo build --verbose
