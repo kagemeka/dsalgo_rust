@@ -8,8 +8,7 @@ pub fn greatest_common_divisor_recurse(a: usize, b: usize) -> usize {
 
 pub fn greatest_common_divisor(mut a: usize, mut b: usize) -> usize {
     while b != 0 {
-        a %= b;
-        std::mem::swap(&mut a, &mut b);
+        (a, b) = (b, a % b);
     }
     a
 }
@@ -28,12 +27,56 @@ pub fn least_common_multiple(a: usize, b: usize) -> usize {
     }
 }
 
-pub fn extended_euclidean_recurse(a: i64, b: i64) -> (i64, i64, i64) {
+pub fn extended_euclidean_recurse(a: isize, b: isize) -> (usize, isize, isize) {
     if b == 0 {
-        return (a, 1, 0);
+        return if a < 0 {
+            ((-a) as usize, -1, 0)
+        } else {
+            (a as usize, 1, 0)
+        };
     }
     let (g, s, t) = extended_euclidean_recurse(b, a % b);
     (g, t, s - a / b * t)
+}
+
+pub fn extended_euclidean(mut a: isize, mut b: isize) -> (usize, isize, isize) {
+    let (mut x00, mut x01, mut x10, mut x11) = (1, 0, 0, 1);
+    while b != 0 {
+        let (q, r) = (a / b, a % b);
+        (x00, x01) = (x01, x00 - q * x01);
+        (x10, x11) = (x11, x10 - q * x11);
+        (a, b) = (b, r);
+    }
+    if a < 0 {
+        a *= -1;
+        x00 *= -1;
+        x10 *= -1;
+    }
+    (a as usize, x00, x10)
+}
+
+/// compute g := \gcd(modulo, n),
+/// and modular inverse of n/g in Z[modulo/g].
+pub fn extended_euclidean_gcd_modular_inverse(modulo: usize, n: usize) -> (usize, Option<usize>) {
+    assert!(modulo > 1 && n < modulo);
+    if n == 0 {
+        return (modulo, None);
+    }
+    let (mut a, mut b) = (n as isize, modulo as isize);
+    let (mut x00, mut x01) = (1, 0);
+    while b != 0 {
+        let (q, r) = (a / b, a % b);
+        (x00, x01) = (x01, x00 - q * x01);
+        (a, b) = (b, r);
+    }
+    assert!(a > 0);
+    let gcd = a as usize;
+    if x00 < 0 {
+        x00 += (modulo / gcd) as isize;
+    }
+    let x00 = x00 as usize;
+    assert!(x00 < modulo / gcd);
+    (gcd, Some(x00))
 }
 
 #[cfg(test)]
@@ -52,5 +95,24 @@ mod tests {
         assert_eq!(super::least_common_multiple(1, 0), 0);
         assert_eq!(super::least_common_multiple(12, 18), 36);
         assert_eq!(super::extended_euclidean_recurse(-30, 111), (3, 11, 3));
+        assert_eq!(super::extended_euclidean_recurse(0, 0), (0, 1, 0));
+        assert_eq!(super::extended_euclidean(-30, 111), (3, 11, 3));
+        assert_eq!(super::extended_euclidean(0, 0), (0, 1, 0));
+        assert_eq!(
+            super::extended_euclidean_gcd_modular_inverse(10, 0),
+            (10, None)
+        );
+        assert_eq!(
+            super::extended_euclidean_gcd_modular_inverse(5, 2),
+            (1, Some(3))
+        );
+        assert_eq!(
+            super::extended_euclidean_gcd_modular_inverse(18, 12),
+            (6, Some(2))
+        );
+        assert_eq!(
+            super::extended_euclidean_gcd_modular_inverse(111, 30),
+            (3, Some(26)) // 111 / 3 = 37, 30 / 3 = 10, 10^{-1} \equiv 26 \mod 37
+        );
     }
 }

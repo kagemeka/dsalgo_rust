@@ -23,7 +23,7 @@ impl UnionFind {
             return;
         }
         if self.data[u] > self.data[v] {
-            std::mem::swap(&mut u, &mut v);
+            (u, v) = (v, u);
         }
         self.data[u] += self.data[v];
         self.data[v] = u as i32;

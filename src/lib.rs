@@ -8,6 +8,7 @@ pub mod binary_search;
 pub mod bitwise;
 pub mod cmp;
 pub mod combinatorics;
+pub mod division;
 pub mod euclidean;
 pub mod fenwick_tree;
 pub mod fenwick_tree_dual;
