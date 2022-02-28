@@ -1,3 +1,5 @@
+// #![allow(dead_code)]
+
 pub mod aa_tree;
 pub mod abstract_structs;
 pub mod abstract_traits;
@@ -6,10 +8,15 @@ pub mod binary_search;
 pub mod bitwise;
 pub mod cmp;
 pub mod combinatorics;
+pub mod division;
+pub mod euclidean;
 pub mod fenwick_tree;
 pub mod fenwick_tree_dual;
 pub mod graph;
-pub mod graph_with_pointer;
+pub mod graph_pointer_directed;
+pub mod graph_pointer_mixed;
+pub mod graph_pointer_undirected;
+pub mod graph_trait_pointer_mixed;
 pub mod longest_common_prefix;
 pub mod modular_static;
 pub mod power;

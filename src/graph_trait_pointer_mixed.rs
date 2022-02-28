@@ -1,17 +1,19 @@
+#![allow(dead_code)]
+
 use std::{cell::RefCell, rc::Rc};
 
-pub struct EdgeData;
-pub struct NodeData;
+pub(crate) struct EdgeData;
+pub(crate) struct NodeData;
 
-pub trait Edge<T = Option<EdgeData>, U = Option<NodeData>> {}
+pub(crate) trait Edge<T = Option<EdgeData>, U = Option<NodeData>> {}
 
 impl<T, U> std::fmt::Debug for dyn Edge<T, U> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "Edge") }
 }
 
-pub struct Node<T, U> {
-    pub edges: Vec<Rc<RefCell<dyn Edge<U, T>>>>,
-    pub data: T,
+pub(crate) struct Node<T, U> {
+    pub(crate) edges: Vec<Rc<RefCell<dyn Edge<U, T>>>>,
+    pub(crate) data: T,
 }
 
 impl<T: std::fmt::Debug, U> std::fmt::Debug for Node<T, U> {
@@ -30,10 +32,10 @@ impl<T: Default, U> Default for Node<T, U> {
 }
 
 #[derive(Debug)]
-pub struct DirectedEdge<T, U> {
-    pub from: Rc<RefCell<Node<U, T>>>,
-    pub to: Rc<RefCell<Node<U, T>>>,
-    pub data: T,
+pub(crate) struct DirectedEdge<T, U> {
+    pub(crate) from: Rc<RefCell<Node<U, T>>>,
+    pub(crate) to: Rc<RefCell<Node<U, T>>>,
+    pub(crate) data: T,
 }
 
 impl<T, U> Edge<T, U> for DirectedEdge<T, U> {}
@@ -51,16 +53,16 @@ impl<T: Default, U> From<(Rc<RefCell<Node<U, T>>>, Rc<RefCell<Node<U, T>>>)>
 }
 
 impl<T, U> DirectedEdge<T, U> {
-    pub fn new(from: Rc<RefCell<Node<U, T>>>, to: Rc<RefCell<Node<U, T>>>, data: T) -> Self {
+    pub(crate) fn new(from: Rc<RefCell<Node<U, T>>>, to: Rc<RefCell<Node<U, T>>>, data: T) -> Self {
         Self { from, to, data }
     }
 }
 
 #[derive(Debug)]
-pub struct UndirectedEdge<T, U> {
-    pub left: Rc<RefCell<Node<U, T>>>,
-    pub right: Rc<RefCell<Node<U, T>>>,
-    pub data: T,
+pub(crate) struct UndirectedEdge<T, U> {
+    pub(crate) left: Rc<RefCell<Node<U, T>>>,
+    pub(crate) right: Rc<RefCell<Node<U, T>>>,
+    pub(crate) data: T,
 }
 
 impl<T, U> Edge<T, U> for UndirectedEdge<T, U> {}
@@ -88,7 +90,11 @@ impl<T: Clone, U> From<&DirectedEdge<T, U>> for UndirectedEdge<T, U> {
 }
 
 impl<T, U> UndirectedEdge<T, U> {
-    pub fn new(left: Rc<RefCell<Node<U, T>>>, right: Rc<RefCell<Node<U, T>>>, data: T) -> Self {
+    pub(crate) fn new(
+        left: Rc<RefCell<Node<U, T>>>,
+        right: Rc<RefCell<Node<U, T>>>,
+        data: T,
+    ) -> Self {
         Self {
             left,
             right,
@@ -98,11 +104,11 @@ impl<T, U> UndirectedEdge<T, U> {
 }
 
 #[derive(Debug)]
-pub struct Graph<T, U> {
-    pub nodes: Vec<Rc<RefCell<Node<T, U>>>>,
+pub struct MixedGraph<T, U> {
+    pub(crate) nodes: Vec<Rc<RefCell<Node<T, U>>>>,
 }
 
-impl<T, U> Graph<T, U> {
+impl<T, U> MixedGraph<T, U> {
     pub fn size(&self) -> usize { self.nodes.len() }
 
     pub fn new(size: usize) -> Self
@@ -184,7 +190,7 @@ mod tests {
         println!("{:?}", edge);
         println!("{:?}", node_left);
 
-        let mut graph = super::Graph::<PureNone, usize>::new(2);
+        let mut graph = super::MixedGraph::<PureNone, usize>::new(2);
         println!("{:?}", graph);
         graph.add_directed_edge(0, 1, 3);
         println!("{:?}", graph);

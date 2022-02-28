@@ -88,12 +88,11 @@ impl<G: AbelianGroup<S, T>, S, T> FenwickTreeDual<G, S, T> {
     /// prod[left, index) + prod[0, left) >= target_value
     /// is_ok(G::operate(prod[left, index), prod[0, left)))
     /// `is_ok`'s results must be mnotonous
-    /// [?, .., ?, false, .., false, true .., true]
-    /// where first false index corresponds to the given left,
-    /// it might be there exists no false.
-    /// this function is reduntant and would be deprecated
-    /// because the problem can be solved by binary search (for
-    /// monoid)
+    /// in the range of [left, self.size())
+    /// [?, .., ?, false(left), .., false, true .., true]
+    /// where first false index corresponds
+    /// to the given left, it might be there exists no
+    /// false.
     pub fn binary_search_from_left<F>(&self, is_ok: &F, left: usize) -> usize
     where
         F: Fn(&S) -> bool,

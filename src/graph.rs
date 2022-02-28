@@ -1,14 +1,27 @@
 #[derive(Debug)]
-pub struct DirectedEdge<T> {
-    pub from: usize,
-    pub to: usize,
-    pub data: T,
+pub enum Edge<T> {
+    Directed {
+        from: usize,
+        to: usize,
+        data: T,
+    },
+    Undirected {
+        left: usize,
+        right: usize,
+        data: T,
+    },
 }
 
 #[derive(Debug)]
 pub struct DirectedGraph<T, U> {
     pub node_datas: Vec<T>,
-    pub edges: Vec<Vec<DirectedEdge<U>>>,
+    pub edges: Vec<Vec<Edge<U>>>,
+}
+
+#[derive(Debug)]
+pub struct UndirectedGraph<T, U> {
+    pub node_datas: Vec<T>,
+    pub edges: Vec<Vec<Edge<U>>>,
 }
 
 #[derive(Debug)]
