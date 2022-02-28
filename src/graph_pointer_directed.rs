@@ -56,11 +56,7 @@ impl<T, U> DirectedGraph<T, U> {
         self.nodes.push(Rc::new(RefCell::new(Node::default())));
     }
 
-    pub fn add_edge(&mut self, from: usize, to: usize, data: U)
-    where
-        T: 'static,
-        U: 'static,
-    {
+    pub fn add_edge(&mut self, from: usize, to: usize, data: U) {
         assert!(from < self.size() && to < self.size());
         self.nodes[from].borrow_mut().edges.push(Box::new(Edge {
             from: self.nodes[from].clone(),

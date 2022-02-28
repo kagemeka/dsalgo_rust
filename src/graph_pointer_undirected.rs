@@ -56,11 +56,7 @@ impl<T, U> UndirectedGraph<T, U> {
         self.nodes.push(Rc::new(RefCell::new(Node::default())));
     }
 
-    pub fn add_edge(&mut self, lhs: usize, rhs: usize, data: U)
-    where
-        T: 'static,
-        U: 'static,
-    {
+    pub fn add_edge(&mut self, lhs: usize, rhs: usize, data: U) {
         assert!(lhs < self.size() && rhs < self.size());
         let edge = Rc::new(RefCell::new(Edge {
             lhs: self.nodes[lhs].clone(),
