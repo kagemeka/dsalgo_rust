@@ -7,8 +7,8 @@ pub(crate) struct NodeData;
 
 #[derive(Debug)]
 pub(crate) struct Node<T, U> {
-    pub edges: Vec<Box<Edge<U, T>>>,
-    pub data: T,
+    pub(crate) edges: Vec<Box<Edge<U, T>>>,
+    pub(crate) data: T,
 }
 
 impl<T: Default, U> Default for Node<T, U> {
@@ -34,8 +34,8 @@ impl<T: std::fmt::Debug, U> std::fmt::Debug for Edge<T, U> {
 }
 
 #[derive(Debug)]
-pub(crate) struct DirectedGraph<T, U> {
-    pub nodes: Vec<Rc<RefCell<Node<T, U>>>>,
+pub struct DirectedGraph<T, U> {
+    pub(crate) nodes: Vec<Rc<RefCell<Node<T, U>>>>,
 }
 
 impl<T, U> DirectedGraph<T, U> {

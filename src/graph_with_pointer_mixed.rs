@@ -37,7 +37,7 @@ impl<T: std::fmt::Debug, U> std::fmt::Debug for Edge<T, U> {
 }
 
 #[derive(Debug)]
-pub struct Node<T, U> {
+pub(crate) struct Node<T, U> {
     pub(crate) edges: Vec<Rc<RefCell<Edge<U, T>>>>,
     pub(crate) data: T,
 }
