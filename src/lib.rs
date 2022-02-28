@@ -8,6 +8,8 @@ pub mod cmp;
 pub mod combinatorics;
 pub mod fenwick_tree;
 pub mod fenwick_tree_dual;
+pub mod graph;
+pub mod graph_with_pointer;
 pub mod longest_common_prefix;
 pub mod modular_static;
 pub mod power;

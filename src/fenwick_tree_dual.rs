@@ -1,6 +1,5 @@
 use crate::{
     abstract_traits::{AbelianGroup, Additive, Commutative, Monoid},
-    bitwise,
     fenwick_tree,
 };
 pub struct FenwickTreeDual<M: Monoid<S, T> + Commutative<S, T>, S = M, T = Additive> {
@@ -74,69 +73,53 @@ impl<G: AbelianGroup<S, T>, S: Clone, T> From<&[S]> for FenwickTreeDual<G, S, T>
     }
 }
 
-// impl<G: AbelianGroup<S, T>, S, T> FenwickTreeDual<G, S, T> {
-//     pub fn get_range(&self, left: usize, right: usize) -> S
-// {         assert!(left <= right);
-//         G::operate(
-//             &G::invert(&self.get_half_range(left)),
-//             &self.get_half_range(right),
-//         )
-//     }
+impl<G: AbelianGroup<S, T>, S, T> FenwickTreeDual<G, S, T> {
+    pub fn set_range(&mut self, left: usize, right: usize, value_to_operate: &S) {
+        assert!(left <= right && right <= self.size());
+        if left < self.size() {
+            self.set_half_range(left, value_to_operate);
+        }
+        if right < self.size() {
+            self.set_half_range(right, &G::invert(value_to_operate));
+        }
+    }
 
-//     pub fn find_max_right_with_left<F>(&self, is_ok: &F,
-// left: usize) -> usize     where
-//         F: Fn(&S) -> bool,
-//     {
-//         assert!(left <= self.size());
-//         if left == self.size() {
-//             return self.size();
-//         }
-//         let mut length = 1usize <<
-// bitwise::most_significant_bit(self.size()).unwrap();
-//         let mut value =
-// G::invert(&self.get_half_range(left));         let mut right
-// = 0;         while length > 0 {
-//             if right + length <= left
-//                 || right + length <= self.size()
-//                     && is_ok(&G::operate(&value,
-// &self.data[right + length]))             {
-//                 right += length;
-//                 value = G::operate(&value,
-// &self.data[right]);             }
-//             length >>= 1;
-//         }
-//         right
-//     }
+    /// prod[left, index) >= target_value - prod[0, left)
+    /// prod[left, index) + prod[0, left) >= target_value
+    /// is_ok(G::operate(prod[left, index), prod[0, left)))
+    /// `is_ok`'s results must be mnotonous
+    /// [?, .., ?, false, .., false, true .., true]
+    /// where first false index corresponds to the given left,
+    /// it might be there exists no false.
+    /// this function is reduntant and would be deprecated
+    /// because the problem can be solved by binary search (for
+    /// monoid)
+    pub fn binary_search_from_left<F>(&self, is_ok: &F, left: usize) -> usize
+    where
+        F: Fn(&S) -> bool,
+    {
+        assert!(left <= self.size());
+        let prod_less_than_left = if left == 0 {
+            G::identity()
+        } else {
+            self.get_point(left - 1)
+        };
+        self.fenwick.find_max_right_with_left(
+            &|prod: &S| !is_ok(&G::operate(&prod_less_than_left, prod)),
+            left,
+        )
+    }
 
-//     pub fn find_min_left_with_right<F>(&self, is_ok: &F,
-// right: usize) -> usize     where
-//         F: Fn(&S) -> bool,
-//     {
-//         assert!(right <= self.size());
-//         if right == 0 {
-//             return 0;
-//         }
-//         let mut length = 1usize <<
-// bitwise::most_significant_bit(self.size()).unwrap();
-//         let mut value = self.get_half_range(right);
-//         if is_ok(&value) {
-//             return 0;
-//         }
-//         let mut left = 1;
-//         while length > 0 {
-//             if left + length <= right
-//                 &&
-// !is_ok(&G::operate(&G::invert(&self.data[left - 1 +
-// length]), &value))             {
-//                 left += length;
-//                 value =
-// G::operate(&G::invert(&self.data[left - 1]), &value);
-//             }
-//             length >>= 1;
-//         }
-//         left
-//     }
-// }
+    // /// [false, .. false, true, .., true, ?, .. ?]
+    // /// find first true index.
+    // /// no longer necessary function.
+    // pub fn binary_search_from_right<F>(&self, is_ok: &F, right:
+    // usize) -> usize where
+    //     F: Fn(&S) -> bool,
+    // {
+    //     assert!(right <= self.size());
+    // }
+}
 
 #[cfg(test)]
 mod tests {
@@ -170,6 +153,7 @@ mod tests {
         assert_eq!(fw.binary_search(&|value: &i32| *value >= 47), 9);
         assert_eq!(fw.binary_search(&|value: &i32| *value > 47), 10);
 
+        // abelian group
         let mut arr = deltas;
         arr.iter_mut().fold(0, |acc, x| {
             *x += acc;
@@ -186,5 +170,17 @@ mod tests {
         assert_eq!(fw.binary_search(&|value: &i32| *value >= 23), 6);
         assert_eq!(fw.binary_search(&|value: &i32| *value >= 47), 9);
         assert_eq!(fw.binary_search(&|value: &i32| *value > 47), 10);
+        fw.set_range(2, 6, &1);
+        assert_eq!(fw.get_point(1), 1);
+        assert_eq!(fw.get_point(5), 18);
+        assert_eq!(fw.get_point(9), 47);
+        fw.set_range(2, 6, &-1);
+        assert_eq!(fw.binary_search_from_left(&|value: &i32| *value >= 23, 0), 6);
+        assert_eq!(fw.binary_search_from_left(&|value: &i32| *value >= 47, 0), 9);
+        assert_eq!(fw.binary_search_from_left(&|value: &i32| *value > 47, 0), 10);
+
+        // [0, 1, 3, 6, 10, 17, 23, 30, 38, 47]
+        assert_eq!(fw.binary_search_from_left(&|value: &i32| *value >= 23, 7), 7);
+        assert_eq!(fw.binary_search_from_left(&|value: &i32| *value >= 23, 5), 6);
     }
 }

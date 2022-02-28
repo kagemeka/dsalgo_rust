@@ -3,7 +3,7 @@
 pub struct Tensor<T, const NDIM: usize> {
     shape: [usize; NDIM],
     strides: [usize; NDIM],
-    size: usize,
+    pub size: usize,
     data: Vec<T>,
 }
 
