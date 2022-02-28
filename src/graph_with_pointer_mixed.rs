@@ -12,8 +12,8 @@ pub(crate) enum Edge<T = Option<EdgeData>, U = Option<NodeData>> {
         data: T,
     },
     Undirected {
-        left: Rc<RefCell<Node<U, T>>>,
-        right: Rc<RefCell<Node<U, T>>>,
+        lhs: Rc<RefCell<Node<U, T>>>,
+        rhs: Rc<RefCell<Node<U, T>>>,
         data: T,
     },
 }
@@ -28,8 +28,8 @@ impl<T: std::fmt::Debug, U> std::fmt::Debug for Edge<T, U> {
                 data,
             } => write!(f, "Edge::Directed {{ data: {:?} }}", data),
             Edge::Undirected {
-                left: _,
-                right: _,
+                lhs: _,
+                rhs: _,
                 data,
             } => write!(f, "Edge::Undirected {{ data: {:?} }}", data),
         }
@@ -93,19 +93,19 @@ impl<T, U> MixedGraph<T, U> {
             })));
     }
 
-    pub fn add_undirected_edge(&mut self, left: usize, right: usize, data: U)
+    pub fn add_undirected_edge(&mut self, lhs: usize, rhs: usize, data: U)
     where
         T: 'static,
         U: 'static,
     {
-        assert!(left < self.size() && right < self.size());
+        assert!(lhs < self.size() && rhs < self.size());
         let edge = Rc::new(RefCell::new(Edge::Undirected {
-            left: self.nodes[left].clone(),
-            right: self.nodes[right].clone(),
+            lhs: self.nodes[lhs].clone(),
+            rhs: self.nodes[rhs].clone(),
             data,
         }));
-        self.nodes[left].borrow_mut().edges.push(edge.clone());
-        self.nodes[right].borrow_mut().edges.push(edge.clone());
+        self.nodes[lhs].borrow_mut().edges.push(edge.clone());
+        self.nodes[rhs].borrow_mut().edges.push(edge.clone());
     }
 }
 
@@ -116,25 +116,25 @@ mod tests {
     fn test() {
         use std::{cell::RefCell, rc::Rc};
 
-        let node_left = Rc::new(RefCell::new(super::Node::default()));
-        let node_right = Rc::new(RefCell::new(super::Node::default()));
+        let node_lhs = Rc::new(RefCell::new(super::Node::default()));
+        let node_rhs = Rc::new(RefCell::new(super::Node::default()));
         let edge = Rc::new(RefCell::new(super::Edge::<(), usize>::Directed {
-            from: node_left.clone(),
-            to: node_right.clone(),
+            from: node_lhs.clone(),
+            to: node_rhs.clone(),
             data: (),
         }));
         println!("{:?}", edge);
-        println!("{:?}", node_left);
-        node_left.borrow_mut().edges.push(edge.clone());
+        println!("{:?}", node_lhs);
+        node_lhs.borrow_mut().edges.push(edge.clone());
         println!("{:?}", edge);
-        println!("{:?}", node_left);
+        println!("{:?}", node_lhs);
         let edge = Rc::new(RefCell::new(super::Edge::<(), usize>::Undirected {
-            left: node_left.clone(),
-            right: node_right.clone(),
+            lhs: node_lhs.clone(),
+            rhs: node_rhs.clone(),
             data: (),
         }));
         println!("{:?}", edge);
-        println!("{:?}", node_left);
+        println!("{:?}", node_lhs);
 
         let mut graph = super::MixedGraph::<(), usize>::new(2);
         println!("{:?}", graph);

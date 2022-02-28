@@ -18,8 +18,8 @@ impl<T: Default, U> Default for Node<T, U> {
 }
 
 pub(crate) struct Edge<T, U> {
-    pub(crate) left: Rc<RefCell<Node<U, T>>>,
-    pub(crate) right: Rc<RefCell<Node<U, T>>>,
+    pub(crate) lhs: Rc<RefCell<Node<U, T>>>,
+    pub(crate) rhs: Rc<RefCell<Node<U, T>>>,
     pub(crate) data: T,
 }
 
@@ -56,19 +56,19 @@ impl<T, U> UndirectedGraph<T, U> {
         self.nodes.push(Rc::new(RefCell::new(Node::default())));
     }
 
-    pub fn add_edge(&mut self, left: usize, right: usize, data: U)
+    pub fn add_edge(&mut self, lhs: usize, rhs: usize, data: U)
     where
         T: 'static,
         U: 'static,
     {
-        assert!(left < self.size() && right < self.size());
+        assert!(lhs < self.size() && rhs < self.size());
         let edge = Rc::new(RefCell::new(Edge {
-            left: self.nodes[left].clone(),
-            right: self.nodes[right].clone(),
+            lhs: self.nodes[lhs].clone(),
+            rhs: self.nodes[rhs].clone(),
             data,
         }));
-        self.nodes[left].borrow_mut().edges.push(edge.clone());
-        self.nodes[right].borrow_mut().edges.push(edge.clone());
+        self.nodes[lhs].borrow_mut().edges.push(edge.clone());
+        self.nodes[rhs].borrow_mut().edges.push(edge.clone());
     }
 }
 
