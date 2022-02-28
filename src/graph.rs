@@ -1,16 +1,17 @@
-// use crate::graph_with_pointer::{EdgeData, NodeData};
-
+#[derive(Debug)]
 pub struct DirectedEdge<T> {
     pub from: usize,
     pub to: usize,
     pub data: T,
 }
 
+#[derive(Debug)]
 pub struct DirectedGraph<T, U> {
     pub node_datas: Vec<T>,
     pub edges: Vec<Vec<DirectedEdge<U>>>,
 }
 
+#[derive(Debug)]
 pub struct DenseGraph<T, U> {
     pub node_datas: Vec<T>,
     pub edge_datas: Vec<Vec<U>>,
@@ -39,11 +40,10 @@ mod tests {
 
     #[test]
     fn test() {
-        #[derive(Clone)]
-        struct PhantomData;
+        #[derive(Clone, Default, Debug)]
+        struct PureNone;
 
-        let graph = super::DenseGraph::<Option<PhantomData>, usize>::new(3);
-        // assert_eq!(super::DenseGraph<usize>,
-        // super::DenseGraph2<usize>);
+        let graph = super::DenseGraph::<PureNone, usize>::new(3);
+        println!("{:?}", graph);
     }
 }
