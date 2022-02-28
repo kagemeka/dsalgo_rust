@@ -52,6 +52,10 @@ pub trait Default<S = Self, T = Additive> {
     fn default() -> S;
 }
 
+/// example of more concrete traits
+pub trait AdditiveGroup<S>: AbelianGroup<S, Additive> {}
+impl<S, U: AbelianGroup<S, Additive>> AdditiveGroup<S> for U {}
+
 #[cfg(test)]
 mod tests {
     // struct ExampleSemiring<S>(std::marker::PhantomData<S>);

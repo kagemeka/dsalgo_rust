@@ -6,7 +6,16 @@ pub struct DirectedEdge<T> {
     pub data: T,
 }
 
-pub struct DirectedGraph<T = NodeData, U = EdgeData> {
-    pub nodes: Vec<T>,
+pub struct DirectedGraph<T, U> {
+    pub nodes: Vec<Option<T>>,
     pub edges: Vec<Vec<DirectedEdge<U>>>,
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test() {
+        let a = Option::<usize>::default();
+        println!("{}", a.is_none());
+    }
 }
