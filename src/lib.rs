@@ -14,6 +14,7 @@ pub mod graph;
 pub mod graph_with_pointer;
 pub mod graph_with_pointer_directed;
 pub mod graph_with_pointer_mixed;
+pub mod graph_with_pointer_undirected;
 pub mod longest_common_prefix;
 pub mod modular_static;
 pub mod power;
