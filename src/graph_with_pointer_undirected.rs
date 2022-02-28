@@ -2,9 +2,6 @@
 
 use std::{cell::RefCell, rc::Rc};
 
-pub(crate) struct EdgeData;
-pub(crate) struct NodeData;
-
 #[derive(Debug)]
 pub(crate) struct Node<T, U> {
     pub(crate) edges: Vec<Rc<RefCell<Edge<U, T>>>>,
