@@ -1,3 +1,5 @@
+// #![allow(dead_code)]
+
 pub mod aa_tree;
 pub mod abstract_structs;
 pub mod abstract_traits;
@@ -10,6 +12,8 @@ pub mod fenwick_tree;
 pub mod fenwick_tree_dual;
 pub mod graph;
 pub mod graph_with_pointer;
+pub mod graph_with_pointer_directed;
+pub mod graph_with_pointer_mixed;
 pub mod longest_common_prefix;
 pub mod modular_static;
 pub mod power;
