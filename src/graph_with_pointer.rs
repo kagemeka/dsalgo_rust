@@ -3,21 +3,41 @@ use std::{cell::RefCell, rc::Rc};
 pub struct EdgeData;
 pub struct NodeData;
 
-pub trait Edge<T = Option<EdgeData>, U = Option<NodeData>> {}
-
-impl<T, U> std::fmt::Debug for dyn Edge<T, U> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "Edge") }
+pub enum Edge<T = Option<EdgeData>, U = Option<NodeData>> {
+    Directed {
+        from: Rc<RefCell<Node<U, T>>>,
+        to: Rc<RefCell<Node<U, T>>>,
+        data: T,
+    },
+    Undirected {
+        left: Rc<RefCell<Node<U, T>>>,
+        right: Rc<RefCell<Node<U, T>>>,
+        data: T,
+    },
 }
 
-pub struct Node<T, U> {
-    pub edges: Vec<Rc<RefCell<dyn Edge<U, T>>>>,
-    pub data: T,
-}
-
-impl<T: std::fmt::Debug, U> std::fmt::Debug for Node<T, U> {
+/// avoid cyclic reference
+impl<T: std::fmt::Debug, U> std::fmt::Debug for Edge<T, U> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Node {{ data: {:?}, edegs: {:?}}}", self.data, self.edges)
+        match self {
+            Edge::Directed {
+                from: _,
+                to: _,
+                data,
+            } => write!(f, "Edge::Directed {{ data: {:?} }}", data),
+            Edge::Undirected {
+                left: _,
+                right: _,
+                data,
+            } => write!(f, "Edge::Undirected {{ data: {:?} }}", data),
+        }
     }
+}
+
+#[derive(Debug)]
+pub struct Node<T, U> {
+    pub edges: Vec<Rc<RefCell<Edge<U, T>>>>,
+    pub data: T,
 }
 
 impl<T: Default, U> Default for Node<T, U> {
@@ -25,74 +45,6 @@ impl<T: Default, U> Default for Node<T, U> {
         Self {
             edges: Vec::new(),
             data: T::default(),
-        }
-    }
-}
-
-#[derive(Debug)]
-pub struct DirectedEdge<T, U> {
-    pub from: Rc<RefCell<Node<U, T>>>,
-    pub to: Rc<RefCell<Node<U, T>>>,
-    pub data: T,
-}
-
-impl<T, U> Edge<T, U> for DirectedEdge<T, U> {}
-
-impl<T: Default, U> From<(Rc<RefCell<Node<U, T>>>, Rc<RefCell<Node<U, T>>>)>
-    for DirectedEdge<T, U>
-{
-    fn from(nodes: (Rc<RefCell<Node<U, T>>>, Rc<RefCell<Node<U, T>>>)) -> Self {
-        Self {
-            from: nodes.0,
-            to: nodes.1,
-            data: T::default(),
-        }
-    }
-}
-
-impl<T, U> DirectedEdge<T, U> {
-    pub fn new(from: Rc<RefCell<Node<U, T>>>, to: Rc<RefCell<Node<U, T>>>, data: T) -> Self {
-        Self { from, to, data }
-    }
-}
-
-#[derive(Debug)]
-pub struct UndirectedEdge<T, U> {
-    pub left: Rc<RefCell<Node<U, T>>>,
-    pub right: Rc<RefCell<Node<U, T>>>,
-    pub data: T,
-}
-
-impl<T, U> Edge<T, U> for UndirectedEdge<T, U> {}
-
-impl<T: Default, U> From<(Rc<RefCell<Node<U, T>>>, Rc<RefCell<Node<U, T>>>)>
-    for UndirectedEdge<T, U>
-{
-    fn from(nodes: (Rc<RefCell<Node<U, T>>>, Rc<RefCell<Node<U, T>>>)) -> Self {
-        Self {
-            left: nodes.0,
-            right: nodes.1,
-            data: T::default(),
-        }
-    }
-}
-
-impl<T: Clone, U> From<&DirectedEdge<T, U>> for UndirectedEdge<T, U> {
-    fn from(edge: &DirectedEdge<T, U>) -> Self {
-        Self {
-            left: edge.from.clone(),
-            right: edge.to.clone(),
-            data: edge.data.clone(),
-        }
-    }
-}
-
-impl<T, U> UndirectedEdge<T, U> {
-    pub fn new(left: Rc<RefCell<Node<U, T>>>, right: Rc<RefCell<Node<U, T>>>, data: T) -> Self {
-        Self {
-            left,
-            right,
-            data,
         }
     }
 }
@@ -132,11 +84,11 @@ impl<T, U> Graph<T, U> {
         self.nodes[from]
             .borrow_mut()
             .edges
-            .push(Rc::new(RefCell::new(DirectedEdge::new(
-                self.nodes[from].clone(),
-                self.nodes[to].clone(),
-                data,
-            ))));
+            .push(Rc::new(RefCell::new(Edge::Directed {
+                from: self.nodes[from].clone(),
+                to: self.nodes[to].clone(),
+                data: data,
+            })));
     }
 
     pub fn add_undirected_edge(&mut self, left: usize, right: usize, data: U)
@@ -145,11 +97,11 @@ impl<T, U> Graph<T, U> {
         U: 'static,
     {
         assert!(left < self.size() && right < self.size());
-        let edge = Rc::new(RefCell::new(UndirectedEdge::new(
-            self.nodes[left].clone(),
-            self.nodes[right].clone(),
+        let edge = Rc::new(RefCell::new(Edge::Undirected {
+            left: self.nodes[left].clone(),
+            right: self.nodes[right].clone(),
             data,
-        )));
+        }));
         self.nodes[left].borrow_mut().edges.push(edge.clone());
         self.nodes[right].borrow_mut().edges.push(edge.clone());
     }
@@ -167,20 +119,21 @@ mod tests {
 
         let node_left = Rc::new(RefCell::new(super::Node::default()));
         let node_right = Rc::new(RefCell::new(super::Node::default()));
-        let edge = Rc::new(RefCell::new(super::DirectedEdge::<PureNone, usize>::new(
-            node_left.clone(),
-            node_right.clone(),
-            PureNone,
-        )));
+        let edge = Rc::new(RefCell::new(super::Edge::<PureNone, usize>::Directed {
+            from: node_left.clone(),
+            to: node_right.clone(),
+            data: PureNone,
+        }));
         println!("{:?}", edge);
         println!("{:?}", node_left);
         node_left.borrow_mut().edges.push(edge.clone());
         println!("{:?}", edge);
         println!("{:?}", node_left);
-        let edge = Rc::new(RefCell::new(super::DirectedEdge::<PureNone, usize>::from((
-            node_left.clone(),
-            node_right.clone(),
-        ))));
+        let edge = Rc::new(RefCell::new(super::Edge::<PureNone, usize>::Undirected {
+            left: node_left.clone(),
+            right: node_right.clone(),
+            data: PureNone,
+        }));
         println!("{:?}", edge);
         println!("{:?}", node_left);
 
