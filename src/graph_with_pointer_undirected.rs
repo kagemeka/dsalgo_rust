@@ -80,9 +80,6 @@ mod tests {
 
     #[test]
     fn test() {
-        #[derive(Debug, Default, Clone)]
-        struct PureNone;
-
         let mut graph = super::UndirectedGraph::<(), usize>::new(2);
         println!("{:?}", graph);
         graph.add_edge(0, 1, 1);
