@@ -1,6 +1,6 @@
 use crate::{
-    abstract_traits::{AbelianGroup, Additive, Commutative, Monoid},
     bitwise,
+    group_theory::{AbelianGroup, Additive, Commutative, Monoid},
 };
 /// Node Indices
 /// (case $|given array| = 8$,
@@ -158,7 +158,7 @@ mod tests {
 
     #[test]
     fn test_as_abelian_group() {
-        use crate::abstract_traits::{BinaryOperation, Commutative, Identity, Inverse};
+        use crate::group_theory::{BinaryOperation, Commutative, Identity, Inverse};
 
         struct Add;
         impl Identity<Self, Add> for i32 {

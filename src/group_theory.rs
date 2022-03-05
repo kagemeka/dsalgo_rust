@@ -17,6 +17,8 @@ pub trait Inverse<S = Self, T = Additive> {
     fn invert(element: &S) -> S;
 }
 
+pub trait Associative<S = Self, T = Additive> {}
+
 pub trait Idempotent<S = Self, T = Additive> {}
 
 pub trait Commutative<S = Self, T = Additive> {}

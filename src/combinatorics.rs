@@ -1,14 +1,14 @@
-use crate::abstract_traits;
+use crate::group_theory;
 
-pub trait PascalTriangle<S = Self, T = abstract_traits::Additive>:
-    abstract_traits::Monoid<S, T> + abstract_traits::Default<S, T>
+pub trait PascalTriangle<S = Self, T = group_theory::Additive>:
+    group_theory::Monoid<S, T> + group_theory::Default<S, T>
 {
     fn pascal_triangle(n: usize) -> Vec<Vec<S>>;
 }
 
 impl<S, T, U> PascalTriangle<S, T> for U
 where
-    U: abstract_traits::Monoid<S, T> + abstract_traits::Default<S, T>,
+    U: group_theory::Monoid<S, T> + group_theory::Default<S, T>,
     S: Clone,
 {
     fn pascal_triangle(n: usize) -> Vec<Vec<S>> {

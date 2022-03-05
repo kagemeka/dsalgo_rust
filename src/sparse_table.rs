@@ -1,6 +1,6 @@
 use crate::{
-    abstract_traits::{Additive, Commutative, Idempotent, Semigroup},
     bitwise,
+    group_theory::{Additive, Commutative, Idempotent, Semigroup},
 };
 pub struct SparseTable<Sg, S = Sg, T = Additive>
 where
@@ -112,18 +112,18 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::abstract_traits;
+    use crate::group_theory;
 
     #[test]
     fn test_self_as_min() {
         let arr: Vec<usize> = vec![0, 4, 2, 8, 5, 1];
 
         struct Min;
-        impl abstract_traits::BinaryOperation<usize, Min> for usize {
+        impl group_theory::BinaryOperation<usize, Min> for usize {
             fn operate(lhs: &Self, rhs: &Self) -> Self { std::cmp::min(*lhs, *rhs) }
         }
-        impl abstract_traits::Idempotent<usize, Min> for usize {}
-        impl abstract_traits::Commutative<usize, Min> for usize {}
+        impl group_theory::Idempotent<usize, Min> for usize {}
+        impl group_theory::Commutative<usize, Min> for usize {}
         let sp = super::SparseTable::<usize, _, Min>::new(&arr);
         assert_eq!(sp.get_range(0, 4), 0);
         assert_eq!(sp.get_range(3, 4), 8);

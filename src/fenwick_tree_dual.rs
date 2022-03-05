@@ -1,6 +1,6 @@
 use crate::{
-    abstract_traits::{AbelianGroup, Additive, Commutative, Monoid},
     fenwick_tree,
+    group_theory::{AbelianGroup, Additive, Commutative, Monoid},
 };
 pub struct FenwickTreeDual<M: Monoid<S, T> + Commutative<S, T>, S = M, T = Additive> {
     fenwick: fenwick_tree::FenwickTree<M, S, T>,
@@ -125,7 +125,7 @@ mod tests {
 
     #[test]
     fn test_as_abelian_group() {
-        use crate::abstract_traits::{BinaryOperation, Commutative, Identity, Inverse};
+        use crate::group_theory::{BinaryOperation, Commutative, Identity, Inverse};
 
         struct Add;
         impl Identity<Self, Add> for i32 {

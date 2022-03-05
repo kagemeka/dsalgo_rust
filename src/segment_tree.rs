@@ -1,6 +1,6 @@
 use crate::{
-    abstract_traits::{Additive, Monoid},
     bitwise,
+    group_theory::{Additive, Monoid},
 };
 
 /// Node Indices (case $4 \lt |given array| \le 8$)
@@ -306,7 +306,7 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
 
 #[cfg(test)]
 mod tests {
-    use crate::abstract_traits::{BinaryOperation, Identity};
+    use crate::group_theory::{BinaryOperation, Identity};
     #[test]
     fn test_as_monoid() {
         impl BinaryOperation for usize {

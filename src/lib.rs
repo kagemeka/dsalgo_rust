@@ -2,7 +2,6 @@
 
 pub mod aa_tree;
 pub mod abstract_structs;
-pub mod abstract_traits;
 pub mod argsort;
 pub mod binary_search;
 pub mod bitwise;
@@ -18,6 +17,7 @@ pub mod graph_pointer_directed;
 pub mod graph_pointer_mixed;
 pub mod graph_pointer_undirected;
 pub mod graph_trait_pointer_mixed;
+pub mod group_theory;
 pub mod longest_common_prefix;
 pub mod modular_static;
 pub mod power;

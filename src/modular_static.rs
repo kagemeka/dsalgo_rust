@@ -1,4 +1,4 @@
-use crate::{abstract_traits, power::Power};
+use crate::{group_theory, power::Power};
 
 pub trait IsPrime {}
 
@@ -37,19 +37,19 @@ impl<M: Modulo> From<usize> for Modular<M> {
     fn from(value: usize) -> Self { Self::new(value) }
 }
 
-impl<M: Modulo> abstract_traits::Identity<Self, Add> for Modular<M> {
+impl<M: Modulo> group_theory::Identity<Self, Add> for Modular<M> {
     fn identity() -> Self { 0.into() }
 }
 
-impl<M: Modulo> abstract_traits::Identity<Self, Mul> for Modular<M> {
+impl<M: Modulo> group_theory::Identity<Self, Mul> for Modular<M> {
     fn identity() -> Self { 1.into() }
 }
 
-impl<M: Modulo> abstract_traits::BinaryOperation<Self, Add> for Modular<M> {
+impl<M: Modulo> group_theory::BinaryOperation<Self, Add> for Modular<M> {
     fn operate(lhs: &Self, rhs: &Self) -> Self { (lhs.value + rhs.value).into() }
 }
 
-impl<M: Modulo> abstract_traits::BinaryOperation<Self, Mul> for Modular<M> {
+impl<M: Modulo> group_theory::BinaryOperation<Self, Mul> for Modular<M> {
     fn operate(lhs: &Self, rhs: &Self) -> Self { (lhs.value * rhs.value).into() }
 }
 
