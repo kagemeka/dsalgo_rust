@@ -31,3 +31,4 @@ pub mod suffix_array;
 pub mod tensor;
 pub mod union_find;
 pub mod vector_util;
+pub mod chinese_remainder_theorem;
