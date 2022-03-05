@@ -306,12 +306,13 @@ impl<M: Monoid<S, T>, S, T> SegmentTree<M, S, T> {
 
 #[cfg(test)]
 mod tests {
-    use crate::group_theory::{BinaryOperation, Identity};
+    use crate::group_theory::{Associative, BinaryOperation, Identity};
     #[test]
     fn test_as_monoid() {
         impl BinaryOperation for usize {
             fn operate(x: &Self, y: &Self) -> Self { x + y }
         }
+        impl Associative for usize {}
         impl Identity for usize {
             fn identity() -> Self { 0 }
         }
@@ -350,6 +351,7 @@ mod tests {
         impl BinaryOperation<usize> for UsizeAdd {
             fn operate(x: &usize, y: &usize) -> usize { x + y }
         }
+        impl Associative<usize> for UsizeAdd {}
         impl Identity<usize> for UsizeAdd {
             fn identity() -> usize { 0 }
         }

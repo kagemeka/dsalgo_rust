@@ -122,6 +122,7 @@ mod tests {
         impl group_theory::BinaryOperation<usize, Min> for usize {
             fn operate(lhs: &Self, rhs: &Self) -> Self { std::cmp::min(*lhs, *rhs) }
         }
+        impl group_theory::Associative<usize, Min> for usize {}
         impl group_theory::Idempotent<usize, Min> for usize {}
         impl group_theory::Commutative<usize, Min> for usize {}
         let sp = super::SparseTable::<usize, _, Min>::new(&arr);

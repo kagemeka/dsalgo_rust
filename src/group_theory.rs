@@ -13,18 +13,25 @@ pub trait BinaryOperation<S = Self, T = Additive> {
     fn operate(lhs: &S, rhs: &S) -> S;
 }
 
+pub trait Associative<S = Self, T = Additive>: BinaryOperation<S, T> {}
+
+pub trait Idempotent<S = Self, T = Additive>: BinaryOperation<S, T> {}
+
+pub trait Commutative<S = Self, T = Additive>: BinaryOperation<S, T> {}
+
 pub trait Inverse<S = Self, T = Additive> {
     fn invert(element: &S) -> S;
 }
 
-pub trait Associative<S = Self, T = Additive> {}
+pub trait Magma<S = Self, T = Additive>: BinaryOperation<S, T> {}
+impl<S, T, U: BinaryOperation<S, T>> Magma<S, T> for U {}
 
-pub trait Idempotent<S = Self, T = Additive> {}
+// pub trait Semigroup<S = Self, T = Additive>:
+// BinaryOperation<S, T>{} impl<S, T, U: BinaryOperation<S, T>>
+// Semigroup<S, T> for U {}
 
-pub trait Commutative<S = Self, T = Additive> {}
-
-pub trait Semigroup<S = Self, T = Additive>: BinaryOperation<S, T> {}
-impl<S, T, U: BinaryOperation<S, T>> Semigroup<S, T> for U {}
+pub trait Semigroup<S = Self, T = Additive>: Magma<S, T> + Associative<S, T> {}
+impl<S, T, U: Magma<S, T> + Associative<S, T>> Semigroup<S, T> for U {}
 
 pub trait Monoid<S = Self, T = Additive>: Semigroup<S, T> + Identity<S, T> {}
 impl<S, T, U: Semigroup<S, T> + Identity<S, T>> Monoid<S, T> for U {}
@@ -75,9 +82,13 @@ mod tests {
         fn operate(a: &usize, b: &usize) -> usize { a + b }
     }
 
+    impl super::Associative<usize, super::Additive> for UsizeAddMul {}
+
     impl super::BinaryOperation<usize, super::Multiplicative> for UsizeAddMul {
         fn operate(a: &usize, b: &usize) -> usize { a * b }
     }
+
+    impl super::Associative<usize, super::Multiplicative> for UsizeAddMul {}
 
     impl super::Commutative<usize, super::Additive> for UsizeAddMul {}
 

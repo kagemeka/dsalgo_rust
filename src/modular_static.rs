@@ -49,9 +49,13 @@ impl<M: Modulo> group_theory::BinaryOperation<Self, Add> for Modular<M> {
     fn operate(lhs: &Self, rhs: &Self) -> Self { (lhs.value + rhs.value).into() }
 }
 
+impl<M: Modulo> group_theory::Associative<Self, Add> for Modular<M> {}
+
 impl<M: Modulo> group_theory::BinaryOperation<Self, Mul> for Modular<M> {
     fn operate(lhs: &Self, rhs: &Self) -> Self { (lhs.value * rhs.value).into() }
 }
+
+impl<M: Modulo> group_theory::Associative<Self, Mul> for Modular<M> {}
 
 impl<M: Modulo + Copy> std::ops::AddAssign<Self> for Modular<M> {
     fn add_assign(&mut self, rhs: Self) { *self = *self + rhs; }

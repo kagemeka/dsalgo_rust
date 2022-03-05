@@ -158,7 +158,7 @@ mod tests {
 
     #[test]
     fn test_as_abelian_group() {
-        use crate::group_theory::{BinaryOperation, Commutative, Identity, Inverse};
+        use crate::group_theory::{Associative, BinaryOperation, Commutative, Identity, Inverse};
 
         struct Add;
         impl Identity<Self, Add> for i32 {
@@ -167,6 +167,7 @@ mod tests {
         impl BinaryOperation<Self, Add> for i32 {
             fn operate(x: &Self, y: &Self) -> Self { x + y }
         }
+        impl Associative<Self, Add> for i32 {}
         impl Commutative<Self, Add> for i32 {}
         impl Inverse<Self, Add> for i32 {
             fn invert(value: &Self) -> i32 { -value }

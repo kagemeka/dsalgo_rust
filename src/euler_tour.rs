@@ -26,7 +26,6 @@ pub fn euler_tour_edge(
             }
             parent[v] = u;
             depth[v] = depth[u] + 1;
-            st.push(v as isize);
         }
     }
     (tour, parent, depth)
