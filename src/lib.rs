@@ -19,6 +19,8 @@ pub mod graph_pointer_undirected;
 pub mod graph_trait_pointer_mixed;
 pub mod group_theory;
 pub mod longest_common_prefix;
+pub mod matrix;
+pub mod matrix_dynamic;
 pub mod modular_static;
 pub mod power;
 pub mod segment_tree;
