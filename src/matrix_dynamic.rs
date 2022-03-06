@@ -3,7 +3,7 @@ pub struct Shape {
     pub width: usize,
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub struct Matrix<T> {
     data: Vec<Vec<T>>,
 }
@@ -18,6 +18,10 @@ impl<T: std::fmt::Debug> std::fmt::Debug for Matrix<T> {
             .join("\n");
         write!(f, "{}", format_str)
     }
+}
+
+impl<T> From<Vec<Vec<T>>> for Matrix<T> {
+    fn from(data: Vec<Vec<T>>) -> Self { Matrix { data } }
 }
 
 impl<T> Matrix<T> {
@@ -100,27 +104,72 @@ mod tests {
     fn test() {
         let (height, width) = (3, 4);
         let mut matrix = super::Matrix::<usize>::new(height, width);
+        assert_eq!(
+            matrix,
+            super::Matrix::<usize>::from(vec![
+                vec![0, 0, 0, 0],
+                vec![0, 0, 0, 0],
+                vec![0, 0, 0, 0],
+            ])
+        );
         println!("{:?}", matrix);
         matrix[(1, 1)] += 1;
-        println!();
-        println!("{:?}", matrix);
-        println!();
-        println!("{:?}", matrix.transpose());
-        println!();
-        println!("{:?}", matrix);
+        assert_eq!(
+            matrix,
+            super::Matrix::<usize>::from(vec![
+                vec![0, 0, 0, 0],
+                vec![0, 1, 0, 0],
+                vec![0, 0, 0, 0],
+            ])
+        );
+        assert_eq!(
+            matrix.transpose(),
+            super::Matrix::<usize>::from(vec![
+                vec![0, 0, 0],
+                vec![0, 1, 0],
+                vec![0, 0, 0],
+                vec![0, 0, 0],
+            ])
+        );
 
         for row in 0..height {
             for col in 0..width {
                 matrix[(row, col)] = row * width + col;
             }
         }
-        println!();
-        println!("{:?}", matrix);
-        println!();
-        println!("{:?}", matrix.reverse());
-        println!();
-        println!("{:?}", matrix.rotate_counterclockwise());
-        println!();
-        println!("{:?}", matrix.rotate_clockwise());
+        assert_eq!(
+            matrix,
+            super::Matrix::<usize>::from(vec![
+                vec![0, 1, 2, 3],
+                vec![4, 5, 6, 7],
+                vec![8, 9, 10, 11],
+            ])
+        );
+        assert_eq!(
+            matrix.reverse(),
+            super::Matrix::<usize>::from(vec![
+                vec![8, 9, 10, 11],
+                vec![4, 5, 6, 7],
+                vec![0, 1, 2, 3],
+            ])
+        );
+        assert_eq!(
+            matrix.rotate_counterclockwise(),
+            super::Matrix::<usize>::from(vec![
+                vec![3, 7, 11],
+                vec![2, 6, 10],
+                vec![1, 5, 9],
+                vec![0, 4, 8],
+            ])
+        );
+        assert_eq!(
+            matrix.rotate_clockwise(),
+            super::Matrix::<usize>::from(vec![
+                vec![8, 4, 0],
+                vec![9, 5, 1],
+                vec![10, 6, 2],
+                vec![11, 7, 3],
+            ])
+        );
     }
 }
