@@ -33,4 +33,5 @@ pub mod string;
 pub mod suffix_array;
 pub mod tensor;
 pub mod union_find;
+pub mod union_find_potential;
 pub mod vector_util;
