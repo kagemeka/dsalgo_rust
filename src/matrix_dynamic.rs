@@ -21,7 +21,16 @@ impl<T: std::fmt::Debug> std::fmt::Debug for Matrix<T> {
 }
 
 impl<T> From<Vec<Vec<T>>> for Matrix<T> {
-    fn from(data: Vec<Vec<T>>) -> Self { Matrix { data } }
+    fn from(data: Vec<Vec<T>>) -> Self {
+        let height = data.len();
+        if height > 0 {
+            let width = data[0].len();
+            for row in 1..height {
+                assert_eq!(data[row].len(), width);
+            }
+        }
+        Self { data }
+    }
 }
 
 impl<T> Matrix<T> {
