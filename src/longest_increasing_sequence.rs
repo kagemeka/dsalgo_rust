@@ -1,13 +1,12 @@
-pub(self) fn find_longest_sequence<T: PartialOrd + Clone + Copy, F: Fn(&T, &T) -> bool>(
+pub(self) fn find_longest_sequence<T: Copy, F: Fn(&T, &T) -> bool>(
     slice: &[T],
-    is_ok: F,
+    binary_relation: F,
 ) -> Vec<T> {
-    let n = slice.len();
-    let mut result = vec![None; n];
+    let mut result = vec![None; slice.len()];
     for &value in slice {
         let is_ok = |x: &Option<T>| {
             if let Some(x) = x {
-                is_ok(x, &value)
+                binary_relation(x, &value)
             } else {
                 true
             }
