@@ -9,6 +9,7 @@ pub mod chinese_remainder_theorem;
 pub mod cmp;
 pub mod combinatorics;
 pub mod division;
+pub mod divisor;
 pub mod euclidean;
 pub mod fenwick_tree;
 pub mod fenwick_tree_dual;
