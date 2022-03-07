@@ -3,6 +3,7 @@
 pub mod aa_tree;
 pub mod abstract_structs;
 pub mod argsort;
+pub mod array_compression;
 pub mod binary_search;
 pub mod bitwise;
 pub mod chinese_remainder_theorem;
