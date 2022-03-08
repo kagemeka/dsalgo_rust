@@ -1,4 +1,4 @@
-use crate::modular::{Modular, Modulus};
+use crate::modular::Modulus;
 pub struct DynamicModulusCore {
     value: std::sync::atomic::AtomicUsize,
 }
@@ -41,6 +41,7 @@ pub trait DynamicModulus: Modulus {
 #[cfg(test)]
 mod tests {
     use super::{DynamicModulus as _, Modulus as _};
+    use crate::modular::Modular;
     #[test]
     fn test() {
         fn define_runtime(n: usize) {
@@ -60,7 +61,7 @@ mod tests {
 
             ModRuntime::set(n);
             assert_eq!(ModRuntime::value(), n);
-            type Mint = super::Modular<ModRuntime>;
+            type Mint = Modular<ModRuntime>;
             let x = Mint::new(5);
             println!("{}", x);
             assert_eq!(x * x, Mint::new(25));

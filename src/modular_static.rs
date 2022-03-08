@@ -45,5 +45,6 @@ mod tests {
         x /= Mint::new(2);
         assert_eq!(x.value(), 499122177);
         assert_eq!(x, x);
+        assert_eq!(x * x, x * x);
     }
 }
