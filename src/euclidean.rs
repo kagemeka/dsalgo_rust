@@ -55,14 +55,14 @@ pub fn extended_euclidean(mut a: isize, mut b: isize) -> (usize, isize, isize) {
     (a as usize, x00, x10)
 }
 
-/// compute g := \gcd(modulo, n),
-/// and modular inverse of n/g in Z[modulo/g].
-pub fn extended_euclidean_gcd_modular_inverse(modulo: usize, n: usize) -> (usize, Option<usize>) {
-    assert!(modulo > 1 && n < modulo);
+/// compute g := \gcd(modulus, n),
+/// and modular inverse of n/g in Z[modulus/g].
+pub fn extended_euclidean_gcd_modular_inverse(modulus: usize, n: usize) -> (usize, Option<usize>) {
+    assert!(modulus > 1 && n < modulus);
     if n == 0 {
-        return (modulo, None);
+        return (modulus, None);
     }
-    let (mut a, mut b) = (n as isize, modulo as isize);
+    let (mut a, mut b) = (n as isize, modulus as isize);
     let (mut x00, mut x01) = (1, 0);
     while b != 0 {
         let (q, r) = (a / b, a % b);
@@ -72,10 +72,10 @@ pub fn extended_euclidean_gcd_modular_inverse(modulo: usize, n: usize) -> (usize
     assert!(a > 0);
     let gcd = a as usize;
     if x00 < 0 {
-        x00 += (modulo / gcd) as isize;
+        x00 += (modulus / gcd) as isize;
     }
     let x00 = x00 as usize;
-    assert!(x00 < modulo / gcd);
+    assert!(x00 < modulus / gcd);
     (gcd, Some(x00))
 }
 

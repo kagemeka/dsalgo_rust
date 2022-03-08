@@ -60,14 +60,14 @@ pub fn safe_crt(mod_rem_pairs: &[(usize, usize)]) -> Option<usize> {
     if mod_rem_pairs.len() == 0 {
         return Some(0);
     }
-    let (mut modulo, mut remainder) = mod_rem_pairs[0];
-    assert!(modulo > 1 && remainder < modulo);
+    let (mut modulus, mut remainder) = mod_rem_pairs[0];
+    assert!(modulus > 1 && remainder < modulus);
     for &&(m, r) in mod_rem_pairs.iter().skip(1) {
         assert!(m > 1 && r < m);
-        if let Some(result) = safe_crt_2(modulo, remainder, m, r) {
+        if let Some(result) = safe_crt_2(modulus, remainder, m, r) {
             remainder = result;
-            modulo = euclidean::least_common_multiple(modulo, m);
-            assert!(remainder < modulo);
+            modulus = euclidean::least_common_multiple(modulus, m);
+            assert!(remainder < modulus);
         } else {
             return None;
         }
