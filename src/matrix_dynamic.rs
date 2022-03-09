@@ -1,14 +1,13 @@
-pub struct Shape {
-    pub height: usize,
-    pub width: usize,
+pub trait DynamicShape {
+    fn shape(&self) -> crate::matrix::Shape;
 }
 
 #[derive(Clone, PartialEq)]
-pub struct Matrix<T> {
+pub struct DynamicShapedMatrix<T> {
     data: Vec<Vec<T>>,
 }
 
-impl<T: std::fmt::Debug> std::fmt::Debug for Matrix<T> {
+impl<T: std::fmt::Debug> std::fmt::Debug for DynamicShapedMatrix<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let format_str = self
             .data
@@ -20,7 +19,7 @@ impl<T: std::fmt::Debug> std::fmt::Debug for Matrix<T> {
     }
 }
 
-impl<T> From<Vec<Vec<T>>> for Matrix<T> {
+impl<T> From<Vec<Vec<T>>> for DynamicShapedMatrix<T> {
     fn from(data: Vec<Vec<T>>) -> Self {
         let height = data.len();
         if height > 0 {
@@ -33,23 +32,23 @@ impl<T> From<Vec<Vec<T>>> for Matrix<T> {
     }
 }
 
-impl<T> Matrix<T> {
-    pub fn new(height: usize, width: usize) -> Matrix<T>
+impl<T> DynamicShapedMatrix<T> {
+    pub fn new(height: usize, width: usize) -> DynamicShapedMatrix<T>
     where
         T: Default + Clone,
     {
-        Matrix {
+        DynamicShapedMatrix {
             data: vec![vec![T::default(); width]; height],
         }
     }
 
-    pub fn shape(&self) -> Shape {
+    pub fn shape(&self) -> crate::matrix::Shape {
         let (height, width) = if self.data.len() == 0 {
             (0, 0)
         } else {
             (self.data.len(), self.data[0].len())
         };
-        Shape { height, width }
+        crate::matrix::Shape { height, width }
     }
 
     pub fn transpose(&self) -> Self
@@ -57,7 +56,7 @@ impl<T> Matrix<T> {
         T: Default + Clone,
     {
         let original_shape = self.shape();
-        let mut result = Matrix::new(original_shape.width, original_shape.height);
+        let mut result = DynamicShapedMatrix::new(original_shape.width, original_shape.height);
         for i in 0..original_shape.height {
             for j in 0..original_shape.width {
                 result.data[j][i] = self.data[i][j].clone();
@@ -95,13 +94,13 @@ impl<T> Matrix<T> {
     }
 }
 
-impl<T> std::ops::Index<(usize, usize)> for Matrix<T> {
+impl<T> std::ops::Index<(usize, usize)> for DynamicShapedMatrix<T> {
     type Output = T;
 
     fn index(&self, index: (usize, usize)) -> &Self::Output { &self.data[index.0][index.1] }
 }
 
-impl<T> std::ops::IndexMut<(usize, usize)> for Matrix<T> {
+impl<T> std::ops::IndexMut<(usize, usize)> for DynamicShapedMatrix<T> {
     fn index_mut(&mut self, index: (usize, usize)) -> &mut Self::Output {
         &mut self.data[index.0][index.1]
     }
@@ -112,10 +111,10 @@ mod tests {
     #[test]
     fn test() {
         let (height, width) = (3, 4);
-        let mut matrix = super::Matrix::<usize>::new(height, width);
+        let mut matrix = super::DynamicShapedMatrix::<usize>::new(height, width);
         assert_eq!(
             matrix,
-            super::Matrix::<usize>::from(vec![
+            super::DynamicShapedMatrix::<usize>::from(vec![
                 vec![0, 0, 0, 0],
                 vec![0, 0, 0, 0],
                 vec![0, 0, 0, 0],
@@ -125,7 +124,7 @@ mod tests {
         matrix[(1, 1)] += 1;
         assert_eq!(
             matrix,
-            super::Matrix::<usize>::from(vec![
+            super::DynamicShapedMatrix::<usize>::from(vec![
                 vec![0, 0, 0, 0],
                 vec![0, 1, 0, 0],
                 vec![0, 0, 0, 0],
@@ -133,7 +132,7 @@ mod tests {
         );
         assert_eq!(
             matrix.transpose(),
-            super::Matrix::<usize>::from(vec![
+            super::DynamicShapedMatrix::<usize>::from(vec![
                 vec![0, 0, 0],
                 vec![0, 1, 0],
                 vec![0, 0, 0],
@@ -148,7 +147,7 @@ mod tests {
         }
         assert_eq!(
             matrix,
-            super::Matrix::<usize>::from(vec![
+            super::DynamicShapedMatrix::<usize>::from(vec![
                 vec![0, 1, 2, 3],
                 vec![4, 5, 6, 7],
                 vec![8, 9, 10, 11],
@@ -156,7 +155,7 @@ mod tests {
         );
         assert_eq!(
             matrix.reverse(),
-            super::Matrix::<usize>::from(vec![
+            super::DynamicShapedMatrix::<usize>::from(vec![
                 vec![8, 9, 10, 11],
                 vec![4, 5, 6, 7],
                 vec![0, 1, 2, 3],
@@ -164,7 +163,7 @@ mod tests {
         );
         assert_eq!(
             matrix.rotate_counterclockwise(),
-            super::Matrix::<usize>::from(vec![
+            super::DynamicShapedMatrix::<usize>::from(vec![
                 vec![3, 7, 11],
                 vec![2, 6, 10],
                 vec![1, 5, 9],
@@ -173,7 +172,7 @@ mod tests {
         );
         assert_eq!(
             matrix.rotate_clockwise(),
-            super::Matrix::<usize>::from(vec![
+            super::DynamicShapedMatrix::<usize>::from(vec![
                 vec![8, 4, 0],
                 vec![9, 5, 1],
                 vec![10, 6, 2],

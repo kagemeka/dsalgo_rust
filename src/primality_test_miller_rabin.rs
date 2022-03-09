@@ -1,8 +1,8 @@
 fn is_trivial_composite(n: usize) -> bool { n > 2 && n & 1 == 0 }
 
-fn is_composite<M: crate::modular::Modulus + Copy>(
+fn is_composite<M: crate::modular_static::Modulus + Copy>(
     n: usize,
-    base: crate::modular::Modular<M>,
+    base: crate::modular_static::Modular<M>,
 ) -> bool {
     if is_trivial_composite(n) {
         return true;
@@ -34,12 +34,12 @@ fn miller_rabin_fixed_bases(n: usize, bases: &[usize]) -> bool {
     #[derive(Clone, Copy)]
     struct Mod;
     use crate::{
-        modular::{Modular, Modulus},
-        modular_dynamic::{DynamicModulus, DynamicModulusCore},
+        modular_runtime_static::{RuntimeModulus, RuntimeModulusCore},
+        modular_static::{Modular, Modulus},
     };
-    impl DynamicModulus for Mod {
-        fn core() -> &'static DynamicModulusCore {
-            static MODULUS: DynamicModulusCore = DynamicModulusCore::new(1);
+    impl RuntimeModulus for Mod {
+        fn core() -> &'static RuntimeModulusCore {
+            static MODULUS: RuntimeModulusCore = RuntimeModulusCore::new(1);
             &MODULUS
         }
     }

@@ -1,20 +1,20 @@
 use crate::{
     bitwise,
-    group_theory::{Additive, Commutative, Idempotent, Semigroup},
+    group_theory::{Commutative, Idempotent, Semigroup},
 };
-pub struct SparseTable<Sg, S = Sg, T = Additive>
+pub struct SparseTable<S, T>
 where
-    Sg: Semigroup<S, T> + Idempotent<S, T> + Commutative<S, T>,
+    S: Semigroup<T> + Idempotent<T> + Commutative<T>,
+    T: crate::group_theory::BinaryOperationIdentifier,
 {
-    phantom_sg: std::marker::PhantomData<Sg>,
     phantom_t: std::marker::PhantomData<T>,
     data: Vec<Vec<S>>,
 }
 
-impl<Sg, S, T> SparseTable<Sg, S, T>
+impl<S, T> SparseTable<S, T>
 where
-    Sg: Semigroup<S, T> + Idempotent<S, T> + Commutative<S, T>,
-    S: Copy,
+    S: Semigroup<T> + Idempotent<T> + Commutative<T> + Copy,
+    T: crate::group_theory::BinaryOperationIdentifier,
 {
     pub fn new(slice: &[S]) -> Self {
         let max_width = slice.len();
@@ -29,13 +29,12 @@ where
             data.push(
                 (0..row_size)
                     .map(|index| {
-                        Sg::operate(&data[log - 1][index], &data[log - 1][index + (1 << (log - 1))])
+                        S::operate(&data[log - 1][index], &data[log - 1][index + (1 << (log - 1))])
                     })
                     .collect(),
             );
         }
         Self {
-            phantom_sg: std::marker::PhantomData,
             phantom_t: std::marker::PhantomData,
             data,
         }
@@ -47,23 +46,23 @@ where
             return self.data[0][left];
         }
         let log = bitwise::bit_length(right - 1 - left) as usize - 1;
-        Sg::operate(&self.data[log][left], &self.data[log][right - (1 << log)])
+        S::operate(&self.data[log][left], &self.data[log][right - (1 << log)])
     }
 }
 
-pub struct DisjointSparseTable<Sg, S = Sg, T = Additive>
+pub struct DisjointSparseTable<S, T>
 where
-    Sg: Semigroup<S, T> + Commutative<S, T>,
+    S: Semigroup<T> + Commutative<T>,
+    T: crate::group_theory::BinaryOperationIdentifier,
 {
-    phantom_sg: std::marker::PhantomData<Sg>,
     phantom_t: std::marker::PhantomData<T>,
     data: Vec<Vec<S>>,
 }
 
-impl<Sg, S, T> DisjointSparseTable<Sg, S, T>
+impl<S, T> DisjointSparseTable<S, T>
 where
-    Sg: Semigroup<S, T> + Commutative<S, T>,
-    S: Copy,
+    S: Semigroup<T> + Commutative<T> + Copy,
+    T: crate::group_theory::BinaryOperationIdentifier,
 {
     pub fn new(slice: &[S]) -> Self {
         let width = slice.len();
@@ -80,7 +79,7 @@ where
                 for delta in 1..(1 << log) {
                     // prod to left.
                     let index = border - delta;
-                    data[log][index - 1] = Sg::operate(&data[log][index - 1], &data[log][index]);
+                    data[log][index - 1] = S::operate(&data[log][index - 1], &data[log][index]);
                 }
                 for delta in 0..(1 << log) - 1 {
                     // prod to right
@@ -89,12 +88,11 @@ where
                         // for last sequence
                         break;
                     }
-                    data[log][index + 1] = Sg::operate(&data[log][index], &data[log][index + 1]);
+                    data[log][index + 1] = S::operate(&data[log][index], &data[log][index + 1]);
                 }
             }
         }
         Self {
-            phantom_sg: std::marker::PhantomData,
             phantom_t: std::marker::PhantomData,
             data,
         }
@@ -106,7 +104,7 @@ where
             return self.data[0][left];
         }
         let log = bitwise::bit_length(left ^ (right - 1)) as usize - 1;
-        Sg::operate(&self.data[log][left], &self.data[log][right - 1])
+        S::operate(&self.data[log][left], &self.data[log][right - 1])
     }
 }
 
@@ -119,17 +117,19 @@ mod tests {
         let arr: Vec<usize> = vec![0, 4, 2, 8, 5, 1];
 
         struct Min;
-        impl group_theory::BinaryOperation<usize, Min> for usize {
+        impl crate::group_theory::BinaryOperationIdentifier for Min {}
+
+        impl group_theory::BinaryOperation<Min> for usize {
             fn operate(lhs: &Self, rhs: &Self) -> Self { std::cmp::min(*lhs, *rhs) }
         }
-        impl group_theory::Associative<usize, Min> for usize {}
-        impl group_theory::Idempotent<usize, Min> for usize {}
-        impl group_theory::Commutative<usize, Min> for usize {}
-        let sp = super::SparseTable::<usize, _, Min>::new(&arr);
+        impl group_theory::Associative<Min> for usize {}
+        impl group_theory::Idempotent<Min> for usize {}
+        impl group_theory::Commutative<Min> for usize {}
+        let sp = super::SparseTable::<usize, Min>::new(&arr);
         assert_eq!(sp.get_range(0, 4), 0);
         assert_eq!(sp.get_range(3, 4), 8);
         assert_eq!(sp.get_range(1, 6), 1);
-        let sp = super::DisjointSparseTable::<usize, usize, Min>::new(&arr);
+        let sp = super::DisjointSparseTable::<usize, Min>::new(&arr);
         assert_eq!(sp.get_range(0, 4), 0);
         assert_eq!(sp.get_range(3, 4), 8);
         assert_eq!(sp.get_range(1, 6), 1);

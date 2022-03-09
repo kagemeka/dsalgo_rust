@@ -1,18 +1,24 @@
 use crate::{
     fenwick_tree,
-    group_theory::{AbelianGroup, Additive, Commutative, Monoid},
+    group_theory::{AbelianGroup, Commutative, Monoid},
 };
-pub struct FenwickTreeDual<M: Monoid<S, T> + Commutative<S, T>, S = M, T = Additive> {
-    fenwick: fenwick_tree::FenwickTree<M, S, T>,
+pub struct FenwickTreeDual<S: Monoid<T> + Commutative<T>, T>
+where
+    T: crate::group_theory::BinaryOperationIdentifier,
+{
+    fenwick: fenwick_tree::FenwickTree<S, T>,
 }
 
-impl<M: Monoid<S, T> + Commutative<S, T>, S, T> FenwickTreeDual<M, S, T> {
+impl<S: Monoid<T> + Commutative<T>, T> FenwickTreeDual<S, T>
+where
+    T: crate::group_theory::BinaryOperationIdentifier,
+{
     pub fn from_deltas(deltas: &[S]) -> Self
     where
         S: Clone,
     {
         Self {
-            fenwick: fenwick_tree::FenwickTree::<M, S, T>::from(deltas),
+            fenwick: fenwick_tree::FenwickTree::<S, T>::from(deltas),
         }
     }
 
@@ -20,7 +26,7 @@ impl<M: Monoid<S, T> + Commutative<S, T>, S, T> FenwickTreeDual<M, S, T> {
     where
         S: Clone,
     {
-        Self::from_deltas(&vec![M::identity(); size].as_slice())
+        Self::from_deltas(&vec![S::identity(); size].as_slice())
     }
 
     pub fn size(&self) -> usize { self.fenwick.size() }
@@ -51,18 +57,21 @@ impl<M: Monoid<S, T> + Commutative<S, T>, S, T> FenwickTreeDual<M, S, T> {
     }
 }
 
-impl<G: AbelianGroup<S, T>, S: Clone, T> From<&[S]> for FenwickTreeDual<G, S, T> {
+impl<S: AbelianGroup<T> + Clone, T> From<&[S]> for FenwickTreeDual<S, T>
+where
+    T: crate::group_theory::BinaryOperationIdentifier,
+{
     fn from(slice: &[S]) -> Self {
         Self::from_deltas(
             slice
                 .iter()
                 .enumerate()
                 .map(|(index, prod)| {
-                    G::operate(
+                    S::operate(
                         &(if index == 0 {
-                            G::identity()
+                            S::identity()
                         } else {
-                            G::invert(&slice[index - 1])
+                            S::invert(&slice[index - 1])
                         }),
                         prod,
                     )
@@ -73,14 +82,17 @@ impl<G: AbelianGroup<S, T>, S: Clone, T> From<&[S]> for FenwickTreeDual<G, S, T>
     }
 }
 
-impl<G: AbelianGroup<S, T>, S, T> FenwickTreeDual<G, S, T> {
+impl<S: AbelianGroup<T>, T> FenwickTreeDual<S, T>
+where
+    T: crate::group_theory::BinaryOperationIdentifier,
+{
     pub fn set_range(&mut self, left: usize, right: usize, value_to_operate: &S) {
         assert!(left <= right && right <= self.size());
         if left < self.size() {
             self.set_half_range(left, value_to_operate);
         }
         if right < self.size() {
-            self.set_half_range(right, &G::invert(value_to_operate));
+            self.set_half_range(right, &S::invert(value_to_operate));
         }
     }
 
@@ -99,12 +111,12 @@ impl<G: AbelianGroup<S, T>, S, T> FenwickTreeDual<G, S, T> {
     {
         assert!(left <= self.size());
         let prod_less_than_left = if left == 0 {
-            G::identity()
+            S::identity()
         } else {
             self.get_point(left - 1)
         };
         self.fenwick.find_max_right_with_left(
-            &|prod: &S| !is_ok(&G::operate(&prod_less_than_left, prod)),
+            &|prod: &S| !is_ok(&S::operate(&prod_less_than_left, prod)),
             left,
         )
     }
@@ -128,20 +140,22 @@ mod tests {
         use crate::group_theory::{Associative, BinaryOperation, Commutative, Identity, Inverse};
 
         struct Add;
-        impl Identity<Self, Add> for i32 {
+        impl crate::group_theory::BinaryOperationIdentifier for Add {}
+
+        impl Identity<Add> for i32 {
             fn identity() -> Self { 0 }
         }
-        impl BinaryOperation<Self, Add> for i32 {
+        impl BinaryOperation<Add> for i32 {
             fn operate(x: &Self, y: &Self) -> Self { x + y }
         }
-        impl Associative<Self, Add> for i32 {}
-        impl Commutative<Self, Add> for i32 {}
-        impl Inverse<Self, Add> for i32 {
+        impl Associative<Add> for i32 {}
+        impl Commutative<Add> for i32 {}
+        impl Inverse<Add> for i32 {
             fn invert(value: &Self) -> i32 { -value }
         }
 
         let deltas = vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-        let mut fw = super::FenwickTreeDual::<i32, i32, Add>::from_deltas(&deltas);
+        let mut fw = super::FenwickTreeDual::<i32, Add>::from_deltas(&deltas);
         assert_eq!(fw.get_point(1), 1);
         assert_eq!(fw.get_point(5), 15);
         assert_eq!(fw.get_point(9), 45);
@@ -159,7 +173,7 @@ mod tests {
             *x += acc;
             *x
         });
-        let mut fw = super::FenwickTreeDual::<i32, i32, Add>::from(arr.as_slice());
+        let mut fw = super::FenwickTreeDual::<i32, Add>::from(arr.as_slice());
         assert_eq!(fw.get_point(1), 1);
         assert_eq!(fw.get_point(5), 15);
         assert_eq!(fw.get_point(9), 45);

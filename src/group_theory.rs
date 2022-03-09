@@ -1,112 +1,121 @@
+pub trait BinaryOperationIdentifier {}
+
+pub trait BinaryOperation<T: BinaryOperationIdentifier> {
+    fn operate(lhs: &Self, rhs: &Self) -> Self;
+}
+
+pub trait Associative<T: BinaryOperationIdentifier>: BinaryOperation<T> {}
+
+pub trait Idempotent<T: BinaryOperationIdentifier>: BinaryOperation<T> {}
+
+pub trait Commutative<T: BinaryOperationIdentifier>: BinaryOperation<T> {}
+
+pub trait Identity<T: BinaryOperationIdentifier>: BinaryOperation<T> {
+    fn identity() -> Self;
+}
+
+pub trait DynamicIdentity<T> {
+    fn identity(&self) -> Self;
+}
+
+pub trait Inverse<T: BinaryOperationIdentifier>: BinaryOperation<T> {
+    fn invert(element: &Self) -> Self;
+}
+
+pub trait Magma<T: BinaryOperationIdentifier>: BinaryOperation<T> {}
+impl<T: BinaryOperationIdentifier, S: BinaryOperation<T>> Magma<T> for S {}
+
+pub trait Semigroup<T: BinaryOperationIdentifier>: Magma<T> + Associative<T> {}
+impl<T: BinaryOperationIdentifier, S: Magma<T> + Associative<T>> Semigroup<T> for S {}
+
+pub trait Monoid<T: BinaryOperationIdentifier>: Semigroup<T> + Identity<T> {}
+impl<T: BinaryOperationIdentifier, S: Semigroup<T> + Identity<T>> Monoid<T> for S {}
+
+pub trait Group<T: BinaryOperationIdentifier>: Monoid<T> + Inverse<T> {}
+impl<T: BinaryOperationIdentifier, U: Monoid<T> + Inverse<T>> Group<T> for U {}
+
+pub trait AbelianGroup<T: BinaryOperationIdentifier>: Group<T> + Commutative<T> {}
+impl<T: BinaryOperationIdentifier, S: Group<T> + Commutative<T>> AbelianGroup<T> for S {}
+
+pub trait Semiring<T: BinaryOperationIdentifier, U: BinaryOperationIdentifier>:
+    Monoid<T> + Commutative<T> + Monoid<U>
+{
+}
+impl<T, U, S> Semiring<T, U> for S
+where
+    T: BinaryOperationIdentifier,
+    U: BinaryOperationIdentifier,
+    S: Monoid<T> + Monoid<U> + Commutative<T>,
+{
+}
+
+pub trait Ring<T: BinaryOperationIdentifier, U: BinaryOperationIdentifier>:
+    Semiring<T, U> + Inverse<T>
+{
+}
+impl<T: BinaryOperationIdentifier, U: BinaryOperationIdentifier, S: Semiring<T, U> + Inverse<T>>
+    Ring<T, U> for S
+{
+}
+
+pub trait Default<T> {
+    fn default() -> Self;
+}
+
 pub struct Additive;
+impl crate::group_theory::BinaryOperationIdentifier for Additive {}
 pub struct Multiplicative;
-
-pub trait Identity<S = Self, T = Additive> {
-    fn identity() -> S;
-}
-
-pub trait DynamicIdentity<S = Self, T = Additive> {
-    fn identity(&self) -> S;
-}
-
-pub trait BinaryOperation<S = Self, T = Additive> {
-    fn operate(lhs: &S, rhs: &S) -> S;
-}
-
-pub trait Associative<S = Self, T = Additive>: BinaryOperation<S, T> {}
-
-pub trait Idempotent<S = Self, T = Additive>: BinaryOperation<S, T> {}
-
-pub trait Commutative<S = Self, T = Additive>: BinaryOperation<S, T> {}
-
-pub trait Inverse<S = Self, T = Additive> {
-    fn invert(element: &S) -> S;
-}
-
-pub trait Magma<S = Self, T = Additive>: BinaryOperation<S, T> {}
-impl<S, T, U: BinaryOperation<S, T>> Magma<S, T> for U {}
-
-// pub trait Semigroup<S = Self, T = Additive>:
-// BinaryOperation<S, T>{} impl<S, T, U: BinaryOperation<S, T>>
-// Semigroup<S, T> for U {}
-
-pub trait Semigroup<S = Self, T = Additive>: Magma<S, T> + Associative<S, T> {}
-impl<S, T, U: Magma<S, T> + Associative<S, T>> Semigroup<S, T> for U {}
-
-pub trait Monoid<S = Self, T = Additive>: Semigroup<S, T> + Identity<S, T> {}
-impl<S, T, U: Semigroup<S, T> + Identity<S, T>> Monoid<S, T> for U {}
-
-pub trait Group<S = Self, T = Additive>: Monoid<S, T> + Inverse<S, T> {}
-impl<S, T, U: Monoid<S, T> + Inverse<S, T>> Group<S, T> for U {}
-
-pub trait AbelianGroup<S = Self, T = Additive>: Group<S, T> + Commutative<S, T> {}
-impl<S, T, U: Group<S, T> + Commutative<S, T>> AbelianGroup<S, T> for U {}
-
-pub trait Semiring<S = Self, Add = Additive, Mul = Multiplicative>:
-    Monoid<S, Add> + Monoid<S, Mul> + Commutative<S, Add>
-{
-}
-impl<S, Add, Mul, U> Semiring<S, Add, Mul> for U where
-    U: Monoid<S, Add> + Monoid<S, Mul> + Commutative<S, Add>
-{
-}
-
-pub trait Ring<S = Self, Add = Additive, Mul = Multiplicative>:
-    Semiring<S, Add, Mul> + Inverse<S, Add>
-{
-}
-impl<S, Add, Mul, U> Ring<S, Add, Mul> for U where U: Semiring<S, Add, Mul> + Inverse<S, Add> {}
-
-pub trait Default<S = Self, T = Additive> {
-    fn default() -> S;
-}
+impl crate::group_theory::BinaryOperationIdentifier for Multiplicative {}
 
 /// example of more concrete traits
-pub trait AdditiveGroup<S>: AbelianGroup<S, Additive> {}
-impl<S, U: AbelianGroup<S, Additive>> AdditiveGroup<S> for U {}
+pub trait AdditiveGroup: AbelianGroup<Additive> {}
+impl<S: AbelianGroup<Additive>> AdditiveGroup for S {}
 
 #[cfg(test)]
 mod tests {
-    // struct ExampleSemiring<S>(std::marker::PhantomData<S>);
-    struct UsizeAddMul;
-
-    impl super::Identity<usize, super::Additive> for UsizeAddMul {
-        fn identity() -> usize { 0 }
-    }
-
-    impl super::Identity<usize, super::Multiplicative> for UsizeAddMul {
-        fn identity() -> usize { 1 }
-    }
-
-    impl super::BinaryOperation<usize, super::Additive> for UsizeAddMul {
-        fn operate(a: &usize, b: &usize) -> usize { a + b }
-    }
-
-    impl super::Associative<usize, super::Additive> for UsizeAddMul {}
-
-    impl super::BinaryOperation<usize, super::Multiplicative> for UsizeAddMul {
-        fn operate(a: &usize, b: &usize) -> usize { a * b }
-    }
-
-    impl super::Associative<usize, super::Multiplicative> for UsizeAddMul {}
-
-    impl super::Commutative<usize, super::Additive> for UsizeAddMul {}
-
-    fn need_semiring<S, Add, Mul, U>()
+    fn need_semiring<S, T: super::BinaryOperationIdentifier, U: super::BinaryOperationIdentifier>()
     where
-        U: super::Semiring<S, Add, Mul>,
-        S: std::fmt::Debug + PartialEq,
+        S: super::Semiring<T, U> + std::fmt::Debug + PartialEq,
     {
-        let add_e = <U as super::Identity<S, Add>>::identity();
-        let value_add = <U as super::BinaryOperation<S, Add>>::operate(&add_e, &add_e);
+        let add_e = <S as super::Identity<T>>::identity();
+        let value_add = <S as super::BinaryOperation<T>>::operate(&add_e, &add_e);
         assert_eq!(value_add, add_e);
 
-        let mul_e = <U as super::Identity<S, Mul>>::identity();
-        let value_mul = <U as super::BinaryOperation<S, Mul>>::operate(&mul_e, &mul_e);
+        let mul_e = <S as super::Identity<U>>::identity();
+        let value_mul = <S as super::BinaryOperation<U>>::operate(&mul_e, &mul_e);
         assert_eq!(value_mul, mul_e);
         eprintln!("{:?}", value_add);
     }
 
     #[test]
-    fn test() { need_semiring::<usize, super::Additive, super::Multiplicative, UsizeAddMul>(); }
+    fn test() {
+        struct Add;
+        impl super::BinaryOperationIdentifier for Add {}
+        struct Mul;
+        impl super::BinaryOperationIdentifier for Mul {}
+
+        impl super::Identity<Add> for usize {
+            fn identity() -> usize { 0 }
+        }
+
+        impl super::Identity<Mul> for usize {
+            fn identity() -> Self { 1 }
+        }
+
+        impl super::BinaryOperation<Add> for usize {
+            fn operate(a: &Self, b: &Self) -> usize { a + b }
+        }
+
+        impl super::Associative<Add> for usize {}
+
+        impl super::BinaryOperation<Mul> for usize {
+            fn operate(a: &usize, b: &usize) -> usize { a * b }
+        }
+
+        impl super::Associative<Mul> for usize {}
+
+        impl super::Commutative<Add> for usize {}
+
+        need_semiring::<usize, Add, Mul>();
+    }
 }

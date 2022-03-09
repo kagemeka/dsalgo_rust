@@ -8,7 +8,6 @@ cargo test \
     --bins \
     --color always \
     --examples \
-    --frozen \
     --future-incompat-report \
     --locked \
     --manifest-path Cargo.toml \
@@ -18,6 +17,7 @@ cargo test \
     --verbose \
     --workspace \
     -Z unstable-options
+# --frozen \
 # --offline
 # --timings html
 # --unit-graph \

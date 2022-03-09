@@ -1,9 +1,9 @@
-use crate::modular::Modulus;
-pub struct DynamicModulusCore {
+use crate::modular_static::Modulus;
+pub struct RuntimeModulusCore {
     value: std::sync::atomic::AtomicUsize,
 }
 
-impl DynamicModulusCore {
+impl RuntimeModulusCore {
     pub const fn new(value: usize) -> Self {
         Self {
             value: std::sync::atomic::AtomicUsize::new(value),
@@ -21,9 +21,9 @@ impl DynamicModulusCore {
 /// ```
 /// use dsalgo::{modular::*, modular_dynamic::*};
 /// struct Mod100;
-/// impl DynamicModulus for Mod100 {
-///     fn core() -> &'static DynamicModulusCore {
-///         static MODULUS: DynamicModulusCore = DynamicModulusCore::new(1);
+/// impl RuntimeModulus for Mod100 {
+///     fn core() -> &'static RuntimeModulusCore {
+///         static MODULUS: RuntimeModulusCore = RuntimeModulusCore::new(1);
 ///         &MODULUS
 ///     }
 /// }
@@ -33,24 +33,24 @@ impl DynamicModulusCore {
 /// Mod100::set(100);
 /// assert_eq!(Mod100::value(), 100);
 /// ```
-pub trait DynamicModulus: Modulus {
-    fn core() -> &'static DynamicModulusCore;
+pub trait RuntimeModulus: Modulus {
+    fn core() -> &'static RuntimeModulusCore;
     fn set(value: usize) { Self::core().set_value(value); }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{DynamicModulus as _, Modulus as _};
-    use crate::modular::Modular;
+    use super::{Modulus as _, RuntimeModulus as _};
+    use crate::modular_static::Modular;
     #[test]
     fn test() {
         fn define_runtime(n: usize) {
             #[derive(Debug, Clone, Copy, PartialEq, Eq)]
             struct ModRuntime;
 
-            impl super::DynamicModulus for ModRuntime {
-                fn core() -> &'static super::DynamicModulusCore {
-                    static MODULUS: super::DynamicModulusCore = super::DynamicModulusCore::new(1);
+            impl super::RuntimeModulus for ModRuntime {
+                fn core() -> &'static super::RuntimeModulusCore {
+                    static MODULUS: super::RuntimeModulusCore = super::RuntimeModulusCore::new(1);
                     &MODULUS
                 }
             }
