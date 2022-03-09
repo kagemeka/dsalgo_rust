@@ -4,6 +4,7 @@ use crate::{
     set_theory,
 };
 
+#[derive(Debug)]
 pub struct SegmentTreeLazy<S, F, M, I, J>
 where
     S: Monoid<I>,
@@ -23,7 +24,7 @@ where
 
 impl<S, F, M, I, J> From<&[S]> for SegmentTreeLazy<S, F, M, I, J>
 where
-    S: Monoid<I> + Clone,
+    S: Monoid<I> + Clone + std::fmt::Debug,
     F: Monoid<J> + Clone,
     M: set_theory::Mapping<S, F>,
     I: BinaryOperationIdentifier,
@@ -52,13 +53,18 @@ where
 
 impl<S, F, M, I, J> SegmentTreeLazy<S, F, M, I, J>
 where
-    S: Monoid<I> + Clone,
+    S: Monoid<I> + Clone + std::fmt::Debug,
     F: Monoid<J> + Clone,
     M: set_theory::Mapping<S, F>,
     I: BinaryOperationIdentifier,
     J: BinaryOperationIdentifier,
 {
-    pub fn new(size: usize) -> Self { (&vec![S::identity(); size]).as_slice().into() }
+    pub fn new(size: usize) -> Self
+    where
+        S: crate::group_theory::Default<I>,
+    {
+        (&vec![S::default(); size]).as_slice().into()
+    }
 
     pub fn size(&self) -> usize { self.size }
 
@@ -84,19 +90,17 @@ where
 
     fn propagate_above(&mut self, node_index: usize) {
         for i in (1..self.height).rev() {
-            // if (node_index >> i) << i != node_index {
-            //     self.propagate(node_index >> i);
-            // }
-            self.propagate(node_index >> i);
+            if (node_index >> i) << i != node_index {
+                self.propagate(node_index >> i);
+            }
         }
     }
 
     fn update_above(&mut self, node_index: usize) {
         for i in 1..self.height {
-            // if (node_index >> i) << i != node_index {
-            //     self.merge_childs(node_index >> i);
-            // }
-            self.merge_childs(node_index >> i);
+            if (node_index >> i) << i != node_index {
+                self.merge_childs(node_index >> i);
+            }
         }
     }
 
@@ -110,7 +114,6 @@ where
         self.propagate_above(right_node);
 
         let (left_0, right_0) = (left_node, right_node);
-        // operate on target range.
         while left_node < right_node {
             if left_node & 1 == 1 {
                 self.apply(left_node, operator);
@@ -131,9 +134,13 @@ where
         assert!(array_index < self.size);
         let n = self.data.len() >> 1;
         let node_index = n + array_index;
-        self.propagate_above(node_index);
+        for i in (1..self.height).rev() {
+            self.propagate(node_index >> i);
+        }
         self.data[node_index] = value;
-        self.update_above(node_index);
+        for i in 1..self.height {
+            self.merge_childs(node_index >> i);
+        }
     }
 
     pub fn get_range(&mut self, left: usize, right: usize) -> S {
@@ -167,89 +174,193 @@ where
         self.get_range(array_index, array_index + 1)
     }
 
-    // pub fn find_max_right<G>(&self, is_ok: &F, left: usize) ->
-    // usize where
-    //     G: Fn(&S) -> bool,
-    // {
-    //     assert!(left <= self.size);
-    //     if left == self.size {
-    //         return self.size;
-    //     }
-    //     let n = self.data.len() >> 1;
-    //     let mut value = S::identity();
-    //     let mut node_index = n + left;
-    //     loop {
-    //         node_index =
-    // bitwise::shift_right_until_odd(node_index).unwrap(); // up
-    // to ceil         if !is_ok(&S::operate(&value,
-    // &self.data[node_index])) {             break;
-    //         }
-    //         // up one stair from left
-    //         value = S::operate(&value, &self.data[node_index]);
-    //         node_index += 1;
-    //         if bitwise::lsb_number(node_index) == node_index {
-    //             // wall.
-    //             return self.size;
-    //         }
-    //     }
-    //     // down stairs to right
-    //     while node_index < n {
-    //         node_index <<= 1;
-    //         if !is_ok(&S::operate(&value,
-    // &self.data[node_index])) {             continue;
-    //         }
-    //         value = S::operate(&value, &self.data[node_index]);
-    //         node_index += 1;
-    //     }
-    //     node_index - n
-    // }
+    // TODO: generics structs preset
+    // TODO: recursive implementation
 
-    // pub fn find_min_left<F>(&self, is_ok: &F, right: usize) ->
-    // usize where
-    //     F: Fn(&S) -> bool,
-    // {
-    //     assert!(right <= self.size);
-    //     if right == 0 {
-    //         return 0;
-    //     }
-    //     let n = self.data.len() >> 1;
-    //     let mut value = S::identity();
-    //     let mut node_index = n + right;
-    //     loop {
-    //         assert!(node_index >= 1);
-    //         node_index =
-    // bitwise::shift_right_until_odd(node_index).unwrap();
-    //         assert!(node_index >= 1);
-    //         if !is_ok(&S::operate(&self.data[node_index - 1],
-    // &value)) {             break;
-    //         }
-    //         node_index -= 1;
-    //         value = S::operate(&self.data[node_index as usize],
-    // &value);         if bitwise::lsb_number(node_index) ==
-    // node_index {             return 0;
-    //         }
-    //     }
-    //     while node_index < n {
-    //         node_index <<= 1;
-    //         if !is_ok(&S::operate(&self.data[node_index - 1],
-    // &value)) {             continue;
-    //         }
-    //         node_index -= 1;
-    //         value = S::operate(&self.data[node_index], &value);
-    //     }
-    //     node_index - n
-    // }
+    pub fn find_max_right<G>(&mut self, is_ok: &G, left: usize) -> usize
+    where
+        G: Fn(&S) -> bool,
+    {
+        assert!(left <= self.size);
+        if left == self.size {
+            return self.size;
+        }
+        let n = self.data.len() >> 1;
+        let mut value = S::identity();
+        let mut node_index = n + left;
+        self.propagate_above(node_index);
+        loop {
+            node_index = bitwise::shift_right_until_odd(node_index).unwrap();
+            if !is_ok(&S::operate(&value, &self.data[node_index])) {
+                break;
+            }
+            // up one stair from left
+            value = S::operate(&value, &self.data[node_index]);
+            node_index += 1;
+            if bitwise::lsb_number(node_index) == node_index {
+                // wall.
+                return self.size;
+            }
+        }
+        // down stairs to right
+        while node_index < n {
+            self.propagate(node_index);
+            node_index <<= 1;
+            if !is_ok(&S::operate(&value, &self.data[node_index])) {
+                continue;
+            }
+            value = S::operate(&value, &self.data[node_index]);
+            node_index += 1;
+        }
+        node_index - n
+    }
+
+    pub fn find_min_left<G>(&mut self, is_ok: &G, right: usize) -> usize
+    where
+        G: Fn(&S) -> bool,
+    {
+        assert!(right <= self.size);
+        if right == 0 {
+            return 0;
+        }
+        let n = self.data.len() >> 1;
+        let mut value = S::identity();
+        let mut node_index = n + right;
+        self.propagate_above(node_index);
+        loop {
+            assert!(node_index >= 1);
+            node_index = bitwise::shift_right_until_odd(node_index).unwrap();
+            assert!(node_index >= 1);
+            if !is_ok(&S::operate(&self.data[node_index - 1], &value)) {
+                break;
+            }
+            node_index -= 1;
+            value = S::operate(&self.data[node_index], &value);
+            if bitwise::lsb_number(node_index) == node_index {
+                return 0;
+            }
+        }
+        while node_index < n {
+            self.propagate(node_index - 1);
+            node_index <<= 1;
+            if !is_ok(&S::operate(&self.data[node_index - 1], &value)) {
+                continue;
+            }
+            node_index -= 1;
+            value = S::operate(&self.data[node_index], &value);
+        }
+        node_index - n
+    }
 }
 
-/// Recursive Implementations for bench mark.
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test() {
+        use crate::{group_theory, set_theory};
+        struct RARS;
+        #[derive(Clone, PartialEq, Debug)]
+        struct Data {
+            pub sum: isize,
+            pub length: usize,
+        }
+        impl group_theory::BinaryOperationIdentifier for RARS {}
+        impl group_theory::BinaryOperation<RARS> for Data {
+            fn operate(lhs: &Self, rhs: &Self) -> Self {
+                Self {
+                    sum: lhs.sum + rhs.sum,
+                    length: lhs.length + rhs.length,
+                }
+            }
+        }
+        impl group_theory::Associative<RARS> for Data {}
+        impl group_theory::Identity<RARS> for Data {
+            fn identity() -> Self {
+                Self {
+                    sum: 0,
+                    length: 0,
+                }
+            }
+        }
+
+        impl group_theory::Default<RARS> for Data {
+            fn default() -> Self {
+                Self {
+                    sum: 0,
+                    length: 1,
+                }
+            }
+        }
+
+        struct Map;
+        impl set_theory::Mapping<Data, isize> for Map {
+            fn map(operator: &isize, element: &Data) -> Data {
+                Data {
+                    sum: element.sum + operator * element.length as isize,
+                    length: element.length,
+                }
+            }
+        }
+
+        let mut seg =
+            super::SegmentTreeLazy::<Data, isize, Map, RARS, group_theory::Additive>::new(10);
+
+        assert_eq!(
+            seg.get_range(0, 10),
+            Data {
+                sum: 0,
+                length: 10
+            }
+        );
+        seg.set_range(0, 5, &2);
+
+        assert_eq!(
+            seg.get_range(2, 6),
+            Data {
+                sum: 6,
+                length: 4
+            }
+        );
+
+        assert_eq!(
+            seg.get_range(0, 10),
+            Data {
+                sum: 10,
+                length: 10
+            }
+        );
+        assert_eq!(seg.find_max_right(&|x: &Data| x.sum <= 3, 4), 10);
+        assert_eq!(seg.find_max_right(&|x: &Data| x.sum <= 3, 2), 3);
+        assert_eq!(seg.find_min_left(&|x: &Data| x.sum <= 3, 4), 3);
+        assert_eq!(seg.find_min_left(&|x: &Data| x.sum <= 3, 10), 4);
+        assert_eq!(seg.find_min_left(&|x: &Data| x.sum < 0, 10), 10);
+
+        seg.update_point(
+            2,
+            Data {
+                sum: -1,
+                length: 1,
+            },
+        );
+        assert_eq!(
+            seg.get_range(0, 10),
+            Data {
+                sum: 7,
+                length: 10
+            }
+        );
+    }
+}
+
+// / Recursive Implementations for bench mark.
 // impl<S: Monoid<T>, T> SegmentTree<S, T>
 // where
 //     T: crate::group_theory::BinaryOperationIdentifier,
 // {
-//     pub fn get_range_recurse(&self, left: usize, right: usize) -> S {
-//         assert!(left <= right && right <= self.size);
-//         self._get_recurse(left, right, 0, self.data.len() >> 1, 1)
-//     }
+//     pub fn get_range_recurse(&self, left: usize, right:
+// usize) -> S {         assert!(left <= right && right <=
+// self.size);         self._get_recurse(left, right, 0,
+// self.data.len() >> 1, 1)     }
 
 //     fn _get_recurse(
 //         &self,
@@ -263,25 +374,26 @@ where
 //             return S::identity();
 //         }
 //         if left <= current_left && current_right <= right {
-//             return S::operate(&S::identity(), &self.data[node_index]);
-//         }
+//             return S::operate(&S::identity(),
+// &self.data[node_index]);         }
 //         let center = (current_left + current_right) >> 1;
 //         S::operate(
-//             &self._get_recurse(left, right, current_left, center, node_index << 1),
-//             &self._get_recurse(left, right, center, current_right, node_index << 1 | 1),
-//         )
+//             &self._get_recurse(left, right, current_left,
+// center, node_index << 1),
+// &self._get_recurse(left, right, center, current_right,
+// node_index << 1 | 1),         )
 //     }
 
-//     pub fn find_max_right_recurse<F>(&self, is_ok: &F, left: usize) -> usize
-//     where
+//     pub fn find_max_right_recurse<F>(&self, is_ok: &F, left:
+// usize) -> usize     where
 //         F: Fn(&S) -> bool,
 //     {
 //         assert!(left <= self.size);
-//         self._max_right_recurse(is_ok, left, 0, self.data.len() >> 1, &mut S::identity(), 1)
-//     }
+//         self._max_right_recurse(is_ok, left, 0,
+// self.data.len() >> 1, &mut S::identity(), 1)     }
 
-//     /// find max right (current_left < right <= current_right)
-//     /// if current_right <= left, return left
+//     /// find max right (current_left < right <=
+// current_right)     /// if current_right <= left, return left
 //     /// if current_left >= self.size, return self.size
 //     fn _max_right_recurse<F>(
 //         &self,
@@ -303,10 +415,10 @@ where
 //         }
 //         if left <= current_left
 //             && current_right <= self.size
-//             && is_ok(&S::operate(current_value, &self.data[node_index]))
-//         {
-//             *current_value = S::operate(current_value, &self.data[node_index]);
-//             return current_right;
+//             && is_ok(&S::operate(current_value,
+// &self.data[node_index]))         {
+//             *current_value = S::operate(current_value,
+// &self.data[node_index]);             return current_right;
 //         }
 //         if current_right - current_left == 1 {
 //             return current_left;
@@ -333,13 +445,13 @@ where
 //         )
 //     }
 
-//     pub fn find_min_left_recurse<F>(&self, is_ok: &F, right: usize) -> usize
-//     where
+//     pub fn find_min_left_recurse<F>(&self, is_ok: &F, right:
+// usize) -> usize     where
 //         F: Fn(&S) -> bool,
 //     {
 //         assert!(right <= self.size);
-//         self._min_left_recurse(is_ok, right, 0, self.data.len() >> 1, &mut S::identity(), 1)
-//     }
+//         self._min_left_recurse(is_ok, right, 0,
+// self.data.len() >> 1, &mut S::identity(), 1)     }
 
 //     fn _min_left_recurse<F>(
 //         &self,
@@ -356,8 +468,10 @@ where
 //         if current_left >= right {
 //             return right;
 //         }
-//         if current_right <= right && is_ok(&S::operate(&self.data[node_index], current_value)) {
-//             *current_value = S::operate(&self.data[node_index], current_value);
+//         if current_right <= right &&
+// is_ok(&S::operate(&self.data[node_index], current_value)) {
+//             *current_value =
+// S::operate(&self.data[node_index], current_value);
 //             return current_left;
 //         }
 //         if current_right - current_left == 1 {
@@ -385,12 +499,6 @@ where
 //         )
 //     }
 // }
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn test() {}
-}
 
 // class LazySegmentTreeDFS(LazySegmentTree[S, F]):
 //     def set(self, left: int, right: int, f: F) -> None:
