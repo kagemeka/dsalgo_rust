@@ -19,7 +19,7 @@ impl RuntimeModulusCore {
 
 /// # Examples
 /// ```
-/// use dsalgo::{modular::*, modular_dynamic::*};
+/// use dsalgo::{modular_runtime_static::*, modular_static::*};
 /// struct Mod100;
 /// impl RuntimeModulus for Mod100 {
 ///     fn core() -> &'static RuntimeModulusCore {
