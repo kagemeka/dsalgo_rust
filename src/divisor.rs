@@ -1,19 +1,16 @@
-pub fn find_divisors(n: i32) -> Vec<i32> {
-    let mut divisors: Vec<i32> = Vec::new();
-    let mut i = 0;
-    loop {
-        i += 1;
-        if i * i >= n {
+pub fn find_divisors(n: usize) -> Vec<usize> {
+    let mut divisors = Vec::new();
+    for divisor in 1..=n {
+        if divisor * divisor > n {
             break;
         }
-        if n % i != 0 {
+        if n % divisor != 0 {
             continue;
         }
-        divisors.push(i);
-        divisors.push(n / i);
-    }
-    if i * i == n {
-        divisors.push(i);
+        divisors.push(divisor);
+        if divisor * divisor != n {
+            divisors.push(n / divisor);
+        }
     }
     divisors.sort();
     divisors
@@ -21,10 +18,8 @@ pub fn find_divisors(n: i32) -> Vec<i32> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[test]
     fn test_find_divisors() {
-        assert_eq!(find_divisors(25), vec![1, 5, 25]);
+        assert_eq!(super::find_divisors(25), vec![1, 5, 25]);
     }
 }

@@ -1,8 +1,6 @@
-use crate::vector_util::compress_array;
-
 pub fn doubling(a: &Vec<usize>) -> Vec<usize> {
     let n = a.len();
-    let (mut rank, _) = compress_array(&a);
+    let mut rank = crate::array_compression::compress(&a).keys;
     let mut k = 1usize;
     let mut key = vec![0; n];
     let mut sa = vec![0; n];
@@ -47,7 +45,7 @@ pub fn doubling_counting_sort(a: &Vec<usize>) -> Vec<usize> {
         }
         key
     };
-    let (mut rank, _) = compress_array(&a);
+    let mut rank = crate::array_compression::compress(&a).keys;
     let mut k = 1usize;
     let mut key = vec![0; n];
     let mut first = vec![0; n];

@@ -1,6 +1,6 @@
 use crate::{
-    abstract_traits::{AbelianGroup, Additive, Commutative, Monoid},
     bitwise,
+    group_theory::{AbelianGroup, Additive, Commutative, Monoid},
 };
 /// Node Indices
 /// (case $|given array| = 8$,
@@ -9,38 +9,45 @@ use crate::{
 /// |4      |       |
 /// |2  |   |6  |   |
 /// |1| |3| |5| |7| |
-pub struct FenwickTree<M: Monoid<S, T> + Commutative<S, T>, S = M, T = Additive> {
+pub struct FenwickTree<S: Monoid<T> + Commutative<T>, T = Additive>
+where
+    T: crate::group_theory::BinaryOperationIdentifier,
+{
     phantom_t: std::marker::PhantomData<T>,
-    phantom_m: std::marker::PhantomData<M>,
     data: Vec<S>,
 }
 
-impl<M: Monoid<S, T> + Commutative<S, T>, S: Clone, T> From<&[S]> for FenwickTree<M, S, T> {
+impl<S: Monoid<T> + Commutative<T> + Clone, T> From<&[S]> for FenwickTree<S, T>
+where
+    T: crate::group_theory::BinaryOperationIdentifier,
+{
     fn from(slice: &[S]) -> Self {
         let size = slice.len();
-        let mut data = vec![M::identity(); size + 1];
+        let mut data = vec![S::identity(); size + 1];
         data[1..].clone_from_slice(slice);
         for node_index in 1..size as isize {
             let parent_node_index = (node_index + (node_index & -node_index)) as usize;
             if parent_node_index <= size {
                 data[parent_node_index] =
-                    M::operate(&data[parent_node_index], &data[node_index as usize]);
+                    S::operate(&data[parent_node_index], &data[node_index as usize]);
             }
         }
         Self {
             phantom_t: std::marker::PhantomData,
-            phantom_m: std::marker::PhantomData,
             data,
         }
     }
 }
 
-impl<M: Monoid<S, T> + Commutative<S, T>, S, T> FenwickTree<M, S, T> {
+impl<S: Monoid<T> + Commutative<T>, T> FenwickTree<S, T>
+where
+    T: crate::group_theory::BinaryOperationIdentifier,
+{
     pub fn new(size: usize) -> Self
     where
         S: Clone,
     {
-        (&vec![M::identity(); size]).as_slice().into()
+        (&vec![S::identity(); size]).as_slice().into()
     }
 
     pub fn size(&self) -> usize { self.data.len() - 1 }
@@ -49,17 +56,17 @@ impl<M: Monoid<S, T> + Commutative<S, T>, S, T> FenwickTree<M, S, T> {
         assert!(array_index < self.size());
         let mut node_index = array_index + 1;
         while node_index <= self.size() {
-            self.data[node_index] = M::operate(&self.data[node_index], value_to_operate);
+            self.data[node_index] = S::operate(&self.data[node_index], value_to_operate);
             node_index += bitwise::lsb_number(node_index);
         }
     }
 
     pub fn get_half_range(&self, right: usize) -> S {
         assert!(right <= self.size());
-        let mut value = M::identity();
+        let mut value = S::identity();
         let mut node_index = right;
         while node_index > 0 {
-            value = M::operate(&value, &self.data[node_index]);
+            value = S::operate(&value, &self.data[node_index]);
             node_index = bitwise::reset_least_bit(node_index);
         }
         value
@@ -73,14 +80,14 @@ impl<M: Monoid<S, T> + Commutative<S, T>, S, T> FenwickTree<M, S, T> {
             return 0;
         }
         let mut length = 1usize << bitwise::most_significant_bit(self.size()).unwrap();
-        let mut value = M::identity();
+        let mut value = S::identity();
         let mut right = 0;
         while length > 0 {
             if right + length <= self.size()
-                && is_ok(&M::operate(&value, &self.data[right + length]))
+                && is_ok(&S::operate(&value, &self.data[right + length]))
             {
                 right += length;
-                value = M::operate(&value, &self.data[right]);
+                value = S::operate(&value, &self.data[right]);
             }
             length >>= 1;
         }
@@ -88,11 +95,14 @@ impl<M: Monoid<S, T> + Commutative<S, T>, S, T> FenwickTree<M, S, T> {
     }
 }
 
-impl<G: AbelianGroup<S, T>, S, T> FenwickTree<G, S, T> {
+impl<S: AbelianGroup<T>, T> FenwickTree<S, T>
+where
+    T: crate::group_theory::BinaryOperationIdentifier,
+{
     pub fn get_range(&self, left: usize, right: usize) -> S {
         assert!(left <= right);
-        G::operate(
-            &G::invert(&self.get_half_range(left)),
+        S::operate(
+            &S::invert(&self.get_half_range(left)),
             &self.get_half_range(right),
         )
     }
@@ -111,15 +121,15 @@ impl<G: AbelianGroup<S, T>, S, T> FenwickTree<G, S, T> {
             return self.size();
         }
         let mut length = 1usize << bitwise::most_significant_bit(self.size()).unwrap();
-        let mut value = G::invert(&self.get_half_range(left));
+        let mut value = S::invert(&self.get_half_range(left));
         let mut right = 0;
         while length > 0 {
             if right + length <= left
                 || right + length <= self.size()
-                    && is_ok(&G::operate(&value, &self.data[right + length]))
+                    && is_ok(&S::operate(&value, &self.data[right + length]))
             {
                 right += length;
-                value = G::operate(&value, &self.data[right]);
+                value = S::operate(&value, &self.data[right]);
             }
             length >>= 1;
         }
@@ -142,10 +152,10 @@ impl<G: AbelianGroup<S, T>, S, T> FenwickTree<G, S, T> {
         let mut left = 1;
         while length > 0 {
             if left + length <= right
-                && !is_ok(&G::operate(&G::invert(&self.data[left - 1 + length]), &value))
+                && !is_ok(&S::operate(&S::invert(&self.data[left - 1 + length]), &value))
             {
                 left += length;
-                value = G::operate(&G::invert(&self.data[left - 1]), &value);
+                value = S::operate(&S::invert(&self.data[left - 1]), &value);
             }
             length >>= 1;
         }
@@ -158,23 +168,11 @@ mod tests {
 
     #[test]
     fn test_as_abelian_group() {
-        use crate::abstract_traits::{BinaryOperation, Commutative, Identity, Inverse};
-
-        struct Add;
-        impl Identity<Self, Add> for i32 {
-            fn identity() -> Self { 0 }
-        }
-        impl BinaryOperation<Self, Add> for i32 {
-            fn operate(x: &Self, y: &Self) -> Self { x + y }
-        }
-        impl Commutative<Self, Add> for i32 {}
-        impl Inverse<Self, Add> for i32 {
-            fn invert(value: &Self) -> i32 { -value }
-        }
+        use crate::group_theory::Additive;
 
         let arr = vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-        let mut fw = super::FenwickTree::<i32, i32, Add>::from(arr.as_slice());
+        let mut fw = super::FenwickTree::<i32, Additive>::from(arr.as_slice());
 
         assert_eq!(fw.get_range(0, 10), 45);
         assert_eq!(fw.get_range(6, 10), 30);

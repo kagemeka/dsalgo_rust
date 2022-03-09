@@ -83,18 +83,18 @@ where
     }
 }
 
-// impl<T: Copy + Default + abstract_traits::Semiring>
+// impl<T: Copy + Default + group_theory::Semiring>
 // Tensor<T, 2> {     pub fn e(&self) -> Self {
 //         let (h, w) = (self.shape[0], self.shape[1]);
 //         let mut e = Self::new(self.shape);
 //         for i in 0..h {
 //             for j in 0..w {
 //                 e[[i, j]] =
-// self::abstract_traits::AddIdentity::identity();
+// self::group_theory::AddIdentity::identity();
 // }         }
 //         for i in 0..h {
 //             e[[i, i]] =
-// self::abstract_traits::MulIdentity::identity();         }
+// self::group_theory::MulIdentity::identity();         }
 //         e
 //     }
 

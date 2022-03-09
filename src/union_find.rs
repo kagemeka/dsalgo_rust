@@ -1,24 +1,28 @@
 pub struct UnionFind {
-    data: Vec<i32>,
+    data: Vec<isize>,
 }
 
 impl UnionFind {
-    pub fn new(n: usize) -> Self {
+    pub fn new(size: usize) -> Self {
         Self {
-            data: vec![-1; n],
+            data: vec![-1; size],
         }
     }
 
-    pub fn find(&mut self, u: usize) -> usize {
-        if self.data[u] < 0 {
-            return u;
+    pub fn size(&self) -> usize { self.data.len() }
+
+    pub fn find_root(&mut self, node: usize) -> usize {
+        assert!(node < self.size());
+        if self.data[node] < 0 {
+            return node;
         }
-        self.data[u] = self.find(self.data[u] as usize) as i32;
-        self.data[u] as usize
+        self.data[node] = self.find_root(self.data[node] as usize) as isize;
+        self.data[node] as usize
     }
 
-    pub fn unite(&mut self, u: usize, v: usize) {
-        let (mut u, mut v) = (self.find(u), self.find(v));
+    pub fn unite(&mut self, left_node: usize, right_node: usize) {
+        assert!(left_node < self.size() && right_node < self.size());
+        let (mut u, mut v) = (self.find_root(left_node), self.find_root(right_node));
         if u == v {
             return;
         }
@@ -26,11 +30,11 @@ impl UnionFind {
             (u, v) = (v, u);
         }
         self.data[u] += self.data[v];
-        self.data[v] = u as i32;
+        self.data[v] = u as isize;
     }
 
-    pub fn size(&mut self, u: usize) -> usize {
-        let u = self.find(u);
+    pub fn size_of(&mut self, u: usize) -> usize {
+        let u = self.find_root(u);
         -self.data[u] as usize
     }
 }
@@ -45,8 +49,8 @@ mod tests {
     #[test]
     fn test_uf() {
         let mut uf = UnionFind::new(10);
-        assert_eq!(uf.size(0), 1);
+        assert_eq!(uf.size_of(0), 1);
         uf.unite(3, 9);
-        assert_eq!(uf.size(3), 2);
+        assert_eq!(uf.size_of(3), 2);
     }
 }

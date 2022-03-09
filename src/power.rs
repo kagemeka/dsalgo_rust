@@ -1,20 +1,21 @@
-use crate::abstract_traits;
+use crate::group_theory;
 
-pub trait Power<S = Self, T = abstract_traits::Multiplicative>:
-    abstract_traits::Monoid<S, T>
-{
-    fn pow(value: &S, expontent: usize) -> S;
+pub trait Power<T: group_theory::BinaryOperationIdentifier>: group_theory::Monoid<T> {
+    fn pow(value: &Self, expontent: usize) -> Self;
 }
 
-impl<S, T, M: abstract_traits::Monoid<S, T>> Power<S, T> for M {
+impl<S: group_theory::Monoid<T>, T> Power<T> for S
+where
+    T: crate::group_theory::BinaryOperationIdentifier,
+{
     fn pow(value: &S, exponent: usize) -> S {
         if exponent == 0 {
-            return M::identity();
+            return S::identity();
         }
         let mut y = Self::pow(value, exponent >> 1);
-        y = M::operate(&y, &y);
+        y = S::operate(&y, &y);
         if exponent & 1 == 1 {
-            y = M::operate(&y, &value);
+            y = S::operate(&y, &value);
         }
         y
     }
