@@ -88,34 +88,5 @@ mod tests {
     }
 
     #[test]
-    fn test() {
-        struct Add;
-        impl super::BinaryOperationIdentifier for Add {}
-        struct Mul;
-        impl super::BinaryOperationIdentifier for Mul {}
-
-        impl super::Identity<Add> for usize {
-            fn identity() -> usize { 0 }
-        }
-
-        impl super::Identity<Mul> for usize {
-            fn identity() -> Self { 1 }
-        }
-
-        impl super::BinaryOperation<Add> for usize {
-            fn operate(a: &Self, b: &Self) -> usize { a + b }
-        }
-
-        impl super::Associative<Add> for usize {}
-
-        impl super::BinaryOperation<Mul> for usize {
-            fn operate(a: &usize, b: &usize) -> usize { a * b }
-        }
-
-        impl super::Associative<Mul> for usize {}
-
-        impl super::Commutative<Add> for usize {}
-
-        need_semiring::<usize, Add, Mul>();
-    }
+    fn test() { need_semiring::<usize, super::Additive, super::Multiplicative>(); }
 }

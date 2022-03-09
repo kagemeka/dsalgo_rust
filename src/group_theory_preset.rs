@@ -38,6 +38,10 @@ impl Identity<Additive> for isize {
     fn identity() -> Self { 0 }
 }
 
+impl Identity<Additive> for i32 {
+    fn identity() -> Self { 0 }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::group_theory::Multiplicative;

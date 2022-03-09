@@ -5,11 +5,9 @@ pub struct Shape {
 
 pub trait Matrix: std::ops::IndexMut<(usize, usize)> {}
 
-struct Add;
-impl crate::group_theory::BinaryOperationIdentifier for Add {}
-
-// impl<M: Matrix> crate::group_theory::Identity<Add> for
-// Option<M> {     fn identity() -> Self { None }
+// impl<M: Matrix>
+// crate::group_theory::Identity<crate::grouptheory::Additive>
+// for Option<M> {     fn identity() -> Self { None }
 // }
 
 pub trait SquareMatrix: Matrix {

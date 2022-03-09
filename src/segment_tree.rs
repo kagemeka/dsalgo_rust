@@ -313,21 +313,10 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::group_theory::{Associative, BinaryOperation, Identity};
+    use crate::group_theory::Additive;
     #[test]
     fn test_as_monoid() {
-        struct Add;
-        impl crate::group_theory::BinaryOperationIdentifier for Add {}
-
-        impl BinaryOperation<Add> for usize {
-            fn operate(x: &Self, y: &Self) -> Self { x + y }
-        }
-        impl Associative<Add> for usize {}
-        impl Identity<Add> for usize {
-            fn identity() -> Self { 0 }
-        }
-
-        let mut seg = super::SegmentTree::<usize, Add>::new(10);
+        let mut seg = super::SegmentTree::<usize, Additive>::new(10);
         assert_eq!(seg.get_range(0, 10), 0);
         assert_eq!(seg.get_range_recurse(0, 10), 0);
         seg.set_point(5, 5);
@@ -350,27 +339,7 @@ mod tests {
         assert_eq!(seg.find_min_left(is_ok, 6), 6);
         assert_eq!(seg.find_min_left_recurse(is_ok, 6), 6);
 
-        seg = super::SegmentTree::<usize, Add>::new(0);
+        seg = super::SegmentTree::<usize, Additive>::new(0);
         assert_eq!(seg.get_range(0, 0), 0);
-    }
-
-    #[test]
-    fn test_wrapping_monoid() {
-        struct Add;
-        impl crate::group_theory::BinaryOperationIdentifier for Add {}
-        impl BinaryOperation<Add> for usize {
-            fn operate(x: &usize, y: &usize) -> usize { x + y }
-        }
-        impl Associative<Add> for usize {}
-        impl Identity<Add> for usize {
-            fn identity() -> usize { 0 }
-        }
-
-        let mut seg = super::SegmentTree::<usize, Add>::new(10);
-        assert_eq!(seg.get_range(0, 10), 0);
-        seg.set_point(0, 5);
-        assert_eq!(seg.get_range(0, 10), 5);
-        seg.set_point(0, 5);
-        assert_eq!(seg[0], 5);
     }
 }

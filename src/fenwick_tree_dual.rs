@@ -137,25 +137,9 @@ mod tests {
 
     #[test]
     fn test_as_abelian_group() {
-        use crate::group_theory::{Associative, BinaryOperation, Commutative, Identity, Inverse};
-
-        struct Add;
-        impl crate::group_theory::BinaryOperationIdentifier for Add {}
-
-        impl Identity<Add> for i32 {
-            fn identity() -> Self { 0 }
-        }
-        impl BinaryOperation<Add> for i32 {
-            fn operate(x: &Self, y: &Self) -> Self { x + y }
-        }
-        impl Associative<Add> for i32 {}
-        impl Commutative<Add> for i32 {}
-        impl Inverse<Add> for i32 {
-            fn invert(value: &Self) -> i32 { -value }
-        }
-
+        use crate::group_theory::Additive;
         let deltas = vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-        let mut fw = super::FenwickTreeDual::<i32, Add>::from_deltas(&deltas);
+        let mut fw = super::FenwickTreeDual::<i32, Additive>::from_deltas(&deltas);
         assert_eq!(fw.get_point(1), 1);
         assert_eq!(fw.get_point(5), 15);
         assert_eq!(fw.get_point(9), 45);
@@ -173,7 +157,7 @@ mod tests {
             *x += acc;
             *x
         });
-        let mut fw = super::FenwickTreeDual::<i32, Add>::from(arr.as_slice());
+        let mut fw = super::FenwickTreeDual::<i32, Additive>::from(arr.as_slice());
         assert_eq!(fw.get_point(1), 1);
         assert_eq!(fw.get_point(5), 15);
         assert_eq!(fw.get_point(9), 45);

@@ -92,21 +92,8 @@ impl<S: crate::group_theory::AbelianGroup<T>, T: crate::group_theory::BinaryOper
 mod tests {
     #[test]
     fn test_potential_union_find() {
-        struct Add;
-        impl crate::group_theory::BinaryOperationIdentifier for Add {}
-        impl crate::group_theory::BinaryOperation<Add> for i32 {
-            fn operate(lhs: &i32, rhs: &i32) -> i32 { lhs + rhs }
-        }
-        impl crate::group_theory::Associative<Add> for i32 {}
-        impl crate::group_theory::Commutative<Add> for i32 {}
-        impl crate::group_theory::Inverse<Add> for i32 {
-            fn invert(element: &i32) -> i32 { -element }
-        }
-        impl crate::group_theory::Identity<Add> for i32 {
-            fn identity() -> i32 { 0 }
-        }
-
-        let mut uf = super::PotentialUnionFind::<i32, Add>::new(10);
+        use crate::group_theory::Additive;
+        let mut uf = super::PotentialUnionFind::<i32, Additive>::new(10);
         assert_eq!(uf.size_of(0), 1);
         uf.unite(3, 9, &5);
         assert_eq!(uf.size_of(3), 2);

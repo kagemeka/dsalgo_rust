@@ -6,12 +6,6 @@ pub trait Modulus {
 
 pub trait IsPrime: Modulus {}
 
-// pub struct Add;
-// impl crate::group_theory::BinaryOperationIdentifier for Add
-// {} pub struct Mul;
-// impl crate::group_theory::BinaryOperationIdentifier for Mul
-// {}
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Modular<M: Modulus> {
     phantom: std::marker::PhantomData<M>,
