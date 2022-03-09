@@ -39,6 +39,8 @@ pub mod primality_test_miller_rabin;
 pub mod prime_number;
 pub mod segment_tree;
 pub mod segment_tree_dynamic;
+pub mod segment_tree_lazy;
+pub mod set_theory;
 pub mod sieve_of_eratosthenes;
 pub mod sort;
 pub mod sparse_table;
