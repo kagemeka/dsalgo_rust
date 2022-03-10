@@ -14,6 +14,7 @@ pub trait Identity<T: BinaryOperationIdentifier>: BinaryOperation<T> {
     fn identity() -> Self;
 }
 
+// TODO: make more sophisticated.
 pub trait DynamicIdentity<T> {
     fn identity(&self) -> Self;
 }
@@ -40,28 +41,34 @@ impl<T: BinaryOperationIdentifier, U: Monoid<T> + Inverse<T>> Group<T> for U {}
 pub trait AbelianGroup<T: BinaryOperationIdentifier>: Group<T> + Commutative<T> {}
 impl<T: BinaryOperationIdentifier, S: Group<T> + Commutative<T>> AbelianGroup<T> for S {}
 
-pub trait Semiring<T: BinaryOperationIdentifier, U: BinaryOperationIdentifier>:
-    Monoid<T> + Commutative<T> + Monoid<U>
+pub trait Semiring<T, U>: CommutativeMonoid<T> + Monoid<U>
+where
+    T: BinaryOperationIdentifier,
+    U: BinaryOperationIdentifier,
 {
 }
 impl<T, U, S> Semiring<T, U> for S
 where
     T: BinaryOperationIdentifier,
     U: BinaryOperationIdentifier,
-    S: Monoid<T> + Monoid<U> + Commutative<T>,
+    S: CommutativeMonoid<T> + Monoid<U>,
 {
 }
 
-pub trait Ring<T: BinaryOperationIdentifier, U: BinaryOperationIdentifier>:
-    Semiring<T, U> + Inverse<T>
+pub trait Ring<T, U>: Semiring<T, U> + Inverse<T>
+where
+    T: BinaryOperationIdentifier,
+    U: BinaryOperationIdentifier,
 {
 }
-impl<T: BinaryOperationIdentifier, U: BinaryOperationIdentifier, S: Semiring<T, U> + Inverse<T>>
-    Ring<T, U> for S
+impl<T, U, S: Semiring<T, U> + Inverse<T>> Ring<T, U> for S
+where
+    T: BinaryOperationIdentifier,
+    U: BinaryOperationIdentifier,
 {
 }
 
-pub trait Default<T> {
+pub trait Default<T: BinaryOperationIdentifier> {
     fn default() -> Self;
 }
 
