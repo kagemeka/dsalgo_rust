@@ -137,7 +137,7 @@ where
                 break;
             }
             node_index -= 1;
-            value = S::operate(&self.data[node_index as usize], &value);
+            value = S::operate(&self.data[node_index], &value);
             if bitwise::lsb_number(node_index) == node_index {
                 return 0;
             }

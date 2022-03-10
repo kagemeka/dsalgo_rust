@@ -1,10 +1,8 @@
-fn is_trivial_composite(n: usize) -> bool { n > 2 && n & 1 == 0 }
-
 fn is_composite<M: crate::modular_static::Modulus + Copy>(
     n: usize,
     base: crate::modular_static::Modular<M>,
 ) -> bool {
-    if is_trivial_composite(n) {
+    if crate::primality::is_trivial_composite(n) {
         return true;
     }
     let (mut s, mut d) = (0, n - 1);
@@ -14,12 +12,14 @@ fn is_composite<M: crate::modular_static::Modulus + Copy>(
         d >>= 1;
     }
     let mut x = base.pow(d);
+    if x.value() == 1 {
+        return false;
+    }
     for _ in 0..s {
-        let y = x * x;
-        if y.value() == 1 {
-            return x.value() != 1 && x.value() != n - 1;
+        if x.value() == n - 1 {
+            return false;
         }
-        x = y;
+        x = x * x;
     }
     true
 }
@@ -67,19 +67,19 @@ pub fn miller_rabin_test(n: usize, check_times: usize) -> bool {
 }
 
 pub fn miller_rabin_test_32(n: usize) -> bool {
-    static BASES: [usize; 3] = [2, 7, 61];
+    const BASES: [usize; 3] = [2, 7, 61];
     miller_rabin_fixed_bases(n, &BASES)
 }
 
 pub fn miller_rabin_test_64(n: usize) -> bool {
-    static BASES: [usize; 12] = [
+    const BASES: [usize; 12] = [
         2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37,
     ];
     miller_rabin_fixed_bases(n, &BASES)
 }
 
 pub fn miller_rabin_test_64_v2(n: usize) -> bool {
-    static BASES: [usize; 7] = [
+    const BASES: [usize; 7] = [
         2, 325, 9375, 28178, 450775, 9780504, 1795265022,
     ];
     miller_rabin_fixed_bases(n, &BASES)

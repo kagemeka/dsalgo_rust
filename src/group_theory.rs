@@ -31,6 +31,9 @@ impl<T: BinaryOperationIdentifier, S: Magma<T> + Associative<T>> Semigroup<T> fo
 pub trait Monoid<T: BinaryOperationIdentifier>: Semigroup<T> + Identity<T> {}
 impl<T: BinaryOperationIdentifier, S: Semigroup<T> + Identity<T>> Monoid<T> for S {}
 
+pub trait CommutativeMonoid<T: BinaryOperationIdentifier>: Monoid<T> + Commutative<T> {}
+impl<T: BinaryOperationIdentifier, S: Monoid<T> + Commutative<T>> CommutativeMonoid<T> for S {}
+
 pub trait Group<T: BinaryOperationIdentifier>: Monoid<T> + Inverse<T> {}
 impl<T: BinaryOperationIdentifier, U: Monoid<T> + Inverse<T>> Group<T> for U {}
 
