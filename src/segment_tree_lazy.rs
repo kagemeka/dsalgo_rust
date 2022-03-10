@@ -174,9 +174,6 @@ where
         self.get_range(array_index, array_index + 1)
     }
 
-    // TODO: generics structs preset
-    // TODO: recursive implementation
-
     pub fn find_max_right<G>(&mut self, is_ok: &G, left: usize) -> usize
     where
         G: Fn(&S) -> bool,
@@ -253,6 +250,190 @@ where
     }
 }
 
+/// Recursive Implementations for bench mark.
+impl<S, F, M, I, J> SegmentTreeLazy<S, F, M, I, J>
+where
+    S: Monoid<I> + Clone + std::fmt::Debug,
+    F: Monoid<J> + Clone,
+    M: set_theory::Mapping<S, F>,
+    I: BinaryOperationIdentifier,
+    J: BinaryOperationIdentifier,
+{
+    pub fn set_range_recurse(&mut self, left: usize, right: usize, operator: &F) {
+        assert!(left <= right && right <= self.size);
+        self._set_range_recurse(left, right, 0, self.data.len() >> 1, 1, operator);
+    }
+
+    fn _set_range_recurse(
+        &mut self,
+        left: usize,
+        right: usize,
+        current_left: usize,
+        current_right: usize,
+        node_index: usize,
+        operator: &F,
+    ) {
+        if current_right <= left || right <= current_left {
+            return;
+        }
+        if left <= current_left && current_right <= right {
+            self.apply(node_index, operator);
+            return;
+        }
+        self.propagate(node_index);
+        let center = (current_left + current_right) >> 1;
+        self._set_range_recurse(left, right, current_left, center, node_index << 1, operator);
+        self._set_range_recurse(
+            left,
+            right,
+            center,
+            current_right,
+            node_index << 1 | 1,
+            operator,
+        );
+        self.merge_childs(node_index);
+    }
+
+    pub fn get_range_recurse(&mut self, left: usize, right: usize) -> S {
+        assert!(left <= right && right <= self.size);
+        self._get_range_recurse(left, right, 0, self.data.len() >> 1, 1)
+    }
+
+    fn _get_range_recurse(
+        &mut self,
+        left: usize,
+        right: usize,
+        current_left: usize,
+        current_right: usize,
+        node_index: usize,
+    ) -> S {
+        if current_right <= left || right <= current_left {
+            return S::identity();
+        }
+        if left <= current_left && current_right <= right {
+            return S::operate(&S::identity(), &self.data[node_index]);
+        }
+        self.propagate(node_index);
+        let center = (current_left + current_right) >> 1;
+        S::operate(
+            &self._get_range_recurse(left, right, current_left, center, node_index << 1),
+            &self._get_range_recurse(left, right, center, current_right, node_index << 1 | 1),
+        )
+    }
+
+    pub fn find_max_right_recurse<G>(&mut self, is_ok: &G, left: usize) -> usize
+    where
+        G: Fn(&S) -> bool,
+    {
+        assert!(left <= self.size);
+        self._max_right_recurse(is_ok, left, 0, self.data.len() >> 1, &mut S::identity(), 1)
+    }
+
+    fn _max_right_recurse<G>(
+        &mut self,
+        is_ok: &G,
+        left: usize,
+        current_left: usize,
+        current_right: usize,
+        current_value: &mut S,
+        node_index: usize,
+    ) -> usize
+    where
+        G: Fn(&S) -> bool,
+    {
+        if current_right <= left {
+            return left;
+        }
+        if current_left >= self.size {
+            return self.size;
+        }
+        if left <= current_left
+            && current_right <= self.size
+            && is_ok(&S::operate(current_value, &self.data[node_index]))
+        {
+            *current_value = S::operate(current_value, &self.data[node_index]);
+            return current_right;
+        }
+        if current_right - current_left == 1 {
+            return current_left;
+        }
+        self.propagate(node_index);
+        let center = (current_left + current_right) >> 1;
+        let right = self._max_right_recurse(
+            is_ok,
+            left,
+            current_left,
+            center,
+            current_value,
+            node_index << 1,
+        );
+        if right < center || right == self.size {
+            return right;
+        }
+        self._max_right_recurse(
+            is_ok,
+            left,
+            center,
+            current_right,
+            current_value,
+            node_index << 1 | 1,
+        )
+    }
+
+    pub fn find_min_left_recurse<G>(&mut self, is_ok: &G, right: usize) -> usize
+    where
+        G: Fn(&S) -> bool,
+    {
+        assert!(right <= self.size);
+        self._min_left_recurse(is_ok, right, 0, self.data.len() >> 1, &mut S::identity(), 1)
+    }
+
+    fn _min_left_recurse<G>(
+        &mut self,
+        is_ok: &G,
+        right: usize,
+        current_left: usize,
+        current_right: usize,
+        current_value: &mut S,
+        node_index: usize,
+    ) -> usize
+    where
+        G: Fn(&S) -> bool,
+    {
+        if current_left >= right {
+            return right;
+        }
+        if current_right <= right && is_ok(&S::operate(&self.data[node_index], current_value)) {
+            *current_value = S::operate(&self.data[node_index], current_value);
+            return current_left;
+        }
+        if current_right - current_left == 1 {
+            return current_right;
+        }
+        self.propagate(node_index);
+        let center = (current_left + current_right) >> 1;
+        let left = self._min_left_recurse(
+            is_ok,
+            right,
+            center,
+            current_right,
+            current_value,
+            node_index << 1 | 1,
+        );
+        if left > center || left == 0 {
+            return left;
+        }
+        self._min_left_recurse(
+            is_ok,
+            right,
+            current_left,
+            center,
+            current_value,
+            node_index << 1,
+        )
+    }
+}
+
 #[cfg(test)]
 mod tests {
     #[test]
@@ -323,17 +504,37 @@ mod tests {
         );
 
         assert_eq!(
+            seg.get_range_recurse(2, 6),
+            Data {
+                sum: 6,
+                length: 4
+            }
+        );
+
+        assert_eq!(
             seg.get_range(0, 10),
             Data {
                 sum: 10,
                 length: 10
             }
         );
+        assert_eq!(
+            seg.get_range_recurse(0, 10),
+            Data {
+                sum: 10,
+                length: 10
+            }
+        );
         assert_eq!(seg.find_max_right(&|x: &Data| x.sum <= 3, 4), 10);
+        assert_eq!(seg.find_max_right_recurse(&|x: &Data| x.sum <= 3, 4), 10);
         assert_eq!(seg.find_max_right(&|x: &Data| x.sum <= 3, 2), 3);
+        assert_eq!(seg.find_max_right_recurse(&|x: &Data| x.sum <= 3, 2), 3);
         assert_eq!(seg.find_min_left(&|x: &Data| x.sum <= 3, 4), 3);
+        assert_eq!(seg.find_min_left_recurse(&|x: &Data| x.sum <= 3, 4), 3);
         assert_eq!(seg.find_min_left(&|x: &Data| x.sum <= 3, 10), 4);
+        assert_eq!(seg.find_min_left_recurse(&|x: &Data| x.sum <= 3, 10), 4);
         assert_eq!(seg.find_min_left(&|x: &Data| x.sum < 0, 10), 10);
+        assert_eq!(seg.find_min_left_recurse(&|x: &Data| x.sum < 0, 10), 10);
 
         seg.update_point(
             2,
@@ -349,216 +550,21 @@ mod tests {
                 length: 10
             }
         );
+        assert_eq!(
+            seg.get_range_recurse(0, 10),
+            Data {
+                sum: 7,
+                length: 10
+            }
+        );
+
+        seg.set_range_recurse(1, 7, &3);
+        assert_eq!(
+            seg.get_range(0, 10),
+            Data {
+                sum: 25,
+                length: 10
+            }
+        );
     }
 }
-
-// / Recursive Implementations for bench mark.
-// impl<S: Monoid<T>, T> SegmentTree<S, T>
-// where
-//     T: crate::group_theory::BinaryOperationIdentifier,
-// {
-//     pub fn get_range_recurse(&self, left: usize, right:
-// usize) -> S {         assert!(left <= right && right <=
-// self.size);         self._get_recurse(left, right, 0,
-// self.data.len() >> 1, 1)     }
-
-//     fn _get_recurse(
-//         &self,
-//         left: usize,
-//         right: usize,
-//         current_left: usize,
-//         current_right: usize,
-//         node_index: usize,
-//     ) -> S {
-//         if current_right <= left || right <= current_left {
-//             return S::identity();
-//         }
-//         if left <= current_left && current_right <= right {
-//             return S::operate(&S::identity(),
-// &self.data[node_index]);         }
-//         let center = (current_left + current_right) >> 1;
-//         S::operate(
-//             &self._get_recurse(left, right, current_left,
-// center, node_index << 1),
-// &self._get_recurse(left, right, center, current_right,
-// node_index << 1 | 1),         )
-//     }
-
-//     pub fn find_max_right_recurse<F>(&self, is_ok: &F, left:
-// usize) -> usize     where
-//         F: Fn(&S) -> bool,
-//     {
-//         assert!(left <= self.size);
-//         self._max_right_recurse(is_ok, left, 0,
-// self.data.len() >> 1, &mut S::identity(), 1)     }
-
-//     /// find max right (current_left < right <=
-// current_right)     /// if current_right <= left, return left
-//     /// if current_left >= self.size, return self.size
-//     fn _max_right_recurse<F>(
-//         &self,
-//         is_ok: &F,
-//         left: usize,
-//         current_left: usize,
-//         current_right: usize,
-//         current_value: &mut S,
-//         node_index: usize,
-//     ) -> usize
-//     where
-//         F: Fn(&S) -> bool,
-//     {
-//         if current_right <= left {
-//             return left;
-//         }
-//         if current_left >= self.size {
-//             return self.size;
-//         }
-//         if left <= current_left
-//             && current_right <= self.size
-//             && is_ok(&S::operate(current_value,
-// &self.data[node_index]))         {
-//             *current_value = S::operate(current_value,
-// &self.data[node_index]);             return current_right;
-//         }
-//         if current_right - current_left == 1 {
-//             return current_left;
-//         }
-//         let center = (current_left + current_right) >> 1;
-//         let right = self._max_right_recurse(
-//             is_ok,
-//             left,
-//             current_left,
-//             center,
-//             current_value,
-//             node_index << 1,
-//         );
-//         if right < center || right == self.size {
-//             return right;
-//         }
-//         self._max_right_recurse(
-//             is_ok,
-//             left,
-//             center,
-//             current_right,
-//             current_value,
-//             node_index << 1 | 1,
-//         )
-//     }
-
-//     pub fn find_min_left_recurse<F>(&self, is_ok: &F, right:
-// usize) -> usize     where
-//         F: Fn(&S) -> bool,
-//     {
-//         assert!(right <= self.size);
-//         self._min_left_recurse(is_ok, right, 0,
-// self.data.len() >> 1, &mut S::identity(), 1)     }
-
-//     fn _min_left_recurse<F>(
-//         &self,
-//         is_ok: &F,
-//         right: usize,
-//         current_left: usize,
-//         current_right: usize,
-//         current_value: &mut S,
-//         node_index: usize,
-//     ) -> usize
-//     where
-//         F: Fn(&S) -> bool,
-//     {
-//         if current_left >= right {
-//             return right;
-//         }
-//         if current_right <= right &&
-// is_ok(&S::operate(&self.data[node_index], current_value)) {
-//             *current_value =
-// S::operate(&self.data[node_index], current_value);
-//             return current_left;
-//         }
-//         if current_right - current_left == 1 {
-//             return current_right;
-//         }
-//         let center = (current_left + current_right) >> 1;
-//         let left = self._min_left_recurse(
-//             is_ok,
-//             right,
-//             center,
-//             current_right,
-//             current_value,
-//             node_index << 1 | 1,
-//         );
-//         if left > center || left == 0 {
-//             return left;
-//         }
-//         self._min_left_recurse(
-//             is_ok,
-//             right,
-//             current_left,
-//             center,
-//             current_value,
-//             node_index << 1,
-//         )
-//     }
-// }
-
-// class LazySegmentTreeDFS(LazySegmentTree[S, F]):
-//     def set(self, left: int, right: int, f: F) -> None:
-//         assert 0 <= left <= right <= self.size
-//         self.__set(left, right, f, 0, len(self) >> 1, 1)
-
-//     def __set(
-//         self,
-//         left: int,
-//         right: int,
-//         f: F,
-//         current_left: int,
-//         current_right: int,
-//         i: int,
-//     ) -> None:
-//         n = len(self) >> 1
-//         if i < n:
-//             self._propagate(i)
-//         if current_right <= left or right <= current_left:
-//             return
-//         if left <= current_left and current_right <= right:
-//             self._apply(i, f)
-//             if i < n:
-//                 self._propagate(i)
-//             return
-//         center = (current_left + current_right) >> 1
-//         self.__set(left, right, f, current_left, center, i
-// << 1)         self.__set(left, right, f, center,
-// current_right, i << 1 | 1)         self._merge(i)
-
-//     def get(self, left: int, right: int) -> S:
-//         assert 0 <= left <= right <= self.size
-//         return self.__get(left, right, 0, len(self) >> 1, 1)
-
-//     def __get(
-//         self,
-//         left: int,
-//         right: int,
-//         current_left: int,
-//         current_right: int,
-//         i: int,
-//     ) -> S:
-//         n = len(self) >> 1
-//         if i < n:
-//             self._propagate(i)
-//         if current_right <= left or right <= current_left:
-//             return self._monoid_s.identity()
-//         if left <= current_left and current_right <= right:
-//             if i < n:
-//                 self._propagate(i)
-//             return self._data[i]
-//         center = (current_left + current_right) >> 1
-//         vl = self.__get(left, right, current_left, center, i
-// << 1)         vr = self.__get(left, right, center,
-// current_right, i << 1 | 1)         self._merge(i)
-//         return self._monoid_s.operation(vl, vr)
-
-//     def update(self, i: int, x: S) -> None:
-//         assert 0 <= i < self.size
-//         n = len(self) >> 1
-//         self.get(i, i + 1)
-//         self._data[n + i] = x
-//         self.get(i, i + 1)

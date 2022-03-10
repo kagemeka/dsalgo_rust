@@ -1,0 +1,1 @@
+// TODO: generics structs preset
