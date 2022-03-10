@@ -5,6 +5,7 @@ pub mod abstract_structs;
 pub mod argsort;
 pub mod array_compression;
 pub mod avl_tree;
+pub mod avl_tree_node;
 pub mod binary_search;
 pub mod bitwise;
 pub mod carmichael_number;
