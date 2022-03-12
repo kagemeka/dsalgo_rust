@@ -1,93 +1,86 @@
-
-pub struct Node<S: Default> {
-    left: *mut Node<S>,
-    right: *mut Node<S>,
-    parent: *mut Node<S>,
-    size: usize,
-    value: S,
+pub(crate) struct Node<K, V> {
+    pub(crate) key: K,
+    pub(crate) value: V,
+    pub(crate) left: Option<Box<Node<K, V>>>,
+    pub(crate) right: Option<Box<Node<K, V>>>,
 }
 
-impl<S: Default> Default for Node<S> {
-    fn default() -> Self {
-        Self {
-            left: std::ptr::null_mut(),
-            right: std::ptr::null_mut(),
-            parent: std::ptr::null_mut(),
-            size: 1,
-            value: S::default(),
-         }
+impl<K: PartialOrd, V> Node<K, V> {
+    pub(crate) fn new(key: K, value: V) -> Box<Node<K, V>> {
+        Box::new(Node {
+            key: key,
+            value: value,
+            left: None,
+            right: None,
+        })
     }
+
+    
 }
 
+// @dataclasses.dataclass
+// class SplayTreeMap(typing.Generic[T, V]):
+//     root: typing.Optional[Node[T, V]] = None
 
-pub struct SplayTree<S: Default> {
-    root: *mut Node<S>,
-}
+//     def rotate(self) -> None:
+//         u = self.root
+//         if self.__key < u.key:
+//             v = u.left
+//             u.left = v.right
+//             v.right = u
+//         else:
+//             v = u.right
+//             u.right = v.left
+//             v.left = u
+//         self.root = v
 
+//     def splay(self, key: T) -> None:
+//         self.__key = key
+//         us = self.__state()
+//         if not us:
+//             return
+//         u = self.root
+//         v = u.left if us < 0 else u.right
+//         self.root = v
+//         vs = self.__state()
+//         if not vs:
+//             self.root = u
+//             self.rotate()
+//             return
+//         self.root = v.left if vs < 0 else v.right
+//         self.splay(key)
+//         if vs < 0:
+//             v.left = self.root
+//         else:
+//             v.right = self.root
+//         if us == vs:
+//             self.root = u
+//             self.rotate()
+//         else:
+//             self.root = v
+//             self.rotate()
+//             if us < 0:
+//                 u.left = self.root
+//             else:
+//                 u.right = self.root
+//             self.root = u
+//         self.rotate()
 
+//     def __state(self) -> int:
+//         u = self.root
+//         if not u:
+//             return 0
+//         k = self.__key
+//         if k == u.key:
+//             return 0
+//         if k < u.key:
+//             return -1 + 1 * (not u.left)
+//         return 1 - 1 * (not u.right)
 
-impl<S: Default> SplayTree<S> {
-    unsafe fn update(u: &mut Node<S>) {
-        u.size = 1;
-        if let Some(v) = u.left.as_mut() { u.size += v.size; }
-        if let Some(v) = u.right.as_mut() { u.size += v.size; }
-    }
+//     def __getitem__(self, key: T) -> V:
+//         self.splay(key)
+//         return self.root.value
 
-    unsafe fn rotate(u: &mut Node<S>) {
-        let p = u.parent.as_mut().unwrap();
-        let pp = p.parent;
-        let c: *mut Node<S>;
-        if p.left == u {
-            c = u.right;
-            u.right = p;
-            p.left = c;
-        } else {
-            c = u.left;
-            u.left = p;
-            p.right = c;
-        }
-        p.parent = u;
-        if let Some(c) = c.as_mut() { c.parent = p; }
-        if let Some(pp) = pp.as_mut() {
-            if std::ptr::eq(pp.left, p) { pp.left = u; } else { pp.right = u; }
-        }
-        u.parent = pp;
-        Self::update(p);
-        Self::update(u);
-    }
-
-    unsafe fn splay(u: &mut Node<S>) {
-        while Self::state(u) != 0 {
-            let p = u.parent.as_mut().unwrap();
-            if Self::state(p) == 0 {
-                Self::rotate(u);
-            } else if Self::state(p) == Self::state(u) {
-                Self::rotate(p);
-                Self::rotate(u);
-            } else {
-                Self::rotate(u);
-                Self::rotate(p);
-            }
-        }
-    }
-
-    unsafe fn state(u: &Node<S>) -> i8 {
-        if let Some(p) = u.parent.as_ref() {
-            if std::ptr::eq(p.left, u) { 1 } else { -1 }
-        } else {
-            0
-        }
-    }
-
-    // pub unsafe fn get(&self, i: usize) -> &'static mut Node<S> {
-    //     let mut u = self.root;
-    //     loop {
-    //         let lsize = if let Some(v) = u.left.as_ref() { v.size } else { 0 };
-    //         if i < lsize {
-    //             u = u.left.as_ref().unwrap();
-    //         } else if i == lsize {
-    //             Self::splay(u);
-    //         }
-    //     }
-    // }
-}
+//     def __setitem__(self, key: T, v: V) -> None:
+//         self.splay(key)
+//         self.root.value = v

@@ -217,5 +217,8 @@ mod tests {
         assert_eq!(Node::upper_bound(root.as_ref(), &1), 2);
         assert!(Node::find(root.as_ref(), &3).is_some());
         assert!(Node::find(root.as_ref(), &2).is_none());
+
+        assert_eq!(Node::new(1, 1), Node::new(1, 1));
+        assert!(!std::ptr::eq(&Node::new(1, 1), &Node::new(1, 1)));
     }
 }
