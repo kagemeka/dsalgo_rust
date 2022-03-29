@@ -89,28 +89,23 @@ impl<K: PartialOrd, V> Node<K, V> {
         Some(root)
     }
 
-
+    pub fn find<'a>(root: Option<&'a Box<Self>>, key: &K) -> Option<&'a Box<Self>> {
+        if root.is_none() {
+            return None;
+        }
+        let root = root.unwrap();
+        if key == &root.key {
+            return Some(root);
+        } else if key < &root.key {
+            Self::find(root.left.as_ref(), key)
+        } else {
+            Self::find(root.right.as_ref(), key)
+        }
+    }
+    // TODO: min, max, lower_bound, upper_bound, get_kth_node
+    // TODO: insert, remove
+    // TODO: merge, split
+    // TODO: insert with split and merge
+    // TODO: remove with split and merge
+    // TODO: index_mut
 }
-
-// @dataclasses.dataclass
-// class SplayTreeMap(typing.Generic[T, V]):
-//     root: typing.Optional[Node[T, V]] = None
-
-//     def __state(self) -> int:
-//         u = self.root
-//         if not u:
-//             return 0
-//         k = self.__key
-//         if k == u.key:
-//             return 0
-//         if k < u.key:
-//             return -1 + 1 * (not u.left)
-//         return 1 - 1 * (not u.right)
-
-//     def __getitem__(self, key: T) -> V:
-//         self.splay(key)
-//         return self.root.value
-
-//     def __setitem__(self, key: T, v: V) -> None:
-//         self.splay(key)
-//         self.root.value = v
