@@ -53,6 +53,7 @@ pub mod tree_node;
 // pub mod rerooting_dynamic;
 pub mod binary_tree_node;
 pub mod identifier;
+pub mod index;
 pub mod segment_tree;
 pub mod segment_tree_dynamic;
 pub mod segment_tree_lazy;

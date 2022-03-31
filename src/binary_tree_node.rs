@@ -18,7 +18,7 @@ pub trait Update {
 
 // impl identifier::Identifier for WithParent {}
 
-pub trait Rotation {
+pub(crate) trait Rotation {
     fn rotate_left(self) -> Self;
     fn rotate_right(self) -> Self;
 }

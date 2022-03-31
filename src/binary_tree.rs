@@ -59,7 +59,7 @@ mod tests {
             }
         }
 
-        impl<T: Size> Split for Option<Node<T>> {
+        impl<T: Size> Split<usize> for Option<Node<T>> {
             // pseudo
             fn split(mut self, index: usize) -> (Self, Self) {
                 assert!(index <= self.size());
@@ -73,7 +73,7 @@ mod tests {
 
         impl<T> Pop for Tree<T>
         where
-            Option<T>: Split + Join + Size,
+            Option<T>: Split<usize> + Join + Size,
         {
             type Data = T;
 
@@ -90,7 +90,7 @@ mod tests {
 
         impl<T> Insert for Tree<T>
         where
-            Option<T>: Split + Join + Size,
+            Option<T>: Split<usize> + Join + Size,
         {
             type Data = T;
 

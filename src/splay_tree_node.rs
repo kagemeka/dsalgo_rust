@@ -4,11 +4,10 @@ pub struct Node<T> {
     pub left: Option<Rc<RefCell<Self>>>,
     pub right: Option<Rc<RefCell<Self>>>,
     pub parent: Option<Rc<RefCell<Self>>>,
-    // pub right: Option<Box<Self>>,
-    // pub parent: Option<Box<Self>>,
 }
 
 use crate::{binary_tree_node, binary_tree_node::Update, size, size::Size};
+
 impl<T: size::Size> size::Size for Node<T> {
     fn size(&self) -> usize { self.data.size() }
 }
@@ -128,6 +127,69 @@ where
         self.borrow_mut().left = child;
         Node::<T>::rotation_common_ops(&self, &sub_root, &self.borrow_mut().left);
         sub_root
+    }
+}
+
+impl<T> Node<T>
+where
+    T: size::Size,
+    Node<T>: Update,
+{
+    fn get(node: &Rc<RefCell<Self>>, index: usize) -> Rc<RefCell<Self>> {
+        assert!(index < node.borrow().size());
+        let left_size = node.borrow().left.size();
+        if index < left_size {
+            Self::get(node.borrow().left.as_ref().unwrap(), index)
+        } else if index == left_size {
+            Node::<T>::splay(node);
+            node.clone()
+        } else {
+            Self::get(node.borrow().right.as_ref().unwrap(), index - left_size)
+        }
+    }
+}
+
+use crate::join::Join;
+
+impl<T> Join for Option<Rc<RefCell<Node<T>>>>
+where
+    T: size::Size,
+    Node<T>: Update,
+{
+    fn join(self, rhs: Self) -> Self {
+        if self.is_none() {
+            return rhs;
+        }
+        if rhs.is_none() {
+            return self;
+        }
+        let left_root = Node::<T>::get(self.as_ref().unwrap(), self.size() - 1);
+        rhs.as_ref().unwrap().borrow_mut().parent = Some(left_root.clone());
+        left_root.borrow_mut().right = rhs;
+        Some(left_root)
+    }
+}
+
+use crate::split::Split;
+
+impl<T> Split<usize> for Option<Rc<RefCell<Node<T>>>>
+where
+    T: size::Size,
+    Node<T>: Update,
+{
+    fn split(self, index: usize) -> (Self, Self) {
+        let size = self.size();
+        assert!(index <= size);
+        if index == size {
+            return (self, None);
+        }
+        if index == 0 {
+            return (None, self);
+        }
+        let right_root = Node::<T>::get(self.as_ref().unwrap(), index);
+        let lhs = right_root.borrow_mut().left.take();
+        lhs.as_ref().unwrap().borrow_mut().parent = None;
+        (lhs, Some(right_root))
     }
 }
 
