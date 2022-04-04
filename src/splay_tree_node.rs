@@ -1,9 +1,20 @@
 use std::{cell::RefCell, rc::Rc};
 pub struct Node<T> {
     pub data: T,
+    pub parent: Option<Rc<RefCell<Self>>>,
     pub left: Option<Rc<RefCell<Self>>>,
     pub right: Option<Rc<RefCell<Self>>>,
-    pub parent: Option<Rc<RefCell<Self>>>,
+}
+
+impl<T> Node<T> {
+    pub fn new(data: T) -> Self {
+        Node {
+            data,
+            parent: None,
+            left: None,
+            right: None,
+        }
+    }
 }
 
 use crate::{binary_tree_node, binary_tree_node::Update, size, size::Size};
@@ -15,15 +26,20 @@ impl<T: size::Size> size::Size for Node<T> {
 impl<T: size::Size> size::Size for Option<Node<T>> {
     fn size(&self) -> usize {
         match self {
-            Some(node) => node.data.size(),
+            Some(node) => node.size(),
             None => 0,
         }
     }
 }
+
+impl<T: size::Size> size::Size for Rc<RefCell<Node<T>>> {
+    fn size(&self) -> usize { self.borrow().size() }
+}
+
 impl<T: size::Size> size::Size for Option<Rc<RefCell<Node<T>>>> {
     fn size(&self) -> usize {
         match self {
-            Some(node) => node.borrow().data.size(),
+            Some(node) => node.size(),
             None => 0,
         }
     }
@@ -36,7 +52,6 @@ enum State {
     Root,
 }
 
-// type Cell<T> = Rc<RefCell<Node<T>>>;
 use crate::binary_tree_node::Rotation;
 impl<T> Node<T>
 where
@@ -65,14 +80,13 @@ where
     }
 
     fn rotate_up(node: &Rc<RefCell<Self>>) {
-        let some_parent = &node.borrow().parent;
-        let parent = some_parent.as_ref().unwrap();
+        let parent = node.borrow().parent.as_ref().unwrap().clone();
         if parent.borrow().left.is_some()
             && Rc::ptr_eq(parent.borrow().left.as_ref().unwrap(), node)
         {
-            parent.clone().rotate_right();
+            parent.rotate_right();
         } else {
-            parent.clone().rotate_left();
+            parent.rotate_left();
         }
     }
 
@@ -92,12 +106,17 @@ where
     }
 
     fn splay(node: &Rc<RefCell<Self>>) {
-        while let Some(parent) = &node.borrow().parent {
+        loop {
+            // don't use while let to avoid borrowing conflict.
+            if node.borrow().parent.is_none() {
+                break;
+            }
+            let parent = node.borrow().parent.as_ref().unwrap().clone();
             let node_state = Node::<T>::get_state(node);
             if parent.borrow().parent.is_some() {
-                let parent_state = Node::<T>::get_state(parent);
+                let parent_state = Node::<T>::get_state(&parent);
                 if parent_state == node_state {
-                    Node::<T>::rotate_up(parent);
+                    Node::<T>::rotate_up(&parent);
                 } else {
                     Node::<T>::rotate_up(node);
                 }
@@ -115,8 +134,8 @@ where
         let sub_root = self.borrow_mut().right.take().unwrap();
         let child = sub_root.borrow_mut().left.take();
         sub_root.borrow_mut().left = Some(self.clone());
-        self.borrow_mut().right = child;
-        Node::<T>::rotation_common_ops(&self, &sub_root, &self.borrow_mut().right);
+        self.borrow_mut().right = child.clone();
+        Node::<T>::rotation_common_ops(&self, &sub_root, &child);
         sub_root
     }
 
@@ -124,8 +143,8 @@ where
         let sub_root = self.borrow_mut().left.take().unwrap();
         let child = sub_root.borrow_mut().right.take();
         sub_root.borrow_mut().right = Some(self.clone());
-        self.borrow_mut().left = child;
-        Node::<T>::rotation_common_ops(&self, &sub_root, &self.borrow_mut().left);
+        self.borrow_mut().left = child.clone();
+        Node::<T>::rotation_common_ops(&self, &sub_root, &child);
         sub_root
     }
 }
@@ -135,16 +154,18 @@ where
     T: size::Size,
     Node<T>: Update,
 {
-    fn get(node: &Rc<RefCell<Self>>, index: usize) -> Rc<RefCell<Self>> {
+    pub fn get(node: &Rc<RefCell<Self>>, index: usize) -> Rc<RefCell<Self>> {
         assert!(index < node.borrow().size());
         let left_size = node.borrow().left.size();
         if index < left_size {
-            Self::get(node.borrow().left.as_ref().unwrap(), index)
+            let left = node.borrow().left.as_ref().unwrap().clone();
+            Self::get(&left, index)
         } else if index == left_size {
             Node::<T>::splay(node);
             node.clone()
         } else {
-            Self::get(node.borrow().right.as_ref().unwrap(), index - left_size)
+            let right = node.borrow().right.as_ref().unwrap().clone();
+            Self::get(&right, index - left_size - 1)
         }
     }
 }
@@ -163,9 +184,11 @@ where
         if rhs.is_none() {
             return self;
         }
+
         let left_root = Node::<T>::get(self.as_ref().unwrap(), self.size() - 1);
         rhs.as_ref().unwrap().borrow_mut().parent = Some(left_root.clone());
         left_root.borrow_mut().right = rhs;
+        left_root.borrow_mut().update();
         Some(left_root)
     }
 }
@@ -189,14 +212,22 @@ where
         let right_root = Node::<T>::get(self.as_ref().unwrap(), index);
         let lhs = right_root.borrow_mut().left.take();
         lhs.as_ref().unwrap().borrow_mut().parent = None;
+        right_root.borrow_mut().update();
         (lhs, Some(right_root))
     }
 }
 
+impl<T: Default> Default for Node<T> {
+    fn default() -> Self { Self::new(T::default()) }
+}
 pub struct DefaultData<K, V> {
     pub size: usize,
     pub key: K,
     pub value: V,
+}
+
+impl Default for DefaultData<usize, usize> {
+    fn default() -> Self { Self::new(0, 0) }
 }
 
 impl<K, V> DefaultData<K, V> {
@@ -214,5 +245,29 @@ impl<K, V> size::Size for DefaultData<K, V> {
 }
 
 impl<K, V> binary_tree_node::Update for Node<DefaultData<K, V>> {
-    fn update(&mut self) { self.data.size = self.left.size(); }
+    fn update(&mut self) { self.data.size = self.left.size() + self.right.size() + 1; }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test() {
+        use super::*;
+        use crate::tree_node::{Insert, Pop};
+        type Data = DefaultData<usize, usize>;
+        type Root = Option<Rc<RefCell<Node<Data>>>>;
+        let mut root = Some(Rc::new(RefCell::new(Node::new(Data::default()))));
+        assert_eq!(root.size(), 1);
+        root = <Root as Insert>::insert(
+            root,
+            0,
+            Some(Rc::new(RefCell::new(Node::new(Data::new(1, 1))))),
+        );
+        assert_eq!(root.size(), 2);
+        assert_eq!(root.as_ref().unwrap().borrow().left.size(), 0);
+        assert_eq!(root.as_ref().unwrap().borrow().right.size(), 1);
+        let (mut root, mut popped) = <Root as Pop>::pop(root, 0);
+        assert_eq!(root.size(), 1);
+        assert_eq!(popped.size(), 1);
+    }
 }
