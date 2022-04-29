@@ -1,6 +1,6 @@
 use crate::{
     bitwise,
-    group_theory::{AbelianGroup, Additive, Commutative, Monoid},
+    group_theory::{AbelianGroup, Additive, CommutativeMonoid, CommutativeProperty, Monoid},
 };
 /// Node Indices
 /// (case $|given array| = 8$,
@@ -9,17 +9,19 @@ use crate::{
 /// |4      |       |
 /// |2  |   |6  |   |
 /// |1| |3| |5| |7| |
-pub struct FenwickTree<S: Monoid<T> + Commutative<T>, T = Additive>
+pub struct FenwickTree<S, I = Additive>
 where
-    T: crate::group_theory::BinaryOperationIdentifier,
+    S: CommutativeMonoid<I>,
+    I: crate::group_theory::BinaryOperationIdentifier,
 {
-    phantom_t: std::marker::PhantomData<T>,
+    phantom: std::marker::PhantomData<I>,
     data: Vec<S>,
 }
 
-impl<S: Monoid<T> + Commutative<T> + Clone, T> From<&[S]> for FenwickTree<S, T>
+impl<S, I> From<&[S]> for FenwickTree<S, I>
 where
-    T: crate::group_theory::BinaryOperationIdentifier,
+    S: CommutativeMonoid<I> + Clone + Copy,
+    I: crate::group_theory::BinaryOperationIdentifier,
 {
     fn from(slice: &[S]) -> Self {
         let size = slice.len();
@@ -28,20 +30,24 @@ where
         for node_index in 1..size as isize {
             let parent_node_index = (node_index + (node_index & -node_index)) as usize;
             if parent_node_index <= size {
+                // data[parent_node_index] =
+                //     S::operate(&data[parent_node_index], &data[node_index as
+                // usize]);
                 data[parent_node_index] =
-                    S::operate(&data[parent_node_index], &data[node_index as usize]);
+                    data[parent_node_index].operate(data[node_index as usize]);
             }
         }
         Self {
-            phantom_t: std::marker::PhantomData,
+            phantom: std::marker::PhantomData,
             data,
         }
     }
 }
 
-impl<S: Monoid<T> + Commutative<T>, T> FenwickTree<S, T>
+impl<S, I> FenwickTree<S, I>
 where
-    T: crate::group_theory::BinaryOperationIdentifier,
+    S: CommutativeMonoid<I> + Copy,
+    I: crate::group_theory::BinaryOperationIdentifier,
 {
     pub fn new(size: usize) -> Self
     where
@@ -52,11 +58,15 @@ where
 
     pub fn size(&self) -> usize { self.data.len() - 1 }
 
-    pub fn set_point(&mut self, array_index: usize, value_to_operate: &S) {
+    // pub fn set_point(&mut self, array_index: usize,
+    // value_to_operate: &S) {
+    pub fn set_point(&mut self, array_index: usize, value_to_operate: S) {
         assert!(array_index < self.size());
         let mut node_index = array_index + 1;
         while node_index <= self.size() {
-            self.data[node_index] = S::operate(&self.data[node_index], value_to_operate);
+            // self.data[node_index] = S::operate(&self.data[node_index],
+            // value_to_operate);
+            self.data[node_index] = self.data[node_index].operate(value_to_operate);
             node_index += bitwise::lsb_number(node_index);
         }
     }
@@ -66,7 +76,8 @@ where
         let mut value = S::identity();
         let mut node_index = right;
         while node_index > 0 {
-            value = S::operate(&value, &self.data[node_index]);
+            // value = S::operate(&value, &self.data[node_index]);
+            value = value.operate(self.data[node_index]);
             node_index = bitwise::reset_least_bit(node_index);
         }
         value
@@ -83,11 +94,12 @@ where
         let mut value = S::identity();
         let mut right = 0;
         while length > 0 {
-            if right + length <= self.size()
-                && is_ok(&S::operate(&value, &self.data[right + length]))
+            if right + length <= self.size() && is_ok(&value.operate(self.data[right + length]))
+            // && is_ok(&S::operate(&value, &self.data[right + length]))
             {
                 right += length;
-                value = S::operate(&value, &self.data[right]);
+                // value = S::operate(&value, &self.data[right]);
+                value = value.operate(self.data[right]);
             }
             length >>= 1;
         }
@@ -95,16 +107,20 @@ where
     }
 }
 
-impl<S: AbelianGroup<T>, T> FenwickTree<S, T>
+impl<S, I> FenwickTree<S, I>
 where
-    T: crate::group_theory::BinaryOperationIdentifier,
+    S: AbelianGroup<I> + Copy,
+    I: crate::group_theory::BinaryOperationIdentifier,
 {
     pub fn get_range(&self, left: usize, right: usize) -> S {
         assert!(left <= right);
-        S::operate(
-            &S::invert(&self.get_half_range(left)),
-            &self.get_half_range(right),
-        )
+        // S::operate(
+        //     &S::invert(&self.get_half_range(left)),
+        //     &self.get_half_range(right),
+        // )
+        self.get_half_range(left)
+            .invert()
+            .operate(self.get_half_range(right))
     }
 
     pub fn get_point(&self, array_index: usize) -> S {
@@ -121,15 +137,17 @@ where
             return self.size();
         }
         let mut length = 1usize << bitwise::most_significant_bit(self.size()).unwrap();
-        let mut value = S::invert(&self.get_half_range(left));
+        // let mut value = S::invert(&self.get_half_range(left));
+        let mut value = self.get_half_range(left).invert();
         let mut right = 0;
         while length > 0 {
             if right + length <= left
-                || right + length <= self.size()
-                    && is_ok(&S::operate(&value, &self.data[right + length]))
+                || right + length <= self.size() && is_ok(&value.operate(self.data[right + length]))
+            // && is_ok(&S::operate(&value, &self.data[right + length]))
             {
                 right += length;
-                value = S::operate(&value, &self.data[right]);
+                // value = S::operate(&value, &self.data[right]);
+                value = value.operate(self.data[right]);
             }
             length >>= 1;
         }
@@ -152,10 +170,13 @@ where
         let mut left = 1;
         while length > 0 {
             if left + length <= right
-                && !is_ok(&S::operate(&S::invert(&self.data[left - 1 + length]), &value))
+                && !is_ok(&self.data[left - 1 + length].invert().operate(value))
+            // && !is_ok(&S::operate(&S::invert(&self.data[left - 1 + length]), &value))
             {
                 left += length;
-                value = S::operate(&S::invert(&self.data[left - 1]), &value);
+                // value = S::operate(&S::invert(&self.data[left - 1]),
+                // &value);
+                value = self.data[left - 1].invert().operate(value);
             }
             length >>= 1;
         }
@@ -176,7 +197,8 @@ mod tests {
 
         assert_eq!(fw.get_range(0, 10), 45);
         assert_eq!(fw.get_range(6, 10), 30);
-        fw.set_point(5, &10);
+        // fw.set_point(5, &10);
+        fw.set_point(5, 10);
         assert_eq!(fw.get_range(6, 10), 30);
         assert_eq!(fw.get_half_range(5), 10);
         assert_eq!(fw.get_half_range(6), 25);

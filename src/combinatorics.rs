@@ -1,17 +1,17 @@
 use crate::group_theory;
 
-pub trait PascalTriangle<T>: group_theory::Monoid<T> + group_theory::Default<T>
+pub trait PascalTriangle<I>: group_theory::Monoid<I> + group_theory::Default<I>
 where
     Self: Sized,
-    T: crate::group_theory::BinaryOperationIdentifier,
+    I: crate::group_theory::BinaryOperationIdentifier,
 {
     fn pascal_triangle(n: usize) -> Vec<Vec<Self>>;
 }
 
-impl<S, T> PascalTriangle<T> for S
+impl<S, I> PascalTriangle<I> for S
 where
-    S: group_theory::Monoid<T> + group_theory::Default<T> + Clone,
-    T: crate::group_theory::BinaryOperationIdentifier,
+    S: group_theory::Monoid<I> + group_theory::Default<I> + Clone + Copy,
+    I: crate::group_theory::BinaryOperationIdentifier,
 {
     fn pascal_triangle(n: usize) -> Vec<Vec<S>> {
         let mut p: Vec<Vec<S>> = vec![vec![S::identity(); n]; n];
@@ -20,7 +20,8 @@ where
         }
         for i in 1..n {
             for j in 1..i + 1 {
-                p[i][j] = S::operate(&p[i - 1][j], &p[i - 1][j - 1]);
+                // p[i][j] = S::operate(&p[i - 1][j], &p[i - 1][j - 1]);
+                p[i][j] = p[i - 1][j].operate(p[i - 1][j - 1]);
             }
         }
         p

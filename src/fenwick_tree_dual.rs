@@ -1,24 +1,26 @@
 use crate::{
     fenwick_tree,
-    group_theory::{AbelianGroup, Commutative, Monoid},
+    group_theory::{AbelianGroup, CommutativeMonoid},
 };
-pub struct FenwickTreeDual<S: Monoid<T> + Commutative<T>, T>
+pub struct FenwickTreeDual<S, I>
 where
-    T: crate::group_theory::BinaryOperationIdentifier,
+    S: CommutativeMonoid<I> + Copy,
+    I: crate::group_theory::BinaryOperationIdentifier,
 {
-    fenwick: fenwick_tree::FenwickTree<S, T>,
+    fenwick: fenwick_tree::FenwickTree<S, I>,
 }
 
-impl<S: Monoid<T> + Commutative<T>, T> FenwickTreeDual<S, T>
+impl<S, I> FenwickTreeDual<S, I>
 where
-    T: crate::group_theory::BinaryOperationIdentifier,
+    S: CommutativeMonoid<I> + Copy,
+    I: crate::group_theory::BinaryOperationIdentifier,
 {
     pub fn from_deltas(deltas: &[S]) -> Self
     where
         S: Clone,
     {
         Self {
-            fenwick: fenwick_tree::FenwickTree::<S, T>::from(deltas),
+            fenwick: fenwick_tree::FenwickTree::<S, I>::from(deltas),
         }
     }
 
@@ -31,7 +33,9 @@ where
 
     pub fn size(&self) -> usize { self.fenwick.size() }
 
-    pub fn set_half_range(&mut self, left: usize, value_to_operate: &S) {
+    // pub fn set_half_range(&mut self, left: usize,
+    // value_to_operate: &S) {
+    pub fn set_half_range(&mut self, left: usize, value_to_operate: S) {
         assert!(left <= self.size());
         if left < self.size() {
             self.fenwick.set_point(left, value_to_operate)
@@ -57,24 +61,43 @@ where
     }
 }
 
-impl<S: AbelianGroup<T> + Clone, T> From<&[S]> for FenwickTreeDual<S, T>
+impl<S, I> From<&[S]> for FenwickTreeDual<S, I>
 where
-    T: crate::group_theory::BinaryOperationIdentifier,
+    S: AbelianGroup<I> + Clone + Copy,
+    I: crate::group_theory::BinaryOperationIdentifier,
 {
     fn from(slice: &[S]) -> Self {
         Self::from_deltas(
             slice
                 .iter()
                 .enumerate()
+                // .map(|(index, prod)| {
+                //     S::operate(
+                //         &(if index == 0 {
+                //             S::identity()
+                //         } else {
+                //             S::invert(&slice[index - 1])
+                //         }),
+                //         prod,
+                //     )
+                // })
                 .map(|(index, prod)| {
                     S::operate(
-                        &(if index == 0 {
+                        if index == 0 {
                             S::identity()
                         } else {
-                            S::invert(&slice[index - 1])
-                        }),
-                        prod,
+                            slice[index - 1].invert()
+                        },
+                        *prod,
                     )
+                    // S::operate(
+                    //     &(if index == 0 {
+                    //         S::identity()
+                    //     } else {
+                    //         S::invert(&slice[index - 1])
+                    //     }),
+                    //     prod,
+                    // )
                 })
                 .collect::<Vec<_>>()
                 .as_slice(),
@@ -82,17 +105,21 @@ where
     }
 }
 
-impl<S: AbelianGroup<T>, T> FenwickTreeDual<S, T>
+impl<S, I> FenwickTreeDual<S, I>
 where
-    T: crate::group_theory::BinaryOperationIdentifier,
+    S: AbelianGroup<I> + Copy,
+    I: crate::group_theory::BinaryOperationIdentifier,
 {
-    pub fn set_range(&mut self, left: usize, right: usize, value_to_operate: &S) {
+    // pub fn set_range(&mut self, left: usize, right: usize,
+    // value_to_operate: &S) {
+    pub fn set_range(&mut self, left: usize, right: usize, value_to_operate: S) {
         assert!(left <= right && right <= self.size());
         if left < self.size() {
             self.set_half_range(left, value_to_operate);
         }
         if right < self.size() {
-            self.set_half_range(right, &S::invert(value_to_operate));
+            // self.set_half_range(right, &S::invert(value_to_operate));
+            self.set_half_range(right, value_to_operate.invert());
         }
     }
 
@@ -116,7 +143,8 @@ where
             self.get_point(left - 1)
         };
         self.fenwick.find_max_right_with_left(
-            &|prod: &S| !is_ok(&S::operate(&prod_less_than_left, prod)),
+            // &|prod: &S| !is_ok(&S::operate(&prod_less_than_left, prod)),
+            &|prod: &S| !is_ok(&S::operate(prod_less_than_left, *prod)),
             left,
         )
     }
@@ -143,7 +171,8 @@ mod tests {
         assert_eq!(fw.get_point(1), 1);
         assert_eq!(fw.get_point(5), 15);
         assert_eq!(fw.get_point(9), 45);
-        fw.set_half_range(5, &2);
+        // fw.set_half_range(5, &2);
+        fw.set_half_range(5, 2);
         assert_eq!(fw.get_point(1), 1);
         assert_eq!(fw.get_point(5), 17);
         assert_eq!(fw.get_point(9), 47);
@@ -161,18 +190,21 @@ mod tests {
         assert_eq!(fw.get_point(1), 1);
         assert_eq!(fw.get_point(5), 15);
         assert_eq!(fw.get_point(9), 45);
-        fw.set_half_range(5, &2);
+        // fw.set_half_range(5, &2);
+        fw.set_half_range(5, 2);
         assert_eq!(fw.get_point(1), 1);
         assert_eq!(fw.get_point(5), 17);
         assert_eq!(fw.get_point(9), 47);
         assert_eq!(fw.binary_search(&|value: &i32| *value >= 23), 6);
         assert_eq!(fw.binary_search(&|value: &i32| *value >= 47), 9);
         assert_eq!(fw.binary_search(&|value: &i32| *value > 47), 10);
-        fw.set_range(2, 6, &1);
+        // fw.set_range(2, 6, &1);
+        fw.set_range(2, 6, 1);
         assert_eq!(fw.get_point(1), 1);
         assert_eq!(fw.get_point(5), 18);
         assert_eq!(fw.get_point(9), 47);
-        fw.set_range(2, 6, &-1);
+        // fw.set_range(2, 6, &-1);
+        fw.set_range(2, 6, -1);
         assert_eq!(fw.binary_search_from_left(&|value: &i32| *value >= 23, 0), 6);
         assert_eq!(fw.binary_search_from_left(&|value: &i32| *value >= 47, 0), 9);
         assert_eq!(fw.binary_search_from_left(&|value: &i32| *value > 47, 0), 10);

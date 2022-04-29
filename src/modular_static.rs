@@ -34,11 +34,13 @@ impl<M: Modulus> From<usize> for Modular<M> {
     fn from(value: usize) -> Self { Self::new(value) }
 }
 
-impl<M: Modulus + std::marker::Copy> group_theory::Identity<group_theory::Additive> for Modular<M> {
+impl<M: Modulus + std::marker::Copy> group_theory::IdentityElement<group_theory::Additive>
+    for Modular<M>
+{
     fn identity() -> Self { 0.into() }
 }
 
-impl<M: Modulus + std::marker::Copy> group_theory::Identity<group_theory::Multiplicative>
+impl<M: Modulus + std::marker::Copy> group_theory::IdentityElement<group_theory::Multiplicative>
     for Modular<M>
 {
     fn identity() -> Self { 1.into() }
@@ -85,7 +87,7 @@ impl<M: Modulus + Copy> std::ops::MulAssign<Self> for Modular<M> {
 
 impl<M: Modulus + std::marker::Copy> Modular<M> {
     pub fn pow(&self, exponent: usize) -> Self {
-        <Self as power::Power<group_theory::Multiplicative>>::pow(self, exponent)
+        <Self as power::Power<group_theory::Multiplicative>>::pow(self.clone(), exponent)
     }
 }
 
