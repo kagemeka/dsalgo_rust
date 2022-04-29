@@ -5,15 +5,20 @@ use crate::{bitwise, group_theory::Monoid};
 /// |2          |3          |4
 /// |4    |5    |6    |7    |8
 /// |8 |9 |10|11|12|13|14|15|16
-pub struct SegmentTree<S: Monoid<T>, T: crate::group_theory::BinaryOperationIdentifier> {
-    phantom_t: std::marker::PhantomData<T>,
+pub struct SegmentTree<S, I>
+where
+    S: Monoid<I>,
+    I: crate::group_theory::BinaryOperationIdentifier,
+{
+    phantom_i: std::marker::PhantomData<I>,
     size: usize,
     data: Vec<S>,
 }
 
-impl<S: Monoid<T> + Clone, T> From<&[S]> for SegmentTree<S, T>
+impl<S, I> From<&[S]> for SegmentTree<S, I>
 where
-    T: crate::group_theory::BinaryOperationIdentifier,
+    S: Monoid<I> + Clone + Copy,
+    I: crate::group_theory::BinaryOperationIdentifier,
 {
     fn from(slice: &[S]) -> Self {
         let size = slice.len();
@@ -21,7 +26,7 @@ where
         let mut data = vec![S::identity(); n << 1];
         data[n..(n + size)].clone_from_slice(slice);
         let mut seg = Self {
-            phantom_t: std::marker::PhantomData,
+            phantom_i: std::marker::PhantomData,
             size: slice.len(),
             data,
         };
@@ -32,9 +37,10 @@ where
     }
 }
 
-impl<S: Monoid<T>, T> SegmentTree<S, T>
+impl<S, I> SegmentTree<S, I>
 where
-    T: crate::group_theory::BinaryOperationIdentifier,
+    S: Monoid<I> + Copy,
+    I: crate::group_theory::BinaryOperationIdentifier,
 {
     pub fn new(size: usize) -> Self
     where
@@ -47,7 +53,8 @@ where
 
     fn merge_childs(&mut self, node_index: usize) {
         self.data[node_index] =
-            S::operate(&self.data[node_index << 1], &self.data[node_index << 1 | 1]);
+            // S::operate(&self.data[node_index << 1], &self.data[node_index << 1 | 1]);
+            self.data[node_index << 1].operate(self.data[node_index << 1 | 1]);
     }
 
     pub fn set_point(&mut self, array_index: usize, x: S) {
@@ -69,17 +76,22 @@ where
         let mut value_right = S::identity();
         while left_node_index < right_node_index {
             if left_node_index & 1 == 1 {
-                value_left = S::operate(&value_left, &self.data[left_node_index]);
+                // value_left = S::operate(&value_left,
+                // &self.data[left_node_index]);
+                value_left = value_left.operate(self.data[left_node_index]);
                 left_node_index += 1;
             }
             if right_node_index & 1 == 1 {
                 right_node_index -= 1;
-                value_right = S::operate(&self.data[right_node_index], &value_right);
+                // value_right = S::operate(&self.data[right_node_index],
+                // &value_right);
+                value_right = self.data[right_node_index].operate(value_right);
             }
             left_node_index >>= 1;
             right_node_index >>= 1;
         }
-        S::operate(&value_left, &value_right)
+        // S::operate(&value_left, &value_right)
+        value_left.operate(value_right)
     }
 
     pub fn find_max_right<F>(&self, is_ok: &F, left: usize) -> usize
@@ -95,11 +107,13 @@ where
         let mut node_index = n + left;
         loop {
             node_index = bitwise::shift_right_until_odd(node_index).unwrap(); // up to ceil
-            if !is_ok(&S::operate(&value, &self.data[node_index])) {
+            // if !is_ok(&S::operate(&value, &self.data[node_index])) {
+            if !is_ok(&value.operate(self.data[node_index])) {
                 break;
             }
             // up one stair from left
-            value = S::operate(&value, &self.data[node_index]);
+            // value = S::operate(&value, &self.data[node_index]);
+            value = value.operate(self.data[node_index]);
             node_index += 1;
             if bitwise::lsb_number(node_index) == node_index {
                 // wall.
@@ -109,10 +123,12 @@ where
         // down stairs to right
         while node_index < n {
             node_index <<= 1;
-            if !is_ok(&S::operate(&value, &self.data[node_index])) {
+            // if !is_ok(&S::operate(&value, &self.data[node_index])) {
+            if !is_ok(&value.operate(self.data[node_index])) {
                 continue;
             }
-            value = S::operate(&value, &self.data[node_index]);
+            // value = S::operate(&value, &self.data[node_index]);
+            value = value.operate(self.data[node_index]);
             node_index += 1;
         }
         node_index - n
@@ -133,30 +149,35 @@ where
             assert!(node_index >= 1);
             node_index = bitwise::shift_right_until_odd(node_index).unwrap();
             assert!(node_index >= 1);
-            if !is_ok(&S::operate(&self.data[node_index - 1], &value)) {
+            // if !is_ok(&S::operate(&self.data[node_index - 1], &value)) {
+            if !is_ok(&&self.data[node_index - 1].operate(value)) {
                 break;
             }
             node_index -= 1;
-            value = S::operate(&self.data[node_index], &value);
+            // value = S::operate(&self.data[node_index], &value);
+            value = self.data[node_index].operate(value);
             if bitwise::lsb_number(node_index) == node_index {
                 return 0;
             }
         }
         while node_index < n {
             node_index <<= 1;
-            if !is_ok(&S::operate(&self.data[node_index - 1], &value)) {
+            // if !is_ok(&S::operate(&self.data[node_index - 1], &value)) {
+            if !is_ok(&self.data[node_index - 1].operate(value)) {
                 continue;
             }
             node_index -= 1;
-            value = S::operate(&self.data[node_index], &value);
+            // value = S::operate(&self.data[node_index], &value);
+            value = self.data[node_index].operate(value);
         }
         node_index - n
     }
 }
 
-impl<S: Monoid<T>, T> std::ops::Index<usize> for SegmentTree<S, T>
+impl<S, I> std::ops::Index<usize> for SegmentTree<S, I>
 where
-    T: crate::group_theory::BinaryOperationIdentifier,
+    S: Monoid<I>,
+    I: crate::group_theory::BinaryOperationIdentifier,
 {
     type Output = S;
 
@@ -167,9 +188,10 @@ where
 }
 
 /// Recursive Implementations for bench mark.
-impl<S: Monoid<T>, T> SegmentTree<S, T>
+impl<S, I> SegmentTree<S, I>
 where
-    T: crate::group_theory::BinaryOperationIdentifier,
+    S: Monoid<I> + Copy,
+    I: crate::group_theory::BinaryOperationIdentifier,
 {
     pub fn get_range_recurse(&self, left: usize, right: usize) -> S {
         assert!(left <= right && right <= self.size);
@@ -188,13 +210,17 @@ where
             return S::identity();
         }
         if left <= current_left && current_right <= right {
-            return S::operate(&S::identity(), &self.data[node_index]);
+            // return S::operate(&S::identity(), &self.data[node_index]);
+            return self.data[node_index];
         }
         let center = (current_left + current_right) >> 1;
-        S::operate(
-            &self._get_recurse(left, right, current_left, center, node_index << 1),
-            &self._get_recurse(left, right, center, current_right, node_index << 1 | 1),
-        )
+        // S::operate(
+        //     &self._get_recurse(left, right, current_left, center,
+        // node_index << 1),     &self._get_recurse(left,
+        // right, center, current_right, node_index << 1 | 1),
+        // )
+        self._get_recurse(left, right, current_left, center, node_index << 1)
+            .operate(self._get_recurse(left, right, center, current_right, node_index << 1 | 1))
     }
 
     pub fn find_max_right_recurse<F>(&self, is_ok: &F, left: usize) -> usize
@@ -228,9 +254,12 @@ where
         }
         if left <= current_left
             && current_right <= self.size
-            && is_ok(&S::operate(current_value, &self.data[node_index]))
+            // && is_ok(&S::operate(current_value, &self.data[node_index]))
+            && is_ok(&current_value.operate(self.data[node_index]))
         {
-            *current_value = S::operate(current_value, &self.data[node_index]);
+            // *current_value = S::operate(current_value,
+            // &self.data[node_index]);
+            *current_value = current_value.operate(self.data[node_index]);
             return current_right;
         }
         if current_right - current_left == 1 {
@@ -281,8 +310,12 @@ where
         if current_left >= right {
             return right;
         }
-        if current_right <= right && is_ok(&S::operate(&self.data[node_index], current_value)) {
-            *current_value = S::operate(&self.data[node_index], current_value);
+        // if current_right <= right &&
+        // is_ok(&S::operate(&self.data[node_index], current_value)) {
+        if current_right <= right && is_ok(&S::operate(self.data[node_index], *current_value)) {
+            // *current_value = S::operate(&self.data[node_index],
+            // current_value);
+            *current_value = self.data[node_index].operate(*current_value);
             return current_left;
         }
         if current_right - current_left == 1 {

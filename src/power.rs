@@ -1,21 +1,42 @@
 use crate::group_theory;
 
-pub trait Power<T: group_theory::BinaryOperationIdentifier>: group_theory::Monoid<T> {
-    fn pow(value: &Self, expontent: usize) -> Self;
+pub trait Power<I>: group_theory::Monoid<I>
+where
+    I: group_theory::BinaryOperationIdentifier,
+{
+    // fn pow(value: &Self, expontent: usize) -> Self;
+    fn pow(self, expontent: usize) -> Self;
 }
 
-impl<S: group_theory::Monoid<T>, T> Power<T> for S
+impl<S, I> Power<I> for S
 where
-    T: crate::group_theory::BinaryOperationIdentifier,
+    S: group_theory::Monoid<I> + Copy,
+    I: crate::group_theory::BinaryOperationIdentifier,
 {
-    fn pow(value: &S, exponent: usize) -> S {
+    // fn pow(value: &S, exponent: usize) -> S {
+    //     if exponent == 0 {
+    //         return S::identity();
+    //     }
+    //     let mut y = Self::pow(value, exponent >> 1);
+    //     // y = S::operate(&y, &y);
+    //     y = y.operate(y);
+    //     if exponent & 1 == 1 {
+    //         y = S::operate(&y, &value);
+    //     }
+    //     y
+    // }
+
+    fn pow(self, exponent: usize) -> S {
         if exponent == 0 {
             return S::identity();
         }
-        let mut y = Self::pow(value, exponent >> 1);
-        y = S::operate(&y, &y);
+        let mut y = self.pow(exponent >> 1);
+        // let mut y = Self::pow(value, exponent >> 1);
+        // y = S::operate(&y, &y);
+        y = y.operate(y);
         if exponent & 1 == 1 {
-            y = S::operate(&y, &value);
+            // y = S::operate(&y, &value);
+            y = y.operate(self);
         }
         y
     }

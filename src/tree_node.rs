@@ -6,10 +6,10 @@ pub trait ParentMut: Sized {
     fn parent_mut(&mut self) -> &mut Option<Self>;
 }
 
-pub trait Get<Idx: ?Sized = usize> {
-    type Output: ?Sized;
-    fn get(&self, index: Idx) -> Self::Output;
-}
+// pub trait Get<Idx: ?Sized = usize> {
+//     type Output: ?Sized;
+//     fn get(&self, index: Idx) -> Self::Output;
+// }
 
 pub trait Insert {
     fn insert(self, index: usize, node: Self) -> Self;
@@ -38,4 +38,13 @@ where
         let (popped, rhs) = rhs.split(1);
         (lhs.join(rhs), popped)
     }
+}
+
+pub(crate) trait Get<'a>
+where
+    Self: 'a,
+{
+    type Output;
+
+    fn get(&'a self, index: usize) -> Self::Output;
 }

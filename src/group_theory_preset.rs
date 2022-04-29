@@ -3,42 +3,46 @@
 
 use crate::group_theory::{
     Additive,
-    Associative,
+    AssociativeProperty,
     BinaryOperation,
-    Commutative,
-    Identity,
-    Inverse,
+    CommutativeProperty,
+    IdentityElement,
+    InverseElement,
     Multiplicative,
 };
 
-impl<S: std::ops::Add<S, Output = S> + Copy> BinaryOperation<Additive> for S {
-    fn operate(lhs: &Self, rhs: &Self) -> Self { *lhs + *rhs }
+impl<S: std::ops::Add<S, Output = S>> BinaryOperation<Self, Self, Additive> for S {
+    fn operate(self, rhs: Self) -> Self { self + rhs }
 }
-impl<S: std::ops::Add<S, Output = S> + Copy> Commutative<Additive> for S {}
-impl<S: std::ops::Add<S, Output = S> + Copy> Associative<Additive> for S {}
-impl<S: std::ops::Add<S, Output = S> + std::ops::Neg<Output = S> + Copy> Inverse<Additive> for S {
-    fn invert(value: &Self) -> Self { -*value }
+impl<S: std::ops::Add<S, Output = S>> CommutativeProperty<Self, Additive> for S {}
+impl<S: std::ops::Add<S, Output = S>> AssociativeProperty<Additive> for S {}
+impl<S: std::ops::Add<S, Output = S> + std::ops::Neg<Output = S> + IdentityElement<Additive>>
+    InverseElement<Additive> for S
+{
+    // fn invert(value: &Self) -> Self { -*value }
+
+    fn invert(self) -> Self { -self }
 }
 
-impl<S: std::ops::Mul<S, Output = S> + Copy> BinaryOperation<Multiplicative> for S {
-    fn operate(lhs: &Self, rhs: &Self) -> Self { *lhs * *rhs }
+impl<S: std::ops::Mul<S, Output = S>> BinaryOperation<Self, Self, Multiplicative> for S {
+    fn operate(self, rhs: Self) -> Self { self * rhs }
 }
-impl<S: std::ops::Mul<S, Output = S> + Copy> Commutative<Multiplicative> for S {}
-impl<S: std::ops::Mul<S, Output = S> + Copy> Associative<Multiplicative> for S {}
+impl<S: std::ops::Mul<S, Output = S>> CommutativeProperty<Self, Multiplicative> for S {}
+impl<S: std::ops::Mul<S, Output = S>> AssociativeProperty<Multiplicative> for S {}
 
-impl Identity<Multiplicative> for usize {
+impl IdentityElement<Multiplicative> for usize {
     fn identity() -> Self { 1 }
 }
 
-impl Identity<Additive> for usize {
+impl IdentityElement<Additive> for usize {
     fn identity() -> Self { 0 }
 }
 
-impl Identity<Additive> for isize {
+impl IdentityElement<Additive> for isize {
     fn identity() -> Self { 0 }
 }
 
-impl Identity<Additive> for i32 {
+impl IdentityElement<Additive> for i32 {
     fn identity() -> Self { 0 }
 }
 
@@ -48,6 +52,8 @@ mod tests {
 
     #[test]
     fn test() {
-        assert_eq!(<usize as crate::power::Power<Multiplicative>>::pow(&4, 2), 16,);
+        // assert_eq!(<usize as
+        // crate::power::Power<Multiplicative>>::pow(&4, 2), 16,);
+        assert_eq!(<usize as crate::power::Power<Multiplicative>>::pow(4, 2), 16);
     }
 }

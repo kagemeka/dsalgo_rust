@@ -170,6 +170,31 @@ where
     }
 }
 
+use crate::tree_node::Get;
+
+impl<'a, T: 'a> Get<'a> for Rc<RefCell<Node<T>>>
+where
+    T: size::Size,
+    Node<T>: Update,
+{
+    type Output = Self;
+
+    fn get(&self, index: usize) -> Self {
+        assert!(index < self.borrow().size());
+        let left_size = self.borrow().left.size();
+        if index < left_size {
+            let left = self.borrow().left.as_ref().unwrap().clone();
+            left.get(index)
+        } else if index == left_size {
+            Node::<T>::splay(self);
+            self.clone()
+        } else {
+            let right = self.borrow().right.as_ref().unwrap().clone();
+            right.get(index - left_size - 1)
+        }
+    }
+}
+
 use crate::join::Join;
 
 impl<T> Join for Option<Rc<RefCell<Node<T>>>>

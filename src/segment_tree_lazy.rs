@@ -7,8 +7,8 @@ use crate::{
 #[derive(Debug)]
 pub struct SegmentTreeLazy<S, F, M, I, J>
 where
-    S: Monoid<I>,
-    F: Monoid<J>,
+    S: Monoid<I> + Copy,
+    F: Monoid<J> + Copy,
     M: set_theory::Mapping<S, F>,
     I: BinaryOperationIdentifier,
     J: BinaryOperationIdentifier,
@@ -24,8 +24,8 @@ where
 
 impl<S, F, M, I, J> From<&[S]> for SegmentTreeLazy<S, F, M, I, J>
 where
-    S: Monoid<I> + Clone + std::fmt::Debug,
-    F: Monoid<J> + Clone,
+    S: Monoid<I> + Clone + std::fmt::Debug + Copy,
+    F: Monoid<J> + Clone + Copy,
     M: set_theory::Mapping<S, F>,
     I: BinaryOperationIdentifier,
     J: BinaryOperationIdentifier,
@@ -47,14 +47,15 @@ where
         for node_index in (1..n).rev() {
             seg.merge_childs(node_index);
         }
+
         seg
     }
 }
 
 impl<S, F, M, I, J> SegmentTreeLazy<S, F, M, I, J>
 where
-    S: Monoid<I> + Clone + std::fmt::Debug,
-    F: Monoid<J> + Clone,
+    S: Monoid<I> + Clone + std::fmt::Debug + Copy,
+    F: Monoid<J> + Clone + Copy,
     M: set_theory::Mapping<S, F>,
     I: BinaryOperationIdentifier,
     J: BinaryOperationIdentifier,
@@ -70,19 +71,24 @@ where
 
     fn merge_childs(&mut self, node_index: usize) {
         self.data[node_index] =
-            S::operate(&self.data[node_index << 1], &self.data[node_index << 1 | 1]);
+            S::operate(self.data[node_index << 1], self.data[node_index << 1 | 1]);
+        // S::operate(&self.data[node_index << 1],
+        // &self.data[node_index << 1 | 1]);
     }
 
-    fn apply(&mut self, node_index: usize, operator: &F) {
-        self.data[node_index] = M::map(operator, &self.data[node_index]);
+    // fn apply(&mut self, node_index: usize, operator: &F) {
+    fn apply(&mut self, node_index: usize, operator: F) {
+        self.data[node_index] = M::map(&operator, &self.data[node_index]);
         if node_index < self.lazy_operators.len() {
-            self.lazy_operators[node_index] =
-                F::operate(operator, &self.lazy_operators[node_index]);
+            // self.lazy_operators[node_index] =
+            // F::operate(operator, &self.lazy_operators[node_index]);
+            self.lazy_operators[node_index] = self.lazy_operators[node_index].operate(operator);
         }
     }
 
     fn propagate(&mut self, node_index: usize) {
-        let operator = &self.lazy_operators[node_index].clone();
+        let operator = self.lazy_operators[node_index].clone();
+        // let operator = &self.lazy_operators[node_index].clone();
         self.apply(node_index << 1, operator);
         self.apply(node_index << 1 | 1, operator);
         self.lazy_operators[node_index] = F::identity();
@@ -104,7 +110,9 @@ where
         }
     }
 
-    pub fn set_range(&mut self, left: usize, right: usize, operator: &F) {
+    // pub fn set_range(&mut self, left: usize, right: usize,
+    // operator: &F) {
+    pub fn set_range(&mut self, left: usize, right: usize, operator: F) {
         assert!(left <= right && right <= self.size);
         let n = self.data.len() >> 1;
         let mut left_node = n + left;
@@ -156,17 +164,21 @@ where
         let mut right_value = S::identity();
         while left_node < right_node {
             if left_node & 1 == 1 {
-                left_value = S::operate(&left_value, &self.data[left_node]);
+                // left_value = S::operate(&left_value, &self.data[left_node]);
+                left_value = left_value.operate(self.data[left_node]);
                 left_node += 1;
             }
             if right_node & 1 == 1 {
                 right_node -= 1;
-                right_value = S::operate(&self.data[right_node], &right_value);
+                // right_value = S::operate(&self.data[right_node],
+                // &right_value);
+                right_value = self.data[right_node].operate(right_value);
             }
             left_node >>= 1;
             right_node >>= 1;
         }
-        S::operate(&left_value, &right_value)
+        // S::operate(&left_value, &right_value)
+        left_value.operate(right_value)
     }
 
     pub fn get_point(&mut self, array_index: usize) -> S {
@@ -188,11 +200,15 @@ where
         self.propagate_above(node_index);
         loop {
             node_index = bitwise::shift_right_until_odd(node_index).unwrap();
-            if !is_ok(&S::operate(&value, &self.data[node_index])) {
+            // if !is_ok(&S::operate(&value, &self.data[node_index])) {
+            //     break;
+            // }
+            if !is_ok(&value.operate(self.data[node_index])) {
                 break;
             }
             // up one stair from left
-            value = S::operate(&value, &self.data[node_index]);
+            // value = S::operate(&value, &self.data[node_index]);
+            value = value.operate(self.data[node_index]);
             node_index += 1;
             if bitwise::lsb_number(node_index) == node_index {
                 // wall.
@@ -203,10 +219,14 @@ where
         while node_index < n {
             self.propagate(node_index);
             node_index <<= 1;
-            if !is_ok(&S::operate(&value, &self.data[node_index])) {
+            // if !is_ok(&S::operate(&value, &self.data[node_index])) {
+            //     continue;
+            // }
+            if !is_ok(&value.operate(self.data[node_index])) {
                 continue;
             }
-            value = S::operate(&value, &self.data[node_index]);
+            // value = S::operate(&value, &self.data[node_index]);
+            value = value.operate(self.data[node_index]);
             node_index += 1;
         }
         node_index - n
@@ -228,11 +248,15 @@ where
             assert!(node_index >= 1);
             node_index = bitwise::shift_right_until_odd(node_index).unwrap();
             assert!(node_index >= 1);
-            if !is_ok(&S::operate(&self.data[node_index - 1], &value)) {
+            // if !is_ok(&S::operate(&self.data[node_index - 1], &value)) {
+            //     break;
+            // }
+            if !is_ok(&self.data[node_index - 1].operate(value)) {
                 break;
             }
             node_index -= 1;
-            value = S::operate(&self.data[node_index], &value);
+            // value = S::operate(&self.data[node_index], &value);
+            value = self.data[node_index].operate(value);
             if bitwise::lsb_number(node_index) == node_index {
                 return 0;
             }
@@ -240,11 +264,15 @@ where
         while node_index < n {
             self.propagate(node_index - 1);
             node_index <<= 1;
-            if !is_ok(&S::operate(&self.data[node_index - 1], &value)) {
+            // if !is_ok(&S::operate(&self.data[node_index - 1], &value)) {
+            //     continue;
+            // }
+            if !is_ok(&self.data[node_index - 1].operate(value)) {
                 continue;
             }
             node_index -= 1;
-            value = S::operate(&self.data[node_index], &value);
+            // value = S::operate(&self.data[node_index], &value);
+            value = self.data[node_index].operate(value);
         }
         node_index - n
     }
@@ -253,13 +281,15 @@ where
 /// Recursive Implementations for bench mark.
 impl<S, F, M, I, J> SegmentTreeLazy<S, F, M, I, J>
 where
-    S: Monoid<I> + Clone + std::fmt::Debug,
-    F: Monoid<J> + Clone,
+    S: Monoid<I> + Clone + std::fmt::Debug + Copy,
+    F: Monoid<J> + Clone + Copy,
     M: set_theory::Mapping<S, F>,
     I: BinaryOperationIdentifier,
     J: BinaryOperationIdentifier,
 {
-    pub fn set_range_recurse(&mut self, left: usize, right: usize, operator: &F) {
+    // pub fn set_range_recurse(&mut self, left: usize, right:
+    // usize, operator: &F) {
+    pub fn set_range_recurse(&mut self, left: usize, right: usize, operator: F) {
         assert!(left <= right && right <= self.size);
         self._set_range_recurse(left, right, 0, self.data.len() >> 1, 1, operator);
     }
@@ -271,7 +301,8 @@ where
         current_left: usize,
         current_right: usize,
         node_index: usize,
-        operator: &F,
+        // operator: &F,
+        operator: F,
     ) {
         if current_right <= left || right <= current_left {
             return;
@@ -310,15 +341,27 @@ where
         if current_right <= left || right <= current_left {
             return S::identity();
         }
+        // if left <= current_left && current_right <= right {
+        //     return S::operate(&S::identity(),
+        // &self.data[node_index]); }
         if left <= current_left && current_right <= right {
-            return S::operate(&S::identity(), &self.data[node_index]);
+            return self.data[node_index];
         }
         self.propagate(node_index);
         let center = (current_left + current_right) >> 1;
-        S::operate(
-            &self._get_range_recurse(left, right, current_left, center, node_index << 1),
-            &self._get_range_recurse(left, right, center, current_right, node_index << 1 | 1),
-        )
+        // S::operate(
+        //     &self._get_range_recurse(left, right, current_left,
+        // center, node_index << 1),
+        //     &self._get_range_recurse(left, right, center,
+        // current_right, node_index << 1 | 1), )
+        self._get_range_recurse(left, right, current_left, center, node_index << 1)
+            .operate(self._get_range_recurse(
+                left,
+                right,
+                center,
+                current_right,
+                node_index << 1 | 1,
+            ))
     }
 
     pub fn find_max_right_recurse<G>(&mut self, is_ok: &G, left: usize) -> usize
@@ -349,9 +392,9 @@ where
         }
         if left <= current_left
             && current_right <= self.size
-            && is_ok(&S::operate(current_value, &self.data[node_index]))
+            && is_ok(&current_value.operate(self.data[node_index]))
         {
-            *current_value = S::operate(current_value, &self.data[node_index]);
+            *current_value = current_value.operate(self.data[node_index]);
             return current_right;
         }
         if current_right - current_left == 1 {
@@ -403,8 +446,8 @@ where
         if current_left >= right {
             return right;
         }
-        if current_right <= right && is_ok(&S::operate(&self.data[node_index], current_value)) {
-            *current_value = S::operate(&self.data[node_index], current_value);
+        if current_right <= right && is_ok(&self.data[node_index].operate(*current_value)) {
+            *current_value = self.data[node_index].operate(*current_value);
             return current_left;
         }
         if current_right - current_left == 1 {
@@ -440,22 +483,22 @@ mod tests {
     fn test() {
         use crate::{group_theory, set_theory};
         struct RARS;
-        #[derive(Clone, PartialEq, Debug)]
+        #[derive(Clone, PartialEq, Debug, Copy)]
         struct Data {
             pub sum: isize,
             pub length: usize,
         }
         impl group_theory::BinaryOperationIdentifier for RARS {}
-        impl group_theory::BinaryOperation<RARS> for Data {
-            fn operate(lhs: &Self, rhs: &Self) -> Self {
+        impl group_theory::BinaryOperation<Self, Self, RARS> for Data {
+            fn operate(self, other: Self) -> Self {
                 Self {
-                    sum: lhs.sum + rhs.sum,
-                    length: lhs.length + rhs.length,
+                    sum: self.sum + other.sum,
+                    length: self.length + other.length,
                 }
             }
         }
-        impl group_theory::Associative<RARS> for Data {}
-        impl group_theory::Identity<RARS> for Data {
+        impl group_theory::AssociativeProperty<RARS> for Data {}
+        impl group_theory::IdentityElement<RARS> for Data {
             fn identity() -> Self {
                 Self {
                     sum: 0,
@@ -493,7 +536,8 @@ mod tests {
                 length: 10
             }
         );
-        seg.set_range(0, 5, &2);
+        // seg.set_range(0, 5, &2);
+        seg.set_range(0, 5, 2);
 
         assert_eq!(
             seg.get_range(2, 6),
@@ -558,7 +602,8 @@ mod tests {
             }
         );
 
-        seg.set_range_recurse(1, 7, &3);
+        // seg.set_range_recurse(1, 7, &3);
+        seg.set_range_recurse(1, 7, 3);
         assert_eq!(
             seg.get_range(0, 10),
             Data {
