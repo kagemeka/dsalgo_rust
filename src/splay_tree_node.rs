@@ -1,4 +1,16 @@
 use std::{cell::RefCell, rc::Rc};
+
+use crate::{
+    binary_tree_node,
+    binary_tree_node::{Rotation, Update},
+    join::Join,
+    size,
+    size::Size,
+    split::Split,
+    tree_node::Get,
+};
+
+#[derive(Debug)]
 pub struct Node<T> {
     pub data: T,
     pub parent: Option<Rc<RefCell<Self>>>,
@@ -17,19 +29,12 @@ impl<T> Node<T> {
     }
 }
 
-use crate::{binary_tree_node, binary_tree_node::Update, size, size::Size};
-
 impl<T: size::Size> size::Size for Node<T> {
     fn size(&self) -> usize { self.data.size() }
 }
 
 impl<T: size::Size> size::Size for Option<Node<T>> {
-    fn size(&self) -> usize {
-        match self {
-            Some(node) => node.size(),
-            None => 0,
-        }
-    }
+    fn size(&self) -> usize { self.as_ref().map_or(0, |node| node.size()) }
 }
 
 impl<T: size::Size> size::Size for Rc<RefCell<Node<T>>> {
@@ -37,12 +42,7 @@ impl<T: size::Size> size::Size for Rc<RefCell<Node<T>>> {
 }
 
 impl<T: size::Size> size::Size for Option<Rc<RefCell<Node<T>>>> {
-    fn size(&self) -> usize {
-        match self {
-            Some(node) => node.size(),
-            None => 0,
-        }
-    }
+    fn size(&self) -> usize { self.as_ref().map_or(0, |node| node.size()) }
 }
 
 #[derive(PartialEq)]
@@ -52,7 +52,6 @@ enum State {
     Root,
 }
 
-use crate::binary_tree_node::Rotation;
 impl<T> Node<T>
 where
     Node<T>: binary_tree_node::Update,
@@ -86,6 +85,8 @@ where
         {
             parent.rotate_right();
         } else {
+            assert!(Rc::ptr_eq(parent.borrow().right.as_ref().unwrap(), node));
+
             parent.rotate_left();
         }
     }
@@ -115,10 +116,9 @@ where
             let node_state = Node::<T>::get_state(node);
             if parent.borrow().parent.is_some() {
                 let parent_state = Node::<T>::get_state(&parent);
-                if parent_state == node_state {
-                    Node::<T>::rotate_up(&parent);
-                } else {
-                    Node::<T>::rotate_up(node);
+                match parent_state {
+                    node_state => Node::<T>::rotate_up(&parent),
+                    _ => Node::<T>::rotate_up(node),
                 }
             }
             Node::<T>::rotate_up(node);
@@ -154,48 +154,26 @@ where
     T: size::Size,
     Node<T>: Update,
 {
+    // pub fn get(
     pub fn get(node: &Rc<RefCell<Self>>, index: usize) -> Rc<RefCell<Self>> {
         assert!(index < node.borrow().size());
         let left_size = node.borrow().left.size();
-        if index < left_size {
-            let left = node.borrow().left.as_ref().unwrap().clone();
-            Self::get(&left, index)
-        } else if index == left_size {
-            Node::<T>::splay(node);
-            node.clone()
-        } else {
-            let right = node.borrow().right.as_ref().unwrap().clone();
-            Self::get(&right, index - left_size - 1)
+        match index.cmp(&left_size) {
+            std::cmp::Ordering::Less => {
+                let left = node.borrow().left.as_ref().unwrap().clone();
+                Self::get(&left, index)
+            },
+            std::cmp::Ordering::Equal => {
+                Node::<T>::splay(node);
+                node.clone()
+            },
+            std::cmp::Ordering::Greater => {
+                let right = node.borrow().right.as_ref().unwrap().clone();
+                Self::get(&right, index - left_size - 1)
+            },
         }
     }
 }
-
-use crate::tree_node::Get;
-
-impl<'a, T: 'a> Get<'a> for Rc<RefCell<Node<T>>>
-where
-    T: size::Size,
-    Node<T>: Update,
-{
-    type Output = Self;
-
-    fn get(&self, index: usize) -> Self {
-        assert!(index < self.borrow().size());
-        let left_size = self.borrow().left.size();
-        if index < left_size {
-            let left = self.borrow().left.as_ref().unwrap().clone();
-            left.get(index)
-        } else if index == left_size {
-            Node::<T>::splay(self);
-            self.clone()
-        } else {
-            let right = self.borrow().right.as_ref().unwrap().clone();
-            right.get(index - left_size - 1)
-        }
-    }
-}
-
-use crate::join::Join;
 
 impl<T> Join for Option<Rc<RefCell<Node<T>>>>
 where
@@ -217,8 +195,6 @@ where
         Some(left_root)
     }
 }
-
-use crate::split::Split;
 
 impl<T> Split<usize> for Option<Rc<RefCell<Node<T>>>>
 where
@@ -245,6 +221,8 @@ where
 impl<T: Default> Default for Node<T> {
     fn default() -> Self { Self::new(T::default()) }
 }
+
+#[derive(Debug)]
 pub struct DefaultData<K, V> {
     pub size: usize,
     pub key: K,
@@ -294,5 +272,7 @@ mod tests {
         let (mut root, mut popped) = <Root as Pop>::pop(root, 0);
         assert_eq!(root.size(), 1);
         assert_eq!(popped.size(), 1);
+        println!("{:?}", popped);
+        println!("{:?}", root);
     }
 }
