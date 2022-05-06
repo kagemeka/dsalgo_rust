@@ -52,9 +52,9 @@ where
     pub fn size(&self) -> usize { self.size }
 
     fn merge_childs(&mut self, node_index: usize) {
-        self.data[node_index] =
-            // S::operate(&self.data[node_index << 1], &self.data[node_index << 1 | 1]);
-            self.data[node_index << 1].operate(self.data[node_index << 1 | 1]);
+        self.data[node_index] = self.data[node_index << 1].operate(self.data[node_index << 1 | 1]);
+        // S::operate(&self.data[node_index << 1],
+        // &self.data[node_index << 1 | 1]);
     }
 
     pub fn set_point(&mut self, array_index: usize, x: S) {

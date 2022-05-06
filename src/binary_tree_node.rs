@@ -22,3 +22,8 @@ pub(crate) trait Rotation {
     fn rotate_left(self) -> Self;
     fn rotate_right(self) -> Self;
 }
+
+/// for updating node data when the childs are changed.
+pub(crate) trait UpdateData {
+    fn update(&mut self, left_data: &Self, right_data: &Self);
+}
