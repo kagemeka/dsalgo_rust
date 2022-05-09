@@ -41,7 +41,7 @@ impl<R: std::io::BufRead> ReadWrapper<R> {
         while self.tokens.is_empty() {
             let mut buf = String::new();
             self.reader.read_line(&mut buf);
-            self.tokens = buf.split_whitespace().rev().map(String::from).collect();
+            self.tokens = buf.split_whitespace().map(str::to_string).rev().collect();
         }
         self.tokens.pop().unwrap().parse::<T>()
     }
@@ -55,7 +55,7 @@ pub fn locked_stdin_reader() -> ReadWrapper<std::io::StdinLock<'static>> {
 /// Example
 /// ```
 /// use std::io::Write;
-/// let mut writer = locked_buf_writer();
+/// let mut writer = locked_stdin_buf_writer();
 /// writeln!(writer, "Hello, world!");
 /// writer.flush().unwrap();
 /// ```
