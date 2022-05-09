@@ -1,10 +1,10 @@
-fn read_stdin<T>() -> Result<T, <T as std::str::FromStr>::Err>
+fn read_token<R, T>(reader: &mut R) -> Result<T, <T as std::str::FromStr>::Err>
 where
+    R: std::io::Read,
     T: std::str::FromStr,
 {
     use std::io::Read;
-    std::io::stdin()
-        .lock()
+    reader
         .by_ref()
         .bytes()
         .map(|c| c.unwrap() as char)
@@ -12,6 +12,13 @@ where
         .take_while(|c| !c.is_whitespace())
         .collect::<String>()
         .parse::<T>()
+}
+
+pub fn read_stdin<T>() -> Result<T, <T as std::str::FromStr>::Err>
+where
+    T: std::str::FromStr,
+{
+    read_token(&mut std::io::stdin().lock())
 }
 
 pub struct ReadWrapper<R: std::io::BufRead> {
