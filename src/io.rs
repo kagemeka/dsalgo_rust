@@ -26,10 +26,13 @@ pub struct ReadWrapper<R: std::io::BufRead> {
     tokens: Vec<String>,
 }
 
+/// Example
+/// ```
+/// let stdin = std::io::stdin();
+/// let mut reader = ReadWrapper::new(stdin.lock());
+/// let x = reader.read::<usize>();
+/// ```
 impl<R: std::io::BufRead> ReadWrapper<R> {
-    /// let stdin = std::io::stdin();
-    /// let mut reader = ReadWrapper::new(stdin.lock());
-    /// let x = reader.read::<usize>();
     pub fn new(reader: R) -> Self {
         Self {
             reader,
