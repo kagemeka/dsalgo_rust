@@ -1,82 +1,54 @@
-pub struct Scanner<R: std::io::Read> {
+fn read<R, T>(reader: &mut R) -> Result<T, <T as std::str::FromStr>::Err>
+where
+    R: std::io::Read,
+    T: std::str::FromStr,
+{
+    use std::io::Read;
+    reader
+        .by_ref()
+        .bytes()
+        .map(|c| c.unwrap() as char)
+        .skip_while(|c| c.is_whitespace())
+        .take_while(|c| !c.is_whitespace())
+        .collect::<String>()
+        .parse::<T>()
+}
+
+pub struct ReadWrapper<R: std::io::Read> {
     reader: R,
 }
 
-impl<R: std::io::Read> Scanner<R> {
+impl<R: std::io::Read> ReadWrapper<R> {
     /// let stdin = std::io::stdin();
-    /// let mut sc = Scanner::new(stdin.lock());
+    /// let mut reader = ReadWrapper::new(std::io::BufReader::new(stdin.lock()));
+    /// let x = reader.read::<usize>();
     pub fn new(reader: R) -> Self { Self { reader: reader } }
 
-    pub fn scan<T: std::str::FromStr>(&mut self) -> T {
-        use std::io::Read;
-        self.reader.by_ref().bytes().map(|c| c.unwrap() as char)
-        .skip_while(|c| c.is_whitespace())
-        .take_while(|c| !c.is_whitespace())
-        .collect::<String>().parse::<T>().ok().unwrap()
+    pub fn read<T: std::str::FromStr>(&mut self) -> Result<T, <T as std::str::FromStr>::Err> {
+        read(&mut self.reader)
     }
 }
 
-
-pub struct StdinScanner<'a> {
-    reader: std::io::StdinLock<'a>,
+pub fn locked_buf_reader() -> ReadWrapper<std::io::BufReader<std::io::StdinLock<'static>>> {
+    let stdin = Box::leak(Box::new(std::io::stdin()));
+    ReadWrapper::new(std::io::BufReader::new(stdin.lock()))
 }
 
-impl<'a> StdinScanner<'a> {
-    /// let mut sc = StdinScanner::new();
-    pub fn new() -> Self {
-        let stdin = Box::leak(Box::new(std::io::stdin()));
-        Self { reader: stdin.lock() }
-    }
-
-    /// let a = sc.scan::<i32>();
-    /// let b: i32 = sc.scan();
-    pub fn scan<T: std::str::FromStr>(&mut self) -> T {
-        use std::io::Read;
-        self.reader.by_ref().bytes().map(|c| c.unwrap() as char)
-        .skip_while(|c| c.is_whitespace())
-        .take_while(|c| !c.is_whitespace())
-        .collect::<String>().parse::<T>().ok().unwrap()
-    }
-}
-
-
-pub fn scan<T: std::str::FromStr>() -> T {
-    use std::io::Read;
-    std::io::stdin().lock().bytes().map(|c| c.unwrap() as char)
-    .skip_while(|c| c.is_whitespace())
-    .take_while(|c| !c.is_whitespace())
-    .collect::<String>().parse::<T>().ok().unwrap()
-}
-
-
-pub fn scan<T: std::str::FromStr>() -> T {
-    use std::io::Read;
-    std::io::stdin().lock().bytes().map(|c|c.unwrap()as char)
-    .skip_while(|c|c.is_whitespace())
-    .take_while(|c|!c.is_whitespace())
-    .collect::<String>().parse::<T>().ok().unwrap()
-}
-
-
-
-use std::io::Write;
-/// let stdout = std::io::stdout();
-/// let out = &mut std::io::BufWriter::new(stdout.lock());
-/// writeln!(out, "{}", 1).unwrap()
-
-
-pub struct Writer<W: std::io::Write> {
-    writer: W,
-}
-
-impl<W: std::io::Write> Writer<W> {
-    pub fn new(writer: W) -> Self { Self { writer: writer } }
-
-}
-
-
+/// Example
+/// ```
 /// use std::io::Write;
-/// let stdin = std::io::stdin();
-/// let mut sc = Scanner::new(std::io::BufReader::new(stdin.lock()));
-/// let stdout = std::io::stdout();
-/// let out = &mut std::io::BufWriter::new(stdout.lock());
+/// let writer = &mut locked_buf_writer();
+/// writeln!(writer, "Hello, world!");
+/// writer.flush().unwrap();
+/// ```
+pub fn locked_buf_writer() -> std::io::BufWriter<std::io::StdoutLock<'static>> {
+    let stdout = Box::leak(Box::new(std::io::stdout()));
+    std::io::BufWriter::new(stdout.lock())
+}
+
+pub fn fast_io() -> (
+    ReadWrapper<std::io::BufReader<std::io::StdinLock<'static>>>,
+    std::io::BufWriter<std::io::StdoutLock<'static>>,
+) {
+    (locked_buf_reader(), locked_buf_writer())
+}
