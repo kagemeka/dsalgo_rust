@@ -14,6 +14,13 @@ pub struct DynamicMod<Id> {
 
 impl<Id> DynamicMod<Id> {
     fn core() -> &'static std::sync::atomic::AtomicU32 {
+        // cannot return &'static mut VALUE because it can be changed by multiple
+        // threads.
+        // so we should return a reference of a type having interior mutability.
+        // cannot use std::cell for static value because it is not
+        // `Sync`;
+        // we should use std::sync types instead.
+        // atomic types are lighter than mutex.
         static VALUE: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(0);
         &VALUE
     }

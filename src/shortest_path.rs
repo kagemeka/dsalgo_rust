@@ -196,27 +196,3 @@ pub fn johnson_dense(
     }
     Ok(dist)
 }
-
-/// O(V^3)
-pub fn floyd_warshall(
-    mut g: Vec<Vec<i64>>,
-) -> Result<Vec<Vec<i64>>, NegativeCycleError> {
-    let inf = std::i64::MAX;
-    let n = g.len();
-    for k in 0..n {
-        for i in 0..n {
-            for j in 0..n {
-                if g[i][k] == inf || g[k][j] == inf {
-                    continue;
-                }
-                g[i][j] = std::cmp::min(g[i][j], g[i][k] + g[k][j]);
-            }
-        }
-    }
-    for i in 0..n {
-        if g[i][i] < 0 {
-            return Err(NegativeCycleError::new());
-        }
-    }
-    Ok(g)
-}

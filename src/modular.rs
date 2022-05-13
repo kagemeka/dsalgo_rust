@@ -53,10 +53,6 @@ impl<M: Modulus> From<i64> for Modular<M> {
     }
 }
 
-impl<M: Modulus> From<i32> for Modular<M> {
-    fn from(value: i32) -> Self { Self::from(value as i64) }
-}
-
 impl<M: Modulus> std::ops::AddAssign<Self> for Modular<M> {
     fn add_assign(&mut self, rhs: Self) {
         let mut value = self.value as u64 + rhs.value as u64;
@@ -125,19 +121,25 @@ impl<M: Modulus> std::ops::DivAssign<Self> for Modular<M> {
 impl<M: Modulus> std::ops::Div<Self> for Modular<M> {
     type Output = Self;
 
-    fn div(mut self, rhs: Self) -> Self {
+    fn div(mut self, rhs: Self) -> Self::Output {
         self /= rhs;
         self
     }
 }
 
 impl<M: Modulus> Modular<M> {
-    pub fn invert(self) -> Option<Self> {
+    fn inverse(self) -> Option<Self> {
         let (g, inv) = extgcd_modinv(M::value() as i64, self.value() as i64);
         if g != 1 || inv.is_none() {
             None
         } else {
-            Some(Self::new(inv.unwrap() as u32))
+            Some(inv.unwrap().into())
         }
+    }
+
+    pub fn invert(self) -> Result<Self, String> {
+        let v = self.value;
+        self.inverse()
+            .ok_or_else(|| format!("{} is not invertible for the modulus {}", v, M::value()))
     }
 }
