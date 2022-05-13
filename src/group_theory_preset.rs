@@ -16,9 +16,7 @@ impl<S: std::ops::Add<S, Output = S>> BinaryOperation<Self, Self, Additive> for 
 }
 impl<S: std::ops::Add<S, Output = S>> CommutativeProperty<Self, Additive> for S {}
 impl<S: std::ops::Add<S, Output = S>> AssociativeProperty<Additive> for S {}
-impl<S: std::ops::Add<S, Output = S> + std::ops::Neg<Output = S> + IdentityElement<Additive>>
-    InverseElement<Additive> for S
-{
+impl<S: std::ops::Add<S, Output = S> + std::ops::Neg<Output = S> + IdentityElement<Additive>> InverseElement<Additive> for S {
     // fn invert(value: &Self) -> Self { -*value }
 
     fn invert(self) -> Self { -self }

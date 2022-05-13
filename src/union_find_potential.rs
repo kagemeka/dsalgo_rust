@@ -36,8 +36,7 @@ where
         //     &self.potential_from_parent[node],
         //     &self.potential_from_parent[parent],
         // );
-        self.potential_from_parent[node] =
-            self.potential_from_parent[node].operate(self.potential_from_parent[parent]);
+        self.potential_from_parent[node] = self.potential_from_parent[node].operate(self.potential_from_parent[parent]);
         self.data[node] as usize
     }
 

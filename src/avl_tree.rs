@@ -10,9 +10,7 @@ impl<K: PartialOrd, V> AVLTree<K, V> {
 
     pub fn size(&self) -> usize { Node::get_size(self.root.as_ref()) }
 
-    pub fn insert(&mut self, key: K, value: V) {
-        self.root = Some(Node::insert(self.root.take(), Node::new(key, value)));
-    }
+    pub fn insert(&mut self, key: K, value: V) { self.root = Some(Node::insert(self.root.take(), Node::new(key, value))); }
 
     pub fn remove(&mut self, key: &K) { self.root = Node::remove(self.root.take(), &key); }
 

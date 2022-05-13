@@ -33,8 +33,7 @@ where
                 // data[parent_node_index] =
                 //     S::operate(&data[parent_node_index], &data[node_index as
                 // usize]);
-                data[parent_node_index] =
-                    data[parent_node_index].operate(data[node_index as usize]);
+                data[parent_node_index] = data[parent_node_index].operate(data[node_index as usize]);
             }
         }
         Self {
@@ -141,8 +140,7 @@ where
         let mut value = self.get_half_range(left).invert();
         let mut right = 0;
         while length > 0 {
-            if right + length <= left
-                || right + length <= self.size() && is_ok(&value.operate(self.data[right + length]))
+            if right + length <= left || right + length <= self.size() && is_ok(&value.operate(self.data[right + length]))
             // && is_ok(&S::operate(&value, &self.data[right + length]))
             {
                 right += length;
@@ -169,8 +167,7 @@ where
         }
         let mut left = 1;
         while length > 0 {
-            if left + length <= right
-                && !is_ok(&self.data[left - 1 + length].invert().operate(value))
+            if left + length <= right && !is_ok(&self.data[left - 1 + length].invert().operate(value))
             // && !is_ok(&S::operate(&S::invert(&self.data[left - 1 + length]), &value))
             {
                 left += length;

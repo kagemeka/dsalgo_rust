@@ -18,16 +18,10 @@ impl<T> AvlTree<T> {
 
     pub fn len(&self) -> usize { len(self.root.as_deref()) }
 
-    pub fn push_back(&mut self, value: T) {
-        self.append(&mut Self {
-            root: Some(new(value)),
-        })
-    }
+    pub fn push_back(&mut self, value: T) { self.append(&mut Self { root: Some(new(value)) }) }
 
     pub fn push_front(&mut self, value: T) {
-        let mut swp = Self {
-            root: Some(new(value)),
-        };
+        let mut swp = Self { root: Some(new(value)) };
         swp.append(self);
         *self = swp;
     }
@@ -54,9 +48,7 @@ impl<T> AvlTree<T> {
 
     pub fn front_mut(&mut self) -> Option<&mut T> { self.get_mut(0) }
 
-    pub fn append(&mut self, other: &mut Self) {
-        self.root = merge(self.root.take(), other.root.take());
-    }
+    pub fn append(&mut self, other: &mut Self) { self.root = merge(self.root.take(), other.root.take()); }
 
     pub fn split_off(&mut self, index: usize) -> Self {
         assert!(index <= self.len());
@@ -102,11 +94,7 @@ impl<T> AvlTree<T> {
         binary_search_by(self.root.as_deref(), f)
     }
 
-    pub fn binary_search_by_key<B: Ord>(
-        &self,
-        b: &B,
-        mut f: impl FnMut(&T) -> B,
-    ) -> Result<usize, usize> {
+    pub fn binary_search_by_key<B: Ord>(&self, b: &B, mut f: impl FnMut(&T) -> B) -> Result<usize, usize> {
         self.binary_search_by(|x| f(x).cmp(b))
     }
 
@@ -162,14 +150,10 @@ impl<T: Ord> Ord for AvlTree<T> {
     fn cmp(&self, other: &Self) -> Ordering { self.iter().cmp(other) }
 }
 impl<T: Debug> Debug for AvlTree<T> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_list().entries(self).finish()
-    }
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { f.debug_list().entries(self).finish() }
 }
 impl<T: Hash> Hash for AvlTree<T> {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.iter().for_each(|elm| elm.hash(state));
-    }
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) { self.iter().for_each(|elm| elm.hash(state)); }
 }
 impl<T> IntoIterator for AvlTree<T> {
     type IntoIter = IntoIter<T>;
@@ -369,10 +353,7 @@ fn merge<T>(left: Option<Box<Node<T>>>, mut right: Option<Box<Node<T>>>) -> Opti
     }
 }
 #[allow(clippy::type_complexity)]
-fn split_delete<T>(
-    mut root: Box<Node<T>>,
-    index: usize,
-) -> (Option<Box<Node<T>>>, Box<Node<T>>, Option<Box<Node<T>>>) {
+fn split_delete<T>(mut root: Box<Node<T>>, index: usize) -> (Option<Box<Node<T>>>, Box<Node<T>>, Option<Box<Node<T>>>) {
     debug_assert!((0..root.len).contains(&index));
     let left = root.left.take();
     let right = root.right.take();
@@ -392,10 +373,7 @@ fn split_delete<T>(
     }
 }
 #[allow(clippy::type_complexity)]
-fn split<T>(
-    tree: Option<Box<Node<T>>>,
-    index: usize,
-) -> (Option<Box<Node<T>>>, Option<Box<Node<T>>>) {
+fn split<T>(tree: Option<Box<Node<T>>>, index: usize) -> (Option<Box<Node<T>>>, Option<Box<Node<T>>>) {
     match tree {
         Some(root) => {
             if root.len == index {
@@ -408,10 +386,7 @@ fn split<T>(
         None => (None, None),
     }
 }
-fn binary_search_by<T>(
-    tree: Option<&Node<T>>,
-    mut f: impl FnMut(&T) -> Ordering,
-) -> Result<usize, usize> {
+fn binary_search_by<T>(tree: Option<&Node<T>>, mut f: impl FnMut(&T) -> Ordering) -> Result<usize, usize> {
     let node = match tree {
         None => return Err(0),
         Some(node) => node,

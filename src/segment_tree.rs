@@ -198,14 +198,7 @@ where
         self._get_recurse(left, right, 0, self.data.len() >> 1, 1)
     }
 
-    fn _get_recurse(
-        &self,
-        left: usize,
-        right: usize,
-        current_left: usize,
-        current_right: usize,
-        node_index: usize,
-    ) -> S {
+    fn _get_recurse(&self, left: usize, right: usize, current_left: usize, current_right: usize, node_index: usize) -> S {
         if current_right <= left || right <= current_left {
             return S::identity();
         }
@@ -252,10 +245,8 @@ where
         if current_left >= self.size {
             return self.size;
         }
-        if left <= current_left
-            && current_right <= self.size
-            // && is_ok(&S::operate(current_value, &self.data[node_index]))
-            && is_ok(&current_value.operate(self.data[node_index]))
+        if left <= current_left && current_right <= self.size && is_ok(&current_value.operate(self.data[node_index]))
+        // && is_ok(&S::operate(current_value, &self.data[node_index]))
         {
             // *current_value = S::operate(current_value,
             // &self.data[node_index]);

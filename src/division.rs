@@ -8,9 +8,7 @@ pub fn divmod_isize(a: isize, b: isize) -> (isize, isize) {
     (q, r)
 }
 
-pub fn divrem_euclid_isize(a: isize, b: isize) -> (isize, isize) {
-    (a.div_euclid(b), a.rem_euclid(b))
-}
+pub fn divrem_euclid_isize(a: isize, b: isize) -> (isize, isize) { (a.div_euclid(b), a.rem_euclid(b)) }
 
 #[cfg(test)]
 mod tests {

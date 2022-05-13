@@ -19,10 +19,7 @@ impl<'a, S: Default + Clone> SparseTable<'a, S> {
                 data[i + 1][j] = (sg.operate)(&data[i][j], &data[i][j + (1 << i)])
             }
         }
-        Self {
-            sg: sg,
-            data: data,
-        }
+        Self { sg: sg, data: data }
     }
 
     pub fn get(&self, l: usize, r: usize) -> S {
@@ -61,10 +58,7 @@ impl<'a, S: Default + Clone> DisjointSparseTable<'a, S> {
                 }
             }
         }
-        Self {
-            sg: sg,
-            data: data,
-        }
+        Self { sg: sg, data: data }
     }
 
     pub fn get(&self, l: usize, r: usize) -> S {

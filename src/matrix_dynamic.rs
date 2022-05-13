@@ -69,9 +69,7 @@ impl<T> DynamicShapedMatrix<T> {
     where
         T: Clone,
     {
-        let mut result = Self {
-            data: self.data.clone(),
-        };
+        let mut result = Self { data: self.data.clone() };
         let height = self.shape().height;
         for i in 0..height / 2 {
             result.data.swap(i, height - i - 1);
@@ -101,9 +99,7 @@ impl<T> std::ops::Index<(usize, usize)> for DynamicShapedMatrix<T> {
 }
 
 impl<T> std::ops::IndexMut<(usize, usize)> for DynamicShapedMatrix<T> {
-    fn index_mut(&mut self, index: (usize, usize)) -> &mut Self::Output {
-        &mut self.data[index.0][index.1]
-    }
+    fn index_mut(&mut self, index: (usize, usize)) -> &mut Self::Output { &mut self.data[index.0][index.1] }
 }
 
 #[cfg(test)]

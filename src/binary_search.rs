@@ -15,13 +15,9 @@ where
     high
 }
 
-pub fn lower_bound<T: PartialOrd>(slice: &[T], x: &T) -> usize {
-    binary_search(&|y: &T| y >= x, slice)
-}
+pub fn lower_bound<T: PartialOrd>(slice: &[T], x: &T) -> usize { binary_search(&|y: &T| y >= x, slice) }
 
-pub fn upper_bound<T: PartialOrd>(slice: &[T], x: &T) -> usize {
-    binary_search(&|y: &T| y > x, slice)
-}
+pub fn upper_bound<T: PartialOrd>(slice: &[T], x: &T) -> usize { binary_search(&|y: &T| y > x, slice) }
 
 #[cfg(test)]
 mod tests {

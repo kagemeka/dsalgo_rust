@@ -22,16 +22,12 @@ pub(crate) enum Edge<T = Option<EdgeData>, U = Option<NodeData>> {
 impl<T: std::fmt::Debug, U> std::fmt::Debug for Edge<T, U> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Edge::Directed {
-                from: _,
-                to: _,
-                data,
-            } => write!(f, "Edge::Directed {{ data: {:?} }}", data),
-            Edge::Undirected {
-                lhs: _,
-                rhs: _,
-                data,
-            } => write!(f, "Edge::Undirected {{ data: {:?} }}", data),
+            Edge::Directed { from: _, to: _, data } => {
+                write!(f, "Edge::Directed {{ data: {:?} }}", data)
+            },
+            Edge::Undirected { lhs: _, rhs: _, data } => {
+                write!(f, "Edge::Undirected {{ data: {:?} }}", data)
+            },
         }
     }
 }

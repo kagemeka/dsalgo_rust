@@ -20,22 +20,13 @@ impl<K: PartialOrd, V> Node<K, V> {
         })
     }
 
-    pub(crate) fn get_height(root: Option<&Box<Self>>) -> usize {
-        if let Some(node) = root {
-            node.height
-        } else {
-            0
-        }
-    }
+    pub(crate) fn get_height(root: Option<&Box<Self>>) -> usize { if let Some(node) = root { node.height } else { 0 } }
 
-    pub(crate) fn get_size(root: Option<&Box<Self>>) -> usize {
-        if let Some(node) = root { node.size } else { 0 }
-    }
+    pub(crate) fn get_size(root: Option<&Box<Self>>) -> usize { if let Some(node) = root { node.size } else { 0 } }
 
     pub(crate) fn get_balance(root: Option<&Box<Self>>) -> isize {
         if let Some(node) = root {
-            Self::get_height(node.right.as_ref()) as isize
-                - Self::get_height(node.left.as_ref()) as isize
+            Self::get_height(node.right.as_ref()) as isize - Self::get_height(node.left.as_ref()) as isize
         } else {
             0
         }

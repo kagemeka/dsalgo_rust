@@ -9,9 +9,7 @@ pub trait BinaryOperation<F: ?Sized, T: ?Sized, I: BinaryOperationIdentifier> {
 }
 
 /// first * second * third
-pub trait AssociativeProperty<I: BinaryOperationIdentifier>:
-    BinaryOperation<Self, Self, I>
-{
+pub trait AssociativeProperty<I: BinaryOperationIdentifier>: BinaryOperation<Self, Self, I> {
     fn assert_associative(first: Self, second: Self, third: Self)
     where
         Self: Copy + PartialEq + Debug,
@@ -32,9 +30,7 @@ pub trait Idempotence<I: BinaryOperationIdentifier>: BinaryOperation<Self, Self,
     }
 }
 
-pub trait CommutativeProperty<T: Sized, I: BinaryOperationIdentifier>:
-    BinaryOperation<Self, T, I> + Sized
-{
+pub trait CommutativeProperty<T: Sized, I: BinaryOperationIdentifier>: BinaryOperation<Self, T, I> + Sized {
     fn assert_commutative(self, operator: Self)
     where
         Self: Copy,
@@ -72,10 +68,7 @@ impl<I: BinaryOperationIdentifier, S: Magma<I> + AssociativeProperty<I>> Semigro
 pub trait Monoid<I: BinaryOperationIdentifier>: Semigroup<I> + IdentityElement<I> {}
 impl<I: BinaryOperationIdentifier, S: Semigroup<I> + IdentityElement<I>> Monoid<I> for S {}
 
-pub trait CommutativeMonoid<I: BinaryOperationIdentifier>:
-    Monoid<I> + CommutativeProperty<Self, I> + Sized
-{
-}
+pub trait CommutativeMonoid<I: BinaryOperationIdentifier>: Monoid<I> + CommutativeProperty<Self, I> + Sized {}
 impl<I, S> CommutativeMonoid<I> for S
 where
     I: BinaryOperationIdentifier,
@@ -86,14 +79,8 @@ where
 pub trait Group<I: BinaryOperationIdentifier>: Monoid<I> + InverseElement<I> {}
 impl<I: BinaryOperationIdentifier, S: Monoid<I> + InverseElement<I>> Group<I> for S {}
 
-pub trait AbelianGroup<I: BinaryOperationIdentifier>:
-    Group<I> + CommutativeProperty<Self, I>
-{
-}
-impl<I: BinaryOperationIdentifier, S: Group<I> + CommutativeProperty<Self, I>> AbelianGroup<I>
-    for S
-{
-}
+pub trait AbelianGroup<I: BinaryOperationIdentifier>: Group<I> + CommutativeProperty<Self, I> {}
+impl<I: BinaryOperationIdentifier, S: Group<I> + CommutativeProperty<Self, I>> AbelianGroup<I> for S {}
 
 pub trait Semiring<I, J>: CommutativeMonoid<I> + Monoid<J>
 where

@@ -27,20 +27,14 @@ impl<'a, S: Copy> SegmentTree<'a, S> {
         for i in 0..size {
             data[n + i] = a[i];
         }
-        let mut seg = Self {
-            monoid,
-            data,
-            size,
-        };
+        let mut seg = Self { monoid, data, size };
         for i in (0..n).rev() {
             seg.merge(i);
         }
         seg
     }
 
-    fn merge(&mut self, i: usize) {
-        self.data[i] = (self.monoid.operate)(&self.data[i << 1], &self.data[i << 1 | 1]);
-    }
+    fn merge(&mut self, i: usize) { self.data[i] = (self.monoid.operate)(&self.data[i << 1], &self.data[i << 1 | 1]); }
 
     pub fn set(&mut self, mut i: usize, x: S) {
         assert!(i < self.size);
@@ -132,8 +126,7 @@ mod tests {
         assert_eq!(
             seg.data,
             [
-                45, 45, 28, 17, 6, 22, 17, 0, 1, 5, 9, 13, 17, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8,
-                9, 0, 0, 0, 0, 0, 0
+                45, 45, 28, 17, 6, 22, 17, 0, 1, 5, 9, 13, 17, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0
             ],
         );
         println!("{:?}", seg);

@@ -40,9 +40,7 @@ pub(crate) struct DirectedEdge<T, U> {
 
 impl<T, U> Edge<T, U> for DirectedEdge<T, U> {}
 
-impl<T: Default, U> From<(Rc<RefCell<Node<U, T>>>, Rc<RefCell<Node<U, T>>>)>
-    for DirectedEdge<T, U>
-{
+impl<T: Default, U> From<(Rc<RefCell<Node<U, T>>>, Rc<RefCell<Node<U, T>>>)> for DirectedEdge<T, U> {
     fn from(nodes: (Rc<RefCell<Node<U, T>>>, Rc<RefCell<Node<U, T>>>)) -> Self {
         Self {
             from: nodes.0,
@@ -53,9 +51,7 @@ impl<T: Default, U> From<(Rc<RefCell<Node<U, T>>>, Rc<RefCell<Node<U, T>>>)>
 }
 
 impl<T, U> DirectedEdge<T, U> {
-    pub(crate) fn new(from: Rc<RefCell<Node<U, T>>>, to: Rc<RefCell<Node<U, T>>>, data: T) -> Self {
-        Self { from, to, data }
-    }
+    pub(crate) fn new(from: Rc<RefCell<Node<U, T>>>, to: Rc<RefCell<Node<U, T>>>, data: T) -> Self { Self { from, to, data } }
 }
 
 #[derive(Debug)]
@@ -67,9 +63,7 @@ pub(crate) struct UndirectedEdge<T, U> {
 
 impl<T, U> Edge<T, U> for UndirectedEdge<T, U> {}
 
-impl<T: Default, U> From<(Rc<RefCell<Node<U, T>>>, Rc<RefCell<Node<U, T>>>)>
-    for UndirectedEdge<T, U>
-{
+impl<T: Default, U> From<(Rc<RefCell<Node<U, T>>>, Rc<RefCell<Node<U, T>>>)> for UndirectedEdge<T, U> {
     fn from(nodes: (Rc<RefCell<Node<U, T>>>, Rc<RefCell<Node<U, T>>>)) -> Self {
         Self {
             left: nodes.0,
@@ -90,16 +84,8 @@ impl<T: Clone, U> From<&DirectedEdge<T, U>> for UndirectedEdge<T, U> {
 }
 
 impl<T, U> UndirectedEdge<T, U> {
-    pub(crate) fn new(
-        left: Rc<RefCell<Node<U, T>>>,
-        right: Rc<RefCell<Node<U, T>>>,
-        data: T,
-    ) -> Self {
-        Self {
-            left,
-            right,
-            data,
-        }
+    pub(crate) fn new(left: Rc<RefCell<Node<U, T>>>, right: Rc<RefCell<Node<U, T>>>, data: T) -> Self {
+        Self { left, right, data }
     }
 }
 

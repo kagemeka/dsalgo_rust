@@ -80,9 +80,7 @@ where
 
     fn rotate_up(node: &Rc<RefCell<Self>>) {
         let parent = node.borrow().parent.as_ref().unwrap().clone();
-        if parent.borrow().left.is_some()
-            && Rc::ptr_eq(parent.borrow().left.as_ref().unwrap(), node)
-        {
+        if parent.borrow().left.is_some() && Rc::ptr_eq(parent.borrow().left.as_ref().unwrap(), node) {
             parent.rotate_right();
         } else {
             assert!(Rc::ptr_eq(parent.borrow().right.as_ref().unwrap(), node));
@@ -94,9 +92,7 @@ where
     fn get_state(node: &Rc<RefCell<Self>>) -> State {
         match &node.borrow().parent {
             Some(parent) => {
-                if parent.borrow().left.is_some()
-                    && Rc::ptr_eq(parent.borrow().left.as_ref().unwrap(), node)
-                {
+                if parent.borrow().left.is_some() && Rc::ptr_eq(parent.borrow().left.as_ref().unwrap(), node) {
                     State::LeftChild
                 } else {
                     State::RightChild
@@ -234,13 +230,7 @@ impl Default for DefaultData<usize, usize> {
 }
 
 impl<K, V> DefaultData<K, V> {
-    pub fn new(key: K, value: V) -> Self {
-        DefaultData {
-            size: 1,
-            key,
-            value,
-        }
-    }
+    pub fn new(key: K, value: V) -> Self { DefaultData { size: 1, key, value } }
 }
 
 impl<K, V> size::Size for DefaultData<K, V> {

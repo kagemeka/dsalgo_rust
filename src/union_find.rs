@@ -3,11 +3,7 @@ pub struct UnionFind {
 }
 
 impl UnionFind {
-    pub fn new(size: usize) -> Self {
-        Self {
-            data: vec![-1; size],
-        }
-    }
+    pub fn new(size: usize) -> Self { Self { data: vec![-1; size] } }
 
     pub fn size(&self) -> usize { self.data.len() }
 

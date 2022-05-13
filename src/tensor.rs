@@ -26,12 +26,7 @@ impl<T: Clone + Default, const NDIM: usize> Tensor<T, NDIM> {
         }
         let size: usize = strides[0] * shape[0];
         let data = vec![T::default(); size];
-        Self {
-            shape,
-            strides,
-            size,
-            data,
-        }
+        Self { shape, strides, size, data }
     }
 }
 

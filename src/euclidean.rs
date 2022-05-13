@@ -29,11 +29,7 @@ pub fn least_common_multiple(a: usize, b: usize) -> usize {
 
 pub fn extended_euclidean_recurse(a: isize, b: isize) -> (usize, isize, isize) {
     if b == 0 {
-        return if a < 0 {
-            ((-a) as usize, -1, 0)
-        } else {
-            (a as usize, 1, 0)
-        };
+        return if a < 0 { ((-a) as usize, -1, 0) } else { (a as usize, 1, 0) };
     }
     let (g, s, t) = extended_euclidean_recurse(b, a % b);
     (g, t, s - a / b * t)

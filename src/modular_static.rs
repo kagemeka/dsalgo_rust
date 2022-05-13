@@ -13,9 +13,7 @@ pub struct Modular<M: Modulus> {
 }
 
 impl<M: Modulus> std::fmt::Display for Modular<M> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.value)
-    }
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "{}", self.value) }
 }
 impl<M: Modulus> Modular<M> {
     pub const fn value(&self) -> usize { self.value }
@@ -34,15 +32,11 @@ impl<M: Modulus> From<usize> for Modular<M> {
     fn from(value: usize) -> Self { Self::new(value) }
 }
 
-impl<M: Modulus + std::marker::Copy> group_theory::IdentityElement<group_theory::Additive>
-    for Modular<M>
-{
+impl<M: Modulus + std::marker::Copy> group_theory::IdentityElement<group_theory::Additive> for Modular<M> {
     fn identity() -> Self { 0.into() }
 }
 
-impl<M: Modulus + std::marker::Copy> group_theory::IdentityElement<group_theory::Multiplicative>
-    for Modular<M>
-{
+impl<M: Modulus + std::marker::Copy> group_theory::IdentityElement<group_theory::Multiplicative> for Modular<M> {
     fn identity() -> Self { 1.into() }
 }
 

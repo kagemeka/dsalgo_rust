@@ -102,11 +102,7 @@ impl<T, U> UndirectedGraph<T, U> {
 
     pub fn add_edge(&mut self, left: usize, right: usize, data: U) {
         assert!(left < self.size() && right < self.size());
-        let edge = Rc::new(RefCell::new(UndirectedEdge {
-            left,
-            right,
-            data,
-        }));
+        let edge = Rc::new(RefCell::new(UndirectedEdge { left, right, data }));
         self.edges[left].push(edge.clone());
         self.edges[right].push(edge.clone());
     }
@@ -172,11 +168,7 @@ mod tests {
     #[test]
     fn test_directed() {
         let edges = (0..2)
-            .map(|i| super::UndirectedEdge::<()> {
-                left: i,
-                right: i + 1,
-                data: (),
-            })
+            .map(|i| super::UndirectedEdge::<()> { left: i, right: i + 1, data: () })
             .collect::<Vec<_>>();
         let graph = super::DirectedGraph::<(), ()>::from(edges.as_slice());
         println!("{:?}", graph);

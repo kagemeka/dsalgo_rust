@@ -1,15 +1,8 @@
-pub(self) fn find_longest_sequence<T: Copy, F: Fn(&T, &T) -> bool>(
-    slice: &[T],
-    binary_relation: F,
-) -> Vec<T> {
+pub(self) fn find_longest_sequence<T: Copy, F: Fn(&T, &T) -> bool>(slice: &[T], binary_relation: F) -> Vec<T> {
     let mut result = vec![None; slice.len()];
     for &value in slice {
         let is_ok = |x: &Option<T>| {
-            if let Some(x) = x {
-                binary_relation(x, &value)
-            } else {
-                true
-            }
+            if let Some(x) = x { binary_relation(x, &value) } else { true }
         };
         let index = crate::binary_search::binary_search(&is_ok, &result);
         result[index] = Some(value);

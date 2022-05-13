@@ -17,9 +17,7 @@ impl<K: PartialOrd, V> Node<K, V> {
         })
     }
 
-    pub(crate) fn get_size(root: Option<&Box<Self>>) -> usize {
-        if let Some(node) = root { node.size } else { 0 }
-    }
+    pub(crate) fn get_size(root: Option<&Box<Self>>) -> usize { if let Some(node) = root { node.size } else { 0 } }
 
     pub(crate) fn update(root: &mut Box<Self>) {
         root.size = Self::get_size(root.left.as_ref()) + Self::get_size(root.right.as_ref()) + 1;

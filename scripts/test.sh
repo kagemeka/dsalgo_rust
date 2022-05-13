@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # https://doc.rust-lang.org/cargo/commands/cargo-test.html
-cargo test
+# cargo test
 cargo test \
     --all-features \
     --all-targets \

@@ -166,13 +166,7 @@ pub fn popcount_table(n: usize) -> Vec<usize> {
 /// assert_eq!(shift_right_until_odd(2), Some(1));
 /// assert_eq!(shift_right_until_odd(12), Some(3));
 /// ```
-pub fn shift_right_until_odd(n: usize) -> Option<usize> {
-    if n == 0 {
-        None
-    } else {
-        Some(n / lsb_number(n))
-    }
-}
+pub fn shift_right_until_odd(n: usize) -> Option<usize> { if n == 0 { None } else { Some(n / lsb_number(n)) } }
 
 #[cfg(test)]
 mod tests {
