@@ -53,6 +53,7 @@ pub mod index;
 pub mod insertion;
 pub mod inverse_element;
 pub mod inverse_factorial_table;
+pub mod io;
 pub mod join;
 pub mod longest_common_prefix;
 pub mod longest_increasing_sequence;
