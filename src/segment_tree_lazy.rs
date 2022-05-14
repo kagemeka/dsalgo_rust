@@ -1,7 +1,8 @@
 use crate::{
     bit_length::bit_length,
-    bitwise,
+    bit_shr_until_odd::bit_shr_until_odd,
     group_theory::{BinaryOperationIdentifier, Monoid},
+    least_significant_bit_number::lsb_number,
     set_theory,
 };
 
@@ -199,7 +200,7 @@ where
         let mut node_index = n + left;
         self.propagate_above(node_index);
         loop {
-            node_index = bitwise::shift_right_until_odd(node_index).unwrap();
+            node_index = bit_shr_until_odd(node_index as u64).unwrap() as usize;
             // if !is_ok(&S::operate(&value, &self.data[node_index])) {
             //     break;
             // }
@@ -210,7 +211,7 @@ where
             // value = S::operate(&value, &self.data[node_index]);
             value = value.operate(self.data[node_index]);
             node_index += 1;
-            if bitwise::lsb_number(node_index) == node_index {
+            if lsb_number(node_index as u64) as usize == node_index {
                 // wall.
                 return self.size;
             }
@@ -246,7 +247,7 @@ where
         self.propagate_above(node_index);
         loop {
             assert!(node_index >= 1);
-            node_index = bitwise::shift_right_until_odd(node_index).unwrap();
+            node_index = bit_shr_until_odd(node_index as u64).unwrap() as usize;
             assert!(node_index >= 1);
             // if !is_ok(&S::operate(&self.data[node_index - 1], &value)) {
             //     break;
@@ -257,7 +258,7 @@ where
             node_index -= 1;
             // value = S::operate(&self.data[node_index], &value);
             value = self.data[node_index].operate(value);
-            if bitwise::lsb_number(node_index) == node_index {
+            if lsb_number(node_index as u64) as usize == node_index {
                 return 0;
             }
         }

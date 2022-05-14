@@ -1,4 +1,4 @@
-use crate::{abstract_structs, bit_length::bit_length, bitwise};
+use crate::{abstract_structs, bit_length::bit_length};
 pub struct SparseTable<'a, S> {
     sg: abstract_structs::Semigroup<'a, S>,
     data: Vec<Vec<S>>,

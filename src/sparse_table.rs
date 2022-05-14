@@ -1,6 +1,5 @@
 use crate::{
     bit_length::bit_length,
-    bitwise,
     group_theory::{CommutativeProperty, Idempotence, Semigroup},
 };
 

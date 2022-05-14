@@ -1,7 +1,8 @@
 use crate::{
-    bitwise,
-    group_theory::{AbelianGroup, Additive, CommutativeMonoid, CommutativeProperty, Monoid},
+    group_theory::{AbelianGroup, Additive, CommutativeMonoid},
+    least_significant_bit_number::lsb_number,
     most_significant_bit::msb,
+    reset_least_bit::reset_least_bit,
 };
 
 /// Node Indices
@@ -68,7 +69,7 @@ where
             // self.data[node_index] = S::operate(&self.data[node_index],
             // value_to_operate);
             self.data[node_index] = self.data[node_index].operate(value_to_operate);
-            node_index += bitwise::lsb_number(node_index);
+            node_index += lsb_number(node_index as u64) as usize;
         }
     }
 
@@ -79,7 +80,7 @@ where
         while node_index > 0 {
             // value = S::operate(&value, &self.data[node_index]);
             value = value.operate(self.data[node_index]);
-            node_index = bitwise::reset_least_bit(node_index);
+            node_index = reset_least_bit(node_index as u64) as usize;
         }
         value
     }

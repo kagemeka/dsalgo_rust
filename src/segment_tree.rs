@@ -1,4 +1,4 @@
-use crate::{bitwise, group_theory::Monoid};
+use crate::{bit_shr_until_odd::bit_shr_until_odd, group_theory::Monoid, least_significant_bit_number::lsb_number};
 
 /// Node Indices (case $4 \lt |given array| \le 8$)
 /// |1                      |2
@@ -106,7 +106,7 @@ where
         let mut value = S::identity();
         let mut node_index = n + left;
         loop {
-            node_index = bitwise::shift_right_until_odd(node_index).unwrap(); // up to ceil
+            node_index = bit_shr_until_odd(node_index as u64).unwrap() as usize; // up to ceil
             // if !is_ok(&S::operate(&value, &self.data[node_index])) {
             if !is_ok(&value.operate(self.data[node_index])) {
                 break;
@@ -115,7 +115,7 @@ where
             // value = S::operate(&value, &self.data[node_index]);
             value = value.operate(self.data[node_index]);
             node_index += 1;
-            if bitwise::lsb_number(node_index) == node_index {
+            if lsb_number(node_index as u64) as usize == node_index {
                 // wall.
                 return self.size;
             }
@@ -147,7 +147,7 @@ where
         let mut node_index = n + right;
         loop {
             assert!(node_index >= 1);
-            node_index = bitwise::shift_right_until_odd(node_index).unwrap();
+            node_index = bit_shr_until_odd(node_index as u64).unwrap() as usize;
             assert!(node_index >= 1);
             // if !is_ok(&S::operate(&self.data[node_index - 1], &value)) {
             if !is_ok(&&self.data[node_index - 1].operate(value)) {
@@ -156,7 +156,7 @@ where
             node_index -= 1;
             // value = S::operate(&self.data[node_index], &value);
             value = self.data[node_index].operate(value);
-            if bitwise::lsb_number(node_index) == node_index {
+            if lsb_number(node_index as u64) as usize == node_index {
                 return 0;
             }
         }
