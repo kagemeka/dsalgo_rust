@@ -22,11 +22,11 @@ Data Structures and Algorithms for Rust.
 
 ## module naming rule
 
-* basically,
-  + <theme>_<algorithm>.rs
+* basically, 
+  + <theme>_<algorithm>_<constraints>.rs
     - if theme is trivial, it can be omitted.
     - for example, `floyd_warshall` is a algorithm only used for shortest path.
-  + <adjective>_<data_structure>.rs
+  + <adjective>_<data_structure>_<constraints>.rs
   + <data_structure>_ext.rs
     - extentional impl section should be separeted with absolute core API.
   -
