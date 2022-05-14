@@ -22,7 +22,7 @@ Data Structures and Algorithms for Rust.
 
 ## module naming rule
 
-* basically, 
+* basically,
   + <theme>_<algorithm>_<constraints>.rs
     - if theme is trivial, it can be omitted.
     - for example, `floyd_warshall` is a algorithm only used for shortest path.

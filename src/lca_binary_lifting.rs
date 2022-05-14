@@ -1,4 +1,3 @@
-
 pub struct BinaryLifting {
     ancestors: Vec<Vec<usize>>,
     depth: Vec<usize>,

@@ -1,7 +1,9 @@
 use crate::{
     bitwise,
     group_theory::{AbelianGroup, Additive, CommutativeMonoid, CommutativeProperty, Monoid},
+    most_significant_bit::msb,
 };
+
 /// Node Indices
 /// (case $|given array| = 8$,
 /// internally 1-indexed implemetation)
@@ -89,7 +91,7 @@ where
         if self.size() == 0 {
             return 0;
         }
-        let mut length = 1usize << bitwise::most_significant_bit(self.size()).unwrap();
+        let mut length = 1usize << msb(self.size() as u64).unwrap();
         let mut value = S::identity();
         let mut right = 0;
         while length > 0 {
@@ -135,7 +137,7 @@ where
         if left == self.size() {
             return self.size();
         }
-        let mut length = 1usize << bitwise::most_significant_bit(self.size()).unwrap();
+        let mut length = 1usize << msb(self.size() as u64).unwrap();
         // let mut value = S::invert(&self.get_half_range(left));
         let mut value = self.get_half_range(left).invert();
         let mut right = 0;
@@ -160,7 +162,7 @@ where
         if right == 0 {
             return 0;
         }
-        let mut length = 1usize << bitwise::most_significant_bit(self.size()).unwrap();
+        let mut length = 1usize << msb(self.size() as u64).unwrap();
         let mut value = self.get_half_range(right);
         if is_ok(&value) {
             return 0;

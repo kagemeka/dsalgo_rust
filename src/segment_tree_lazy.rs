@@ -1,4 +1,5 @@
 use crate::{
+    bit_length::bit_length,
     bitwise,
     group_theory::{BinaryOperationIdentifier, Monoid},
     set_theory,
@@ -40,7 +41,7 @@ where
             phantom_i: std::marker::PhantomData,
             phantom_j: std::marker::PhantomData,
             size: slice.len(),
-            height: bitwise::bit_length(n),
+            height: bit_length(n as u64) as u32,
             data,
             lazy_operators: vec![F::identity(); n],
         };

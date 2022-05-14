@@ -1,12 +1,3 @@
-/// O(1)
-pub fn most_significant_bit(n: usize) -> Option<u32> {
-    if n == 0 {
-        None
-    } else {
-        Some(0usize.leading_zeros() - n.leading_zeros() - 1)
-    }
-}
-
 /// O(\log\log{N})
 /// ```
 /// use dsalgo::bitwise::msb_number_binary_search;
@@ -70,42 +61,6 @@ pub fn reset_least_bit_naive(n: usize) -> usize { n - lsb_number_direct(n) }
 pub fn reset_least_bit(n: usize) -> usize { if n == 0 { 0 } else { n & (n - 1) } }
 
 pub fn reset_bit(n: usize, bit: usize) -> usize { n & !(1 << bit) }
-
-/// O(\log{N})
-pub fn bit_length_naive(n: usize) -> u32 {
-    let mut length = 0;
-    while 1 << length <= n {
-        length += 1;
-    }
-    length
-}
-
-/// O(\log\log{N}})
-pub fn bit_length_binary_search(mut n: usize) -> u32 {
-    if n == 0 {
-        return 0;
-    }
-    let mut length = 1;
-    for i in (0..6usize).rev() {
-        if n >> (1 << i) > 0 {
-            n >>= 1 << i;
-            length += 1 << i;
-        }
-    }
-    length
-}
-
-/// O(1)
-pub fn bit_length(n: usize) -> u32 { 0usize.leading_zeros() - n.leading_zeros() }
-
-/// O(N)
-pub fn bit_length_table(n: usize) -> Vec<usize> {
-    let mut length = vec![0; n];
-    for i in 1..n {
-        length[i] = length[i >> 1] + 1;
-    }
-    length
-}
 
 /// O(1)
 pub fn reverse_bits(n: usize) -> usize { n.reverse_bits() }

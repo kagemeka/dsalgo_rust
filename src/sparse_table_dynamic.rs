@@ -1,5 +1,4 @@
-use crate::{abstract_structs, bitwise};
-
+use crate::{abstract_structs, bit_length::bit_length, bitwise};
 pub struct SparseTable<'a, S> {
     sg: abstract_structs::Semigroup<'a, S>,
     data: Vec<Vec<S>>,
@@ -10,7 +9,7 @@ impl<'a, S: Default + Clone> SparseTable<'a, S> {
         assert!(sg.idempotent && sg.commutative);
         let n = a.len();
         assert!(n > 0);
-        let k = std::cmp::max(1, bitwise::bit_length(n - 1) as usize);
+        let k = std::cmp::max(1, bit_length((n - 1) as u64) as usize);
         let mut data = vec![vec![S::default(); n]; k];
         data[0] = a.clone();
         for i in 0..k - 1 {
@@ -27,7 +26,7 @@ impl<'a, S: Default + Clone> SparseTable<'a, S> {
         if r - l == 1 {
             return self.data[0][l].clone();
         }
-        let k = bitwise::bit_length(r - 1 - l) as usize - 1;
+        let k = bit_length((r - 1 - l) as u64) as usize - 1;
         (self.sg.operate)(&self.data[k][l], &self.data[k][r - (1 << k)])
     }
 }
@@ -41,7 +40,7 @@ impl<'a, S: Default + Clone> DisjointSparseTable<'a, S> {
     pub fn new(sg: abstract_structs::Semigroup<'a, S>, a: &Vec<S>) -> Self {
         let n = a.len();
         assert!(n > 0);
-        let k = std::cmp::max(1, bitwise::bit_length(n - 1) as usize);
+        let k = std::cmp::max(1, bit_length((n - 1) as u64) as usize);
         let mut data = vec![vec![S::default(); n]; k];
         data[0] = a.clone();
         for i in 1..k {
@@ -66,7 +65,7 @@ impl<'a, S: Default + Clone> DisjointSparseTable<'a, S> {
         if r - l == 1 {
             return self.data[0][l].clone();
         }
-        let log = bitwise::bit_length(l ^ (r - 1)) as usize - 1;
+        let log = bit_length((l ^ (r - 1)) as u64) as usize - 1;
         (self.sg.operate)(&self.data[log][l], &self.data[log][r - 1])
     }
 }

@@ -1,7 +1,9 @@
 use crate::{
+    bit_length::bit_length,
     bitwise,
     group_theory::{CommutativeProperty, Idempotence, Semigroup},
 };
+
 pub struct SparseTable<S, I>
 where
     S: Semigroup<I> + Idempotence<I> + CommutativeProperty<S, I>,
@@ -21,7 +23,7 @@ where
         let height = if max_width <= 1 {
             1
         } else {
-            bitwise::bit_length(max_width - 1) as usize
+            bit_length((max_width - 1) as u64) as usize
         };
         let mut data = vec![slice.to_vec()];
         for log in 1..height {
@@ -47,7 +49,7 @@ where
         if right - left == 1 {
             return self.data[0][left];
         }
-        let log = bitwise::bit_length(right - 1 - left) as usize - 1;
+        let log = bit_length((right - 1 - left) as u64) as usize - 1;
         // S::operate(&self.data[log][left], &self.data[log][right - (1
         // << log)])
         self.data[log][left].operate(self.data[log][right - (1 << log)])
@@ -73,7 +75,7 @@ where
         let height = if width <= 1 {
             1
         } else {
-            bitwise::bit_length(width - 1) as usize
+            bit_length((width - 1) as u64) as usize
         };
         let mut data = vec![slice.to_vec()];
         for log in 1..height {
@@ -111,7 +113,7 @@ where
         if right - left == 1 {
             return self.data[0][left];
         }
-        let log = bitwise::bit_length(left ^ (right - 1)) as usize - 1;
+        let log = bit_length((left ^ (right - 1)) as u64) as usize - 1;
         // S::operate(&self.data[log][left], &self.data[log][right -
         // 1])
         self.data[log][left].operate(self.data[log][right - 1])
