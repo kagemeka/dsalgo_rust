@@ -2,7 +2,7 @@ use crate::{group::Group, power_monoid::pow_monoid};
 
 pub fn pow_group<S, Id, G>(x: S, exponent: i64) -> S
 where
-    S: Copy,
+    S: Clone,
     G: Group<S, Id>,
 {
     if exponent >= 0 {
@@ -14,8 +14,8 @@ where
 
 pub trait PowerGroup<Id>: Group<Self, Id>
 where
-    Self: Copy,
+    Self: Clone,
 {
     fn pow_group(self, exponent: i64) -> Self { pow_group::<Self, Id, Self>(self, exponent) }
 }
-impl<S, Id> PowerGroup<Id> for S where S: Group<S, Id> + Copy {}
+impl<S, Id> PowerGroup<Id> for S where S: Group<S, Id> + Clone {}

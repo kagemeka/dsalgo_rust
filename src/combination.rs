@@ -6,7 +6,7 @@ use crate::{
 
 pub struct Combination<T>
 where
-    T: std::ops::Mul + MulInv<Output = T> + From<usize> + Copy,
+    T: std::ops::Mul + MulInv<Output = T> + From<usize> + Clone,
 {
     fact: Vec<T>,
     inv_fact: Vec<T>,
@@ -14,7 +14,7 @@ where
 
 impl<T> Combination<T>
 where
-    T: std::ops::Mul<Output = T> + MulInv<Output = T> + From<usize> + Copy,
+    T: std::ops::Mul<Output = T> + MulInv<Output = T> + From<usize> + Clone,
 {
     pub fn new(size: usize) -> Self {
         let fact = factorial_table::<T>(size);
@@ -26,7 +26,7 @@ where
         if n < k {
             0.into()
         } else {
-            self.fact[n] * self.inv_fact[k] * self.inv_fact[n - k]
+            self.fact[n].clone() * self.inv_fact[k].clone() * self.inv_fact[n - k].clone()
         }
     }
 
@@ -34,7 +34,7 @@ where
         if n < k {
             0.into()
         } else {
-            self.inv_fact[n] * self.fact[k] * self.fact[n - k]
+            self.inv_fact[n].clone() * self.fact[k].clone() * self.fact[n - k].clone()
         }
     }
 }

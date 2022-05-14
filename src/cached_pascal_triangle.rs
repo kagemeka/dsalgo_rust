@@ -1,6 +1,6 @@
 pub struct CachedPascalTriangle<T>
 where
-    T: std::ops::Add<Output = T> + From<usize> + Copy,
+    T: std::ops::Add<Output = T> + From<usize> + Clone,
 {
     cache: std::collections::HashMap<usize, T>,
 }

@@ -35,6 +35,7 @@ pub mod factorial_table;
 pub mod fenwick_tree;
 pub mod fenwick_tree_dual;
 pub mod floyd_warshall;
+pub mod ghost_leg;
 pub mod graph;
 pub mod graph_pointer_directed;
 pub mod graph_pointer_mixed;

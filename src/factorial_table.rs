@@ -2,7 +2,7 @@ use crate::accumulate::accumulate;
 
 pub fn factorial_table<T>(size: usize) -> Vec<T>
 where
-    T: std::ops::Mul<Output = T> + From<usize> + Copy,
+    T: std::ops::Mul<Output = T> + From<usize> + Clone,
 {
     assert!(size > 0);
     let mut v = (0..size).map(|i| i.into()).collect::<Vec<T>>();

@@ -27,7 +27,7 @@ impl<M: Modulus> IdentityElement<Self, Multiplicative> for Modular<M> {
 
 impl<M: Modulus> AssociativeProperty<Self, Multiplicative> for Modular<M> {}
 
-impl<M: Modulus + std::marker::Copy> Modular<M> {
+impl<M: Modulus + Clone> Modular<M> {
     pub fn pow(self, exponent: u64) -> Self { self.pow_monoid(exponent) }
 }
 
