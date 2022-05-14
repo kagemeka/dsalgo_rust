@@ -22,19 +22,23 @@ where
         Self { fact, inv_fact }
     }
 
-    pub fn calc(&self, n: usize, k: usize) -> T {
+    pub fn calc(&self, n: usize, k: usize) -> Result<T, ()> {
         if n < k {
-            0.into()
+            Ok(0.into())
+        } else if n >= self.fact.len() {
+            Err(())
         } else {
-            self.fact[n].clone() * self.inv_fact[k].clone() * self.inv_fact[n - k].clone()
+            Ok(self.fact[n].clone() * self.inv_fact[n - k].clone() * self.inv_fact[k].clone())
         }
     }
 
-    pub fn inv(&self, n: usize, k: usize) -> T {
+    pub fn inv(&self, n: usize, k: usize) -> Result<T, ()> {
         if n < k {
-            0.into()
+            Ok(0.into())
+        } else if n >= self.fact.len() {
+            Err(())
         } else {
-            self.inv_fact[n].clone() * self.fact[k].clone() * self.fact[n - k].clone()
+            Ok(self.inv_fact[n].clone() * self.fact[k].clone() * self.fact[n - k].clone())
         }
     }
 }

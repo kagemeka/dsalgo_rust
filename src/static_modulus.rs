@@ -14,14 +14,14 @@ impl<const MOD: u32> Modulus for StaticMod<MOD> {
 
 // old version.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-struct Mod1_000_000_007;
+pub struct Mod1_000_000_007;
 
 impl Modulus for Mod1_000_000_007 {
     fn value() -> u32 { 1_000_000_007 }
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-struct Mod998_244_353;
+pub struct Mod998_244_353;
 
 impl Modulus for Mod998_244_353 {
     fn value() -> u32 { 998_244_353 }
