@@ -1,6 +1,6 @@
 use crate::{tree_edges_to_graph::tree_edges_to_graph, union_find::UnionFind};
 
-pub fn lca_tarjan_offline(
+pub fn offline_lca_tarjan(
     tree_edges: &[(usize, usize)],
     queries: &[(usize, usize)],
     root: usize,
