@@ -41,7 +41,7 @@ where
                     .collect(),
             );
         }
-        SparseTable {
+        Self {
             phantom_id: std::marker::PhantomData,
             phandom_g: std::marker::PhantomData,
             data,

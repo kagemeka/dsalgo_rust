@@ -4,5 +4,6 @@ use crate::{
     segment_tree::SegmentTree,
 };
 
+#[allow(dead_code)]
 type LCAEulerTourRMQSegTree =
     LCAEulerTourRMQ<SegmentTree<(usize, usize), Min, (usize, usize)>>;
