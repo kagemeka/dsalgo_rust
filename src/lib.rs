@@ -67,12 +67,12 @@ pub mod reset_least_bit;
 pub mod rollback_union_find;
 pub mod tree_bfs;
 pub mod tree_depths;
-
 pub mod tree_dfs;
 pub mod tree_edges_to_graph;
 pub mod tree_parents;
 pub mod tree_sizes;
 // pub mod lowest_common_ancestor;
+pub mod disjoint_sparse_table;
 pub mod dual_segment_tree;
 pub mod graph_pointer_directed;
 pub mod graph_pointer_mixed;

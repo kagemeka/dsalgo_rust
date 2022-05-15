@@ -1,152 +1,100 @@
 use crate::{
-    bit_length::bit_length,
-    group_theory::{CommutativeProperty, Idempotence, Semigroup},
+    commutative_property::CommutativeProperty,
+    idempotence::Idempotence,
+    semigroup::Semigroup,
 };
 
-pub struct SparseTable<S, I>
+pub struct SparseTable<S, Id, G>
 where
-    S: Semigroup<I> + Idempotence<I> + CommutativeProperty<S, I>,
-    I: crate::group_theory::BinaryOperationIdentifier,
+    G: Semigroup<S, Id> + Idempotence<S, Id> + CommutativeProperty<S, S, Id>,
 {
-    phantom: std::marker::PhantomData<I>,
+    phantom_id: std::marker::PhantomData<Id>,
+    phandom_g: std::marker::PhantomData<G>,
     data: Vec<Vec<S>>,
 }
 
-impl<S, I> SparseTable<S, I>
+impl<S, Id, G> std::iter::FromIterator<S> for SparseTable<S, Id, G>
 where
-    S: Semigroup<I> + CommutativeProperty<S, I> + Idempotence<I> + Copy,
-    I: crate::group_theory::BinaryOperationIdentifier,
+    G: Semigroup<S, Id> + Idempotence<S, Id> + CommutativeProperty<S, S, Id>,
+    S: Clone,
 {
-    pub fn new(slice: &[S]) -> Self {
-        let max_width = slice.len();
+    fn from_iter<T: IntoIterator<Item = S>>(iter: T) -> Self {
+        let mut data = vec![iter.into_iter().collect::<Vec<_>>()];
+        let max_width = data[0].len();
         let height = if max_width <= 1 {
             1
         } else {
-            bit_length((max_width - 1) as u64) as usize
+            max_width.next_power_of_two().trailing_zeros() as usize
         };
-        let mut data = vec![slice.to_vec()];
-        for log in 1..height {
-            let row_size = max_width - (1 << log) + 1;
+        for i in 1..height {
+            let row_size = max_width - (1 << i) + 1;
+            // last is max_width - (1 << i) covering (1 << i)
+            // including the position.
             data.push(
                 (0..row_size)
-                    .map(|index| {
-                        // S::operate(&data[log - 1][index], &data[log -
-                        // 1][index + (1 << (log - 1))])
-                        data[log - 1][index]
-                            .operate(data[log - 1][index + (1 << (log - 1))])
+                    .map(|j| {
+                        G::operate(
+                            data[i - 1][j].clone(),
+                            data[i - 1][j + (1 << (i - 1))].clone(),
+                        )
                     })
                     .collect(),
             );
         }
-        Self {
-            phantom: std::marker::PhantomData,
+        SparseTable {
+            phantom_id: std::marker::PhantomData,
+            phandom_g: std::marker::PhantomData,
             data,
         }
     }
-
-    pub fn get_range(&self, left: usize, right: usize) -> S {
-        assert!(left < right && right <= self.data[0].len());
-        if right - left == 1 {
-            return self.data[0][left];
-        }
-        let log = bit_length((right - 1 - left) as u64) as usize - 1;
-        // S::operate(&self.data[log][left], &self.data[log][right - (1
-        // << log)])
-        self.data[log][left].operate(self.data[log][right - (1 << log)])
-    }
 }
 
-pub struct DisjointSparseTable<S, I>
+impl<S, Id, G> SparseTable<S, Id, G>
 where
-    S: Semigroup<I> + CommutativeProperty<S, I>,
-    I: crate::group_theory::BinaryOperationIdentifier,
+    G: Semigroup<S, Id> + Idempotence<S, Id> + CommutativeProperty<S, S, Id>,
+    S: Clone,
 {
-    phantom: std::marker::PhantomData<I>,
-    data: Vec<Vec<S>>,
-}
+    pub fn new(slice: &[S]) -> Self { Self::from_iter(slice.iter().cloned()) }
 
-impl<S, I> DisjointSparseTable<S, I>
-where
-    S: Semigroup<I> + CommutativeProperty<S, I> + Copy,
-    I: crate::group_theory::BinaryOperationIdentifier,
-{
-    pub fn new(slice: &[S]) -> Self {
-        let width = slice.len();
-        let height = if width <= 1 {
-            1
-        } else {
-            bit_length((width - 1) as u64) as usize
-        };
-        let mut data = vec![slice.to_vec()];
-        for log in 1..height {
-            data.push(slice.to_vec());
-            // store cummulative products from borders.
-            for border in (1 << log..width + 1).step_by(2 << log) {
-                for delta in 1..(1 << log) {
-                    // prod to left.
-                    let index = border - delta;
-                    // data[log][index - 1] = S::operate(&data[log][index - 1],
-                    // &data[log][index]);
-                    data[log][index - 1] =
-                        data[log][index - 1].operate(data[log][index]);
-                }
-                for delta in 0..(1 << log) - 1 {
-                    // prod to right
-                    let index = border + delta;
-                    if index + 1 >= width {
-                        // for last sequence
-                        break;
-                    }
-                    // data[log][index + 1] = S::operate(&data[log][index],
-                    // &data[log][index + 1]);
-                    data[log][index + 1] =
-                        data[log][index].operate(data[log][index + 1]);
-                }
-            }
+    pub fn fold(&self, l: usize, r: usize) -> S {
+        assert!(l < r && r <= self.data[0].len());
+        if r - l == 1 {
+            return self.data[0][l].clone();
         }
-        Self {
-            phantom: std::marker::PhantomData,
-            data,
-        }
-    }
-
-    pub fn get_range(&self, left: usize, right: usize) -> S {
-        assert!(left < right && right <= self.data[0].len());
-        if right - left == 1 {
-            return self.data[0][left];
-        }
-        let log = bit_length((left ^ (right - 1)) as u64) as usize - 1;
-        // S::operate(&self.data[log][left], &self.data[log][right -
-        // 1])
-        self.data[log][left].operate(self.data[log][right - 1])
+        let i = (r - l).next_power_of_two().trailing_zeros() as usize - 1;
+        G::operate(
+            self.data[i][l].clone(),
+            self.data[i][r - (1 << i)].clone(),
+        )
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::group_theory;
-
     #[test]
     fn test_self_as_min() {
-        let arr: Vec<usize> = vec![0, 4, 2, 8, 5, 1];
+        use crate::{
+            associative_property::AssociativeProperty,
+            binary_operation::BinaryOperation,
+            commutative_property::CommutativeProperty,
+            idempotence::Idempotence,
+        };
 
         struct Min;
-        impl crate::group_theory::BinaryOperationIdentifier for Min {}
 
-        // impl group_theory::BinaryOperation<Min> for usize {
-        impl group_theory::BinaryOperation<Self, Self, Min> for usize {
-            fn operate(self, other: Self) -> Self { std::cmp::min(self, other) }
+        impl BinaryOperation<usize, usize, usize, Min> for usize {
+            fn operate(lhs: usize, rhs: usize) -> usize {
+                std::cmp::min(lhs, rhs)
+            }
         }
-        impl group_theory::AssociativeProperty<Min> for usize {}
-        impl group_theory::Idempotence<Min> for usize {}
-        impl group_theory::CommutativeProperty<Self, Min> for usize {}
-        let sp = super::SparseTable::<usize, Min>::new(&arr);
-        assert_eq!(sp.get_range(0, 4), 0);
-        assert_eq!(sp.get_range(3, 4), 8);
-        assert_eq!(sp.get_range(1, 6), 1);
-        let sp = super::DisjointSparseTable::<usize, Min>::new(&arr);
-        assert_eq!(sp.get_range(0, 4), 0);
-        assert_eq!(sp.get_range(3, 4), 8);
-        assert_eq!(sp.get_range(1, 6), 1);
+        impl AssociativeProperty<usize, Min> for usize {}
+        impl Idempotence<usize, Min> for usize {}
+        impl CommutativeProperty<usize, usize, Min> for usize {}
+
+        let arr: Vec<usize> = vec![0, 4, 2, 8, 5, 1];
+        let sp = super::SparseTable::<usize, Min, usize>::new(&arr);
+        assert_eq!(sp.fold(0, 4), 0);
+        assert_eq!(sp.fold(3, 4), 8);
+        assert_eq!(sp.fold(1, 6), 1);
     }
 }

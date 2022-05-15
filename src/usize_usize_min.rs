@@ -1,7 +1,9 @@
 use crate::{
     associative_property::AssociativeProperty,
     binary_operation::BinaryOperation,
+    commutative_property::CommutativeProperty,
     group_theory_id::Min,
+    idempotence::Idempotence,
     identity_element::IdentityElement,
 };
 
@@ -23,3 +25,10 @@ impl IdentityElement<(usize, usize), Min> for (usize, usize) {
         )
     }
 }
+
+impl CommutativeProperty<(usize, usize), (usize, usize), Min>
+    for (usize, usize)
+{
+}
+
+impl Idempotence<(usize, usize), Min> for (usize, usize) {}
