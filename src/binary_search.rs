@@ -28,9 +28,18 @@ mod tests {
     #[test]
     fn binary_search() {
         let v = (0..10).collect::<Vec<_>>();
-        assert_eq!(super::binary_search(&|x: &i32| x >= &5, &v), 5);
-        assert_eq!(super::binary_search(&|x: &i32| x >= &10, &v), 10);
-        assert_eq!(super::binary_search(&|x: &i32| x >= &11, &v), 10);
+        assert_eq!(
+            super::binary_search(&|x: &i32| x >= &5, &v),
+            5
+        );
+        assert_eq!(
+            super::binary_search(&|x: &i32| x >= &10, &v),
+            10
+        );
+        assert_eq!(
+            super::binary_search(&|x: &i32| x >= &11, &v),
+            10
+        );
         assert_eq!(super::lower_bound(&v, &-1), 0);
         assert_eq!(super::upper_bound(&v, &-1), 0);
         assert_eq!(super::lower_bound(&v, &0), 0);

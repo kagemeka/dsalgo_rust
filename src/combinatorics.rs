@@ -1,6 +1,7 @@
 use crate::group_theory;
 
-pub trait PascalTriangle<I>: group_theory::Monoid<I> + group_theory::Default<I>
+pub trait PascalTriangle<I>:
+    group_theory::Monoid<I> + group_theory::Default<I>
 where
     Self: Sized,
     I: crate::group_theory::BinaryOperationIdentifier,

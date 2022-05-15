@@ -1,4 +1,6 @@
-pub fn is_prime(n: usize) -> bool { crate::divisor::find_divisors(n).len() == 2 }
+pub fn is_prime(n: usize) -> bool {
+    crate::divisor::find_divisors(n).len() == 2
+}
 
 pub fn is_prime_table(size: usize) -> Vec<bool> {
     crate::sieve_of_eratosthenes::sieve_of_eratosthens(size)

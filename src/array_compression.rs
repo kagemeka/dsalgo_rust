@@ -40,13 +40,25 @@ mod tests {
     fn test() {
         let arr = [4, 3, 0, -1, 3, 10];
         let compression = super::ArrayCompression::new(&arr);
-        assert_eq!(compression.encode(&-1).unwrap(), 0);
-        assert_eq!(compression.encode(&10).unwrap(), 4);
+        assert_eq!(
+            compression.encode(&-1).unwrap(),
+            0
+        );
+        assert_eq!(
+            compression.encode(&10).unwrap(),
+            4
+        );
         assert_eq!(compression.decode(0), -1);
         assert_eq!(compression.encode(&5), None);
 
         let result = super::compress(&arr);
-        assert_eq!(result.keys, vec![3, 2, 1, 0, 2, 4]);
-        assert_eq!(result.values, vec![-1, 0, 3, 4, 10]);
+        assert_eq!(
+            result.keys,
+            vec![3, 2, 1, 0, 2, 4]
+        );
+        assert_eq!(
+            result.values,
+            vec![-1, 0, 3, 4, 10]
+        );
     }
 }

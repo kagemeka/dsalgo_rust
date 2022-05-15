@@ -14,9 +14,9 @@ pub fn greatest_common_divisor(mut a: usize, mut b: usize) -> usize {
 }
 
 pub fn gcd_prod(slice: &[usize]) -> usize {
-    slice
-        .iter()
-        .fold(0, |accumulated, x| greatest_common_divisor(accumulated, *x))
+    slice.iter().fold(0, |accumulated, x| {
+        greatest_common_divisor(accumulated, *x)
+    })
 }
 
 pub fn least_common_multiple(a: usize, b: usize) -> usize {
@@ -29,11 +29,7 @@ pub fn least_common_multiple(a: usize, b: usize) -> usize {
 
 pub fn extended_euclidean_recurse(a: isize, b: isize) -> (usize, isize, isize) {
     if b == 0 {
-        return if a < 0 {
-            ((-a) as usize, -1, 0)
-        } else {
-            (a as usize, 1, 0)
-        };
+        return if a < 0 { ((-a) as usize, -1, 0) } else { (a as usize, 1, 0) };
     }
     let (g, s, t) = extended_euclidean_recurse(b, a % b);
     (g, t, s - a / b * t)
@@ -57,7 +53,10 @@ pub fn extended_euclidean(mut a: isize, mut b: isize) -> (usize, isize, isize) {
 
 /// compute g := \gcd(modulus, n),
 /// and modular inverse of n/g in Z[modulus/g].
-pub fn extended_euclidean_gcd_modular_inverse(modulus: usize, n: usize) -> (usize, Option<usize>) {
+pub fn extended_euclidean_gcd_modular_inverse(
+    modulus: usize,
+    n: usize,
+) -> (usize, Option<usize>) {
     assert!(modulus > 1 && n < modulus);
     if n == 0 {
         return (modulus, None);
@@ -83,21 +82,60 @@ pub fn extended_euclidean_gcd_modular_inverse(modulus: usize, n: usize) -> (usiz
 mod tests {
     #[test]
     fn test() {
-        assert_eq!(super::greatest_common_divisor_recurse(10, 5), 5);
-        assert_eq!(super::greatest_common_divisor_recurse(0, 10), 10);
-        assert_eq!(super::greatest_common_divisor_recurse(0, 0), 0);
-        assert_eq!(super::greatest_common_divisor(10, 5), 5);
-        assert_eq!(super::greatest_common_divisor(0, 10), 10);
-        assert_eq!(super::greatest_common_divisor(0, 0), 0);
+        assert_eq!(
+            super::greatest_common_divisor_recurse(10, 5),
+            5
+        );
+        assert_eq!(
+            super::greatest_common_divisor_recurse(0, 10),
+            10
+        );
+        assert_eq!(
+            super::greatest_common_divisor_recurse(0, 0),
+            0
+        );
+        assert_eq!(
+            super::greatest_common_divisor(10, 5),
+            5
+        );
+        assert_eq!(
+            super::greatest_common_divisor(0, 10),
+            10
+        );
+        assert_eq!(
+            super::greatest_common_divisor(0, 0),
+            0
+        );
         assert_eq!(super::gcd_prod(&[]), 0);
         assert_eq!(super::gcd_prod(&[2, 8, 4]), 2);
-        assert_eq!(super::least_common_multiple(0, 0), 0);
-        assert_eq!(super::least_common_multiple(1, 0), 0);
-        assert_eq!(super::least_common_multiple(12, 18), 36);
-        assert_eq!(super::extended_euclidean_recurse(-30, 111), (3, 11, 3));
-        assert_eq!(super::extended_euclidean_recurse(0, 0), (0, 1, 0));
-        assert_eq!(super::extended_euclidean(-30, 111), (3, 11, 3));
-        assert_eq!(super::extended_euclidean(0, 0), (0, 1, 0));
+        assert_eq!(
+            super::least_common_multiple(0, 0),
+            0
+        );
+        assert_eq!(
+            super::least_common_multiple(1, 0),
+            0
+        );
+        assert_eq!(
+            super::least_common_multiple(12, 18),
+            36
+        );
+        assert_eq!(
+            super::extended_euclidean_recurse(-30, 111),
+            (3, 11, 3)
+        );
+        assert_eq!(
+            super::extended_euclidean_recurse(0, 0),
+            (0, 1, 0)
+        );
+        assert_eq!(
+            super::extended_euclidean(-30, 111),
+            (3, 11, 3)
+        );
+        assert_eq!(
+            super::extended_euclidean(0, 0),
+            (0, 1, 0)
+        );
         assert_eq!(
             super::extended_euclidean_gcd_modular_inverse(10, 0),
             (10, None)
@@ -112,7 +150,8 @@ mod tests {
         );
         assert_eq!(
             super::extended_euclidean_gcd_modular_inverse(111, 30),
-            (3, Some(26)) // 111 / 3 = 37, 30 / 3 = 10, 10^{-1} \equiv 26 \mod 37
+            (3, Some(26)) /* 111 / 3 = 37, 30 / 3 = 10, 10^{-1} \equiv 26
+                           * \mod 37 */
         );
     }
 }

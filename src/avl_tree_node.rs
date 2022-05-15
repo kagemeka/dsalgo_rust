@@ -21,11 +21,7 @@ impl<K: PartialOrd, V> Node<K, V> {
     }
 
     pub(crate) fn get_height(root: Option<&Box<Self>>) -> usize {
-        if let Some(node) = root {
-            node.height
-        } else {
-            0
-        }
+        if let Some(node) = root { node.height } else { 0 }
     }
 
     pub(crate) fn get_size(root: Option<&Box<Self>>) -> usize {
@@ -47,7 +43,9 @@ impl<K: PartialOrd, V> Node<K, V> {
             Self::get_height(root.left.as_ref()),
             Self::get_height(root.right.as_ref()),
         ) + 1;
-        root.size = Self::get_size(root.left.as_ref()) + Self::get_size(root.right.as_ref()) + 1;
+        root.size = Self::get_size(root.left.as_ref())
+            + Self::get_size(root.right.as_ref())
+            + 1;
     }
 
     pub(crate) fn rotate_left(mut root: Box<Self>) -> Box<Self> {
@@ -78,13 +76,17 @@ impl<K: PartialOrd, V> Node<K, V> {
         if balance < -1 {
             // lean left
             if Self::get_balance(root.left.as_ref()) > 0 {
-                root.left = Some(Self::rotate_left(root.left.take().unwrap()));
+                root.left = Some(Self::rotate_left(
+                    root.left.take().unwrap(),
+                ));
             }
             return Self::rotate_right(root);
         } else if balance > 1 {
             // lean right
             if Self::get_balance(root.right.as_ref()) < 0 {
-                root.right = Some(Self::rotate_right(root.right.take().unwrap()));
+                root.right = Some(Self::rotate_right(
+                    root.right.take().unwrap(),
+                ));
             }
             return Self::rotate_left(root);
         }
@@ -92,23 +94,35 @@ impl<K: PartialOrd, V> Node<K, V> {
     }
 
     /// return (popped, new_root)
-    pub(crate) fn pop_max_node(mut root: Box<Self>) -> (Box<Self>, Option<Box<Self>>) {
+    pub(crate) fn pop_max_node(
+        mut root: Box<Self>,
+    ) -> (Box<Self>, Option<Box<Self>>) {
         if root.right.is_none() {
             let new_root = root.left.take();
             root.left = None;
             return (root, new_root);
         }
-        let (max_node, new_right) = Self::pop_max_node(root.right.take().unwrap());
+        let (max_node, new_right) =
+            Self::pop_max_node(root.right.take().unwrap());
         root.right = new_right;
-        (max_node, Some(Self::balance_tree(root)))
+        (
+            max_node,
+            Some(Self::balance_tree(root)),
+        )
     }
 
     pub fn insert(root: Option<Box<Self>>, node: Box<Self>) -> Box<Self> {
         if let Some(mut root) = root {
             if node.key <= root.key {
-                root.left = Some(Self::insert(root.left.take(), node));
+                root.left = Some(Self::insert(
+                    root.left.take(),
+                    node,
+                ));
             } else {
-                root.right = Some(Self::insert(root.right.take(), node));
+                root.right = Some(Self::insert(
+                    root.right.take(),
+                    node,
+                ));
             }
             Self::balance_tree(root)
         } else {
@@ -129,7 +143,8 @@ impl<K: PartialOrd, V> Node<K, V> {
             if root.left.is_none() {
                 return root.right;
             }
-            let (max_node, new_left) = Self::pop_max_node(root.left.take().unwrap());
+            let (max_node, new_left) =
+                Self::pop_max_node(root.left.take().unwrap());
             root.left = new_left;
             root.key = max_node.key;
             root.value = max_node.value;
@@ -137,7 +152,10 @@ impl<K: PartialOrd, V> Node<K, V> {
         Some(Self::balance_tree(root))
     }
 
-    pub fn get_kth_node(root: Option<&Box<Self>>, k: usize) -> Option<&Box<Self>> {
+    pub fn get_kth_node(
+        root: Option<&Box<Self>>,
+        k: usize,
+    ) -> Option<&Box<Self>> {
         if root.is_none() {
             return None;
         }
@@ -149,7 +167,10 @@ impl<K: PartialOrd, V> Node<K, V> {
         if k < current_index {
             Self::get_kth_node(root.left.as_ref(), k)
         } else {
-            Self::get_kth_node(root.right.as_ref(), k - current_index - 1)
+            Self::get_kth_node(
+                root.right.as_ref(),
+                k - current_index - 1,
+            )
         }
     }
 
@@ -161,7 +182,9 @@ impl<K: PartialOrd, V> Node<K, V> {
         if key <= &root.key {
             Self::lower_bound(root.left.as_ref(), key)
         } else {
-            Self::get_size(root.left.as_ref()) + 1 + Self::lower_bound(root.right.as_ref(), key)
+            Self::get_size(root.left.as_ref())
+                + 1
+                + Self::lower_bound(root.right.as_ref(), key)
         }
     }
 
@@ -173,11 +196,16 @@ impl<K: PartialOrd, V> Node<K, V> {
         if key < &root.key {
             Self::upper_bound(root.left.as_ref(), key)
         } else {
-            Self::get_size(root.left.as_ref()) + 1 + Self::upper_bound(root.right.as_ref(), key)
+            Self::get_size(root.left.as_ref())
+                + 1
+                + Self::upper_bound(root.right.as_ref(), key)
         }
     }
 
-    pub fn find<'a>(root: Option<&'a Box<Self>>, key: &K) -> Option<&'a Box<Self>> {
+    pub fn find<'a>(
+        root: Option<&'a Box<Self>>,
+        key: &K,
+    ) -> Option<&'a Box<Self>> {
         if root.is_none() {
             return None;
         }
@@ -199,26 +227,56 @@ mod tests {
         type Node = super::Node<usize, usize>;
         let mut root = Some(Node::new(1, 1));
         println!("{:?}", root);
-        root = Some(Node::insert(root, Node::new(2, 2)));
+        root = Some(Node::insert(
+            root,
+            Node::new(2, 2),
+        ));
         println!("{:?}", root);
-        root = Some(Node::insert(root, Node::new(3, 3)));
+        root = Some(Node::insert(
+            root,
+            Node::new(3, 3),
+        ));
         println!("{:?}", root);
         root = Node::remove(root, &2);
         println!("{:?}", root);
         root = Node::remove(root, &2);
         println!("{:?}", root);
-        assert_eq!(&Node::get_kth_node(root.as_ref(), 1).unwrap().key, &3);
-        assert_eq!(Node::get_kth_node(root.as_ref(), 2), None);
+        assert_eq!(
+            &Node::get_kth_node(root.as_ref(), 1).unwrap().key,
+            &3
+        );
+        assert_eq!(
+            Node::get_kth_node(root.as_ref(), 2),
+            None
+        );
 
-        root = Some(Node::insert(root, Node::new(1, 2)));
+        root = Some(Node::insert(
+            root,
+            Node::new(1, 2),
+        ));
 
-        assert_eq!(Node::lower_bound(root.as_ref(), &1), 0);
-        assert_eq!(Node::lower_bound(root.as_ref(), &2), 2);
-        assert_eq!(Node::upper_bound(root.as_ref(), &1), 2);
+        assert_eq!(
+            Node::lower_bound(root.as_ref(), &1),
+            0
+        );
+        assert_eq!(
+            Node::lower_bound(root.as_ref(), &2),
+            2
+        );
+        assert_eq!(
+            Node::upper_bound(root.as_ref(), &1),
+            2
+        );
         assert!(Node::find(root.as_ref(), &3).is_some());
         assert!(Node::find(root.as_ref(), &2).is_none());
 
-        assert_eq!(Node::new(1, 1), Node::new(1, 1));
-        assert!(!std::ptr::eq(&Node::new(1, 1), &Node::new(1, 1)));
+        assert_eq!(
+            Node::new(1, 1),
+            Node::new(1, 1)
+        );
+        assert!(!std::ptr::eq(
+            &Node::new(1, 1),
+            &Node::new(1, 1)
+        ));
     }
 }

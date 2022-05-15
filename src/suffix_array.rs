@@ -93,11 +93,7 @@ pub fn sais_recurse(a: &Vec<usize>) -> Vec<usize> {
     let mut is_lms = vec![false; n];
     let mut lms = Vec::with_capacity(n);
     for i in (1..n).rev() {
-        is_s[i - 1] = if a[i - 1] == a[i] {
-            is_s[i]
-        } else {
-            a[i - 1] < a[i]
-        };
+        is_s[i - 1] = if a[i - 1] == a[i] { is_s[i] } else { a[i - 1] < a[i] };
         is_lms[i] = !is_s[i - 1] && is_s[i];
         if is_lms[i] {
             lms.push(i);
@@ -209,7 +205,10 @@ mod tests {
             15, 14, 10, 6, 2, 11, 7, 3, 1, 0, 13, 12, 9, 5, 8, 4,
         ];
         assert_eq!(super::sais_recurse(&s), answer,);
-        assert_eq!(super::doubling_counting_sort(&s), answer,);
+        assert_eq!(
+            super::doubling_counting_sort(&s),
+            answer,
+        );
         assert_eq!(super::doubling(&s), answer,);
     }
 }

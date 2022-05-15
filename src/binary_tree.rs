@@ -28,9 +28,7 @@ mod tests {
         impl<V> From<Option<Box<V>>> for Tree<V> {
             fn from(root: Option<Box<V>>) -> Self {
                 if let Some(root) = root {
-                    Tree {
-                        root: Some(*root),
-                    }
+                    Tree { root: Some(*root) }
                 } else {
                     Tree { root: None }
                 }
@@ -38,13 +36,7 @@ mod tests {
         }
 
         impl<T> Node<T> {
-            fn new(data: T) -> Self {
-                Node {
-                    data,
-                    left: None,
-                    right: None,
-                }
-            }
+            fn new(data: T) -> Self { Node { data, left: None, right: None } }
         }
 
         impl<T> Size for Option<Node<T>>
@@ -94,7 +86,9 @@ mod tests {
         {
             type Data = T;
 
-            fn insert(&mut self, index: usize, data: Self::Data) { let size = self.root.size(); }
+            fn insert(&mut self, index: usize, data: Self::Data) {
+                let size = self.root.size();
+            }
         }
     }
 }

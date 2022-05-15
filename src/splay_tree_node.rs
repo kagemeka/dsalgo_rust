@@ -69,8 +69,12 @@ where
         new_root.borrow_mut().parent = previous_root.borrow_mut().parent.take();
         if let Some(parent) = &new_root.borrow().parent {
             match Node::<T>::get_state(previous_root) {
-                State::LeftChild => parent.borrow_mut().left = Some(new_root.clone()),
-                State::RightChild => parent.borrow_mut().right = Some(new_root.clone()),
+                State::LeftChild => {
+                    parent.borrow_mut().left = Some(new_root.clone())
+                },
+                State::RightChild => {
+                    parent.borrow_mut().right = Some(new_root.clone())
+                },
                 _ => (),
             }
             parent.borrow_mut().update();
@@ -81,11 +85,17 @@ where
     fn rotate_up(node: &Rc<RefCell<Self>>) {
         let parent = node.borrow().parent.as_ref().unwrap().clone();
         if parent.borrow().left.is_some()
-            && Rc::ptr_eq(parent.borrow().left.as_ref().unwrap(), node)
+            && Rc::ptr_eq(
+                parent.borrow().left.as_ref().unwrap(),
+                node,
+            )
         {
             parent.rotate_right();
         } else {
-            assert!(Rc::ptr_eq(parent.borrow().right.as_ref().unwrap(), node));
+            assert!(Rc::ptr_eq(
+                parent.borrow().right.as_ref().unwrap(),
+                node
+            ));
 
             parent.rotate_left();
         }
@@ -95,7 +105,10 @@ where
         match &node.borrow().parent {
             Some(parent) => {
                 if parent.borrow().left.is_some()
-                    && Rc::ptr_eq(parent.borrow().left.as_ref().unwrap(), node)
+                    && Rc::ptr_eq(
+                        parent.borrow().left.as_ref().unwrap(),
+                        node,
+                    )
                 {
                     State::LeftChild
                 } else {
@@ -188,7 +201,10 @@ where
             return self;
         }
 
-        let left_root = Node::<T>::get(self.as_ref().unwrap(), self.size() - 1);
+        let left_root = Node::<T>::get(
+            self.as_ref().unwrap(),
+            self.size() - 1,
+        );
         rhs.as_ref().unwrap().borrow_mut().parent = Some(left_root.clone());
         left_root.borrow_mut().right = rhs;
         left_root.borrow_mut().update();
@@ -234,13 +250,7 @@ impl Default for DefaultData<usize, usize> {
 }
 
 impl<K, V> DefaultData<K, V> {
-    pub fn new(key: K, value: V) -> Self {
-        DefaultData {
-            size: 1,
-            key,
-            value,
-        }
-    }
+    pub fn new(key: K, value: V) -> Self { DefaultData { size: 1, key, value } }
 }
 
 impl<K, V> size::Size for DefaultData<K, V> {
@@ -248,7 +258,9 @@ impl<K, V> size::Size for DefaultData<K, V> {
 }
 
 impl<K, V> binary_tree_node::Update for Node<DefaultData<K, V>> {
-    fn update(&mut self) { self.data.size = self.left.size() + self.right.size() + 1; }
+    fn update(&mut self) {
+        self.data.size = self.left.size() + self.right.size() + 1;
+    }
 }
 
 #[cfg(test)]
@@ -259,16 +271,26 @@ mod tests {
         use crate::tree_node::{Insert, Pop};
         type Data = DefaultData<usize, usize>;
         type Root = Option<Rc<RefCell<Node<Data>>>>;
-        let mut root = Some(Rc::new(RefCell::new(Node::new(Data::default()))));
+        let mut root = Some(Rc::new(RefCell::new(
+            Node::new(Data::default()),
+        )));
         assert_eq!(root.size(), 1);
         root = <Root as Insert>::insert(
             root,
             0,
-            Some(Rc::new(RefCell::new(Node::new(Data::new(1, 1))))),
+            Some(Rc::new(RefCell::new(
+                Node::new(Data::new(1, 1)),
+            ))),
         );
         assert_eq!(root.size(), 2);
-        assert_eq!(root.as_ref().unwrap().borrow().left.size(), 0);
-        assert_eq!(root.as_ref().unwrap().borrow().right.size(), 1);
+        assert_eq!(
+            root.as_ref().unwrap().borrow().left.size(),
+            0
+        );
+        assert_eq!(
+            root.as_ref().unwrap().borrow().right.size(),
+            1
+        );
         let (mut root, mut popped) = <Root as Pop>::pop(root, 0);
         assert_eq!(root.size(), 1);
         assert_eq!(popped.size(), 1);

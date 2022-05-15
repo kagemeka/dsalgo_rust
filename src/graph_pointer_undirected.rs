@@ -26,7 +26,11 @@ pub(crate) struct Edge<T, U> {
 /// avoid cycle reference
 impl<T: std::fmt::Debug, U> std::fmt::Debug for Edge<T, U> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Edge {{ data: {:?} }}", self.data)
+        write!(
+            f,
+            "Edge {{ data: {:?} }}",
+            self.data
+        )
     }
 }
 
@@ -53,7 +57,9 @@ impl<T, U> UndirectedGraph<T, U> {
     where
         T: Default,
     {
-        self.nodes.push(Rc::new(RefCell::new(Node::default())));
+        self.nodes.push(Rc::new(RefCell::new(
+            Node::default(),
+        )));
     }
 
     pub fn add_edge(&mut self, lhs: usize, rhs: usize, data: U) {

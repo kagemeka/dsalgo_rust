@@ -34,14 +34,14 @@ impl<M: Modulus> From<usize> for Modular<M> {
     fn from(value: usize) -> Self { Self::new(value) }
 }
 
-impl<M: Modulus + std::marker::Copy> group_theory::IdentityElement<group_theory::Additive>
-    for Modular<M>
+impl<M: Modulus + std::marker::Copy>
+    group_theory::IdentityElement<group_theory::Additive> for Modular<M>
 {
     fn identity() -> Self { 0.into() }
 }
 
-impl<M: Modulus + std::marker::Copy> group_theory::IdentityElement<group_theory::Multiplicative>
-    for Modular<M>
+impl<M: Modulus + std::marker::Copy>
+    group_theory::IdentityElement<group_theory::Multiplicative> for Modular<M>
 {
     fn identity() -> Self { 1.into() }
 }
@@ -87,7 +87,10 @@ impl<M: Modulus + Copy> std::ops::MulAssign<Self> for Modular<M> {
 
 impl<M: Modulus + std::marker::Copy> Modular<M> {
     pub fn pow(&self, exponent: usize) -> Self {
-        <Self as power::Power<group_theory::Multiplicative>>::pow(self.clone(), exponent)
+        <Self as power::Power<group_theory::Multiplicative>>::pow(
+            self.clone(),
+            exponent,
+        )
     }
 }
 
@@ -95,7 +98,9 @@ impl<M: Modulus + IsPrime + std::marker::Copy> Modular<M> {
     pub fn invert(&self) -> Self { self.pow(M::value() - 2) }
 }
 
-impl<M: Modulus + IsPrime + std::marker::Copy> std::ops::Div<Self> for Modular<M> {
+impl<M: Modulus + IsPrime + std::marker::Copy> std::ops::Div<Self>
+    for Modular<M>
+{
     type Output = Self;
 
     fn div(self, rhs: Self) -> Self { self * rhs.invert() }

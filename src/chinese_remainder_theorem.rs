@@ -1,6 +1,11 @@
 use crate::euclidean;
 
-pub fn crt_2_coprime(mod_0: usize, rem_0: usize, mod_1: usize, rem_1: usize) -> usize {
+pub fn crt_2_coprime(
+    mod_0: usize,
+    rem_0: usize,
+    mod_1: usize,
+    rem_1: usize,
+) -> usize {
     assert!(mod_0 > 1 && rem_0 < mod_0 && mod_1 > 1 && rem_1 < mod_1);
     crt_2(mod_0, rem_0, mod_1, rem_1).unwrap()
 }
@@ -16,7 +21,8 @@ pub fn crt_2(
         (rem_0, rem_1) = (rem_1, rem_0);
         (mod_0, mod_1) = (mod_1, mod_0);
     }
-    let (gcd, x, _) = euclidean::extended_euclidean_recurse(mod_0 as isize, mod_1 as isize);
+    let (gcd, x, _) =
+        euclidean::extended_euclidean_recurse(mod_0 as isize, mod_1 as isize);
     if (rem_1 - rem_0) % gcd != 0 {
         return None;
     }
@@ -37,7 +43,8 @@ pub fn safe_crt_2(
         (rem_0, rem_1) = (rem_1, rem_0);
         (mod_0, mod_1) = (mod_1, mod_0);
     }
-    let (gcd, inv_u0) = euclidean::extended_euclidean_gcd_modular_inverse(mod_1, mod_0 % mod_1);
+    let (gcd, inv_u0) =
+        euclidean::extended_euclidean_gcd_modular_inverse(mod_1, mod_0 % mod_1);
     let inv_u0 = inv_u0.unwrap();
     if (rem_1 - rem_0) % gcd != 0 {
         return None;
@@ -79,10 +86,22 @@ pub fn safe_crt(mod_rem_pairs: &[(usize, usize)]) -> Option<usize> {
 mod tests {
     #[test]
     fn test() {
-        assert_eq!(super::crt_2_coprime(5, 3, 7, 4), 18);
-        assert_eq!(super::crt_2(5, 3, 7, 4), Some(18));
-        assert_eq!(super::safe_crt_2(5, 3, 7, 4), Some(18));
+        assert_eq!(
+            super::crt_2_coprime(5, 3, 7, 4),
+            18
+        );
+        assert_eq!(
+            super::crt_2(5, 3, 7, 4),
+            Some(18)
+        );
+        assert_eq!(
+            super::safe_crt_2(5, 3, 7, 4),
+            Some(18)
+        );
         let mod_rem_pairs = vec![(5, 3), (7, 4), (8, 3)];
-        assert_eq!(super::safe_crt(&mod_rem_pairs), Some(123));
+        assert_eq!(
+            super::safe_crt(&mod_rem_pairs),
+            Some(123)
+        );
     }
 }

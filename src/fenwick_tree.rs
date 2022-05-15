@@ -1,7 +1,10 @@
 use crate::{
-    bitwise,
-    group_theory::{AbelianGroup, Additive, CommutativeMonoid, CommutativeProperty, Monoid},
+    group_theory::{AbelianGroup, Additive, CommutativeMonoid},
+    least_significant_bit_number::lsb_number,
+    most_significant_bit::msb,
+    reset_least_bit::reset_least_bit,
 };
+
 /// Node Indices
 /// (case $|given array| = 8$,
 /// internally 1-indexed implemetation)
@@ -28,7 +31,8 @@ where
         let mut data = vec![S::identity(); size + 1];
         data[1..].clone_from_slice(slice);
         for node_index in 1..size as isize {
-            let parent_node_index = (node_index + (node_index & -node_index)) as usize;
+            let parent_node_index =
+                (node_index + (node_index & -node_index)) as usize;
             if parent_node_index <= size {
                 // data[parent_node_index] =
                 //     S::operate(&data[parent_node_index], &data[node_index as
@@ -66,8 +70,9 @@ where
         while node_index <= self.size() {
             // self.data[node_index] = S::operate(&self.data[node_index],
             // value_to_operate);
-            self.data[node_index] = self.data[node_index].operate(value_to_operate);
-            node_index += bitwise::lsb_number(node_index);
+            self.data[node_index] =
+                self.data[node_index].operate(value_to_operate);
+            node_index += lsb_number(node_index as u64) as usize;
         }
     }
 
@@ -78,7 +83,7 @@ where
         while node_index > 0 {
             // value = S::operate(&value, &self.data[node_index]);
             value = value.operate(self.data[node_index]);
-            node_index = bitwise::reset_least_bit(node_index);
+            node_index = reset_least_bit(node_index as u64) as usize;
         }
         value
     }
@@ -90,11 +95,12 @@ where
         if self.size() == 0 {
             return 0;
         }
-        let mut length = 1usize << bitwise::most_significant_bit(self.size()).unwrap();
+        let mut length = 1usize << msb(self.size() as u64).unwrap();
         let mut value = S::identity();
         let mut right = 0;
         while length > 0 {
-            if right + length <= self.size() && is_ok(&value.operate(self.data[right + length]))
+            if right + length <= self.size()
+                && is_ok(&value.operate(self.data[right + length]))
             // && is_ok(&S::operate(&value, &self.data[right + length]))
             {
                 right += length;
@@ -136,13 +142,14 @@ where
         if left == self.size() {
             return self.size();
         }
-        let mut length = 1usize << bitwise::most_significant_bit(self.size()).unwrap();
+        let mut length = 1usize << msb(self.size() as u64).unwrap();
         // let mut value = S::invert(&self.get_half_range(left));
         let mut value = self.get_half_range(left).invert();
         let mut right = 0;
         while length > 0 {
             if right + length <= left
-                || right + length <= self.size() && is_ok(&value.operate(self.data[right + length]))
+                || right + length <= self.size()
+                    && is_ok(&value.operate(self.data[right + length]))
             // && is_ok(&S::operate(&value, &self.data[right + length]))
             {
                 right += length;
@@ -162,7 +169,7 @@ where
         if right == 0 {
             return 0;
         }
-        let mut length = 1usize << bitwise::most_significant_bit(self.size()).unwrap();
+        let mut length = 1usize << msb(self.size() as u64).unwrap();
         let mut value = self.get_half_range(right);
         if is_ok(&value) {
             return 0;
@@ -171,7 +178,8 @@ where
         while length > 0 {
             if left + length <= right
                 && !is_ok(&self.data[left - 1 + length].invert().operate(value))
-            // && !is_ok(&S::operate(&S::invert(&self.data[left - 1 + length]), &value))
+            // && !is_ok(&S::operate(&S::invert(&self.data[left - 1 + length]),
+            // &value))
             {
                 left += length;
                 // value = S::operate(&S::invert(&self.data[left - 1]),
@@ -205,23 +213,65 @@ mod tests {
         assert_eq!(fw.get_point(5), 15);
         let is_ok = |x: &i32| *x <= 25;
         assert_eq!(fw.find_max_right(&is_ok), 6);
-        assert_eq!(fw.find_max_right_with_left(&is_ok, 0), 6);
+        assert_eq!(
+            fw.find_max_right_with_left(&is_ok, 0),
+            6
+        );
         let is_ok = |x: &i32| *x < 25;
         assert_eq!(fw.find_max_right(&is_ok), 5);
-        assert_eq!(fw.find_max_right_with_left(&is_ok, 0), 5);
-        assert_eq!(fw.find_max_right_with_left(&is_ok, 4), 6);
-        assert_eq!(fw.find_max_right_with_left(&is_ok, 5), 7);
-        assert_eq!(fw.find_max_right_with_left(&is_ok, 6), 9);
-        assert_eq!(fw.find_max_right_with_left(&is_ok, 9), 10);
-        assert_eq!(fw.find_min_left_with_right(&is_ok, 10), 7);
-        assert_eq!(fw.find_min_left_with_right(&is_ok, 0), 0);
-        assert_eq!(fw.find_min_left_with_right(&is_ok, 6), 2);
-        assert_eq!(fw.find_min_left_with_right(&is_ok, 5), 0);
+        assert_eq!(
+            fw.find_max_right_with_left(&is_ok, 0),
+            5
+        );
+        assert_eq!(
+            fw.find_max_right_with_left(&is_ok, 4),
+            6
+        );
+        assert_eq!(
+            fw.find_max_right_with_left(&is_ok, 5),
+            7
+        );
+        assert_eq!(
+            fw.find_max_right_with_left(&is_ok, 6),
+            9
+        );
+        assert_eq!(
+            fw.find_max_right_with_left(&is_ok, 9),
+            10
+        );
+        assert_eq!(
+            fw.find_min_left_with_right(&is_ok, 10),
+            7
+        );
+        assert_eq!(
+            fw.find_min_left_with_right(&is_ok, 0),
+            0
+        );
+        assert_eq!(
+            fw.find_min_left_with_right(&is_ok, 6),
+            2
+        );
+        assert_eq!(
+            fw.find_min_left_with_right(&is_ok, 5),
+            0
+        );
         let is_ok = |x: &i32| *x < 15;
-        assert_eq!(fw.find_max_right_with_left(&is_ok, 5), 5);
-        assert_eq!(fw.find_min_left_with_right(&is_ok, 6), 6);
-        assert_eq!(fw.find_min_left_with_right(&is_ok, 10), 9);
+        assert_eq!(
+            fw.find_max_right_with_left(&is_ok, 5),
+            5
+        );
+        assert_eq!(
+            fw.find_min_left_with_right(&is_ok, 6),
+            6
+        );
+        assert_eq!(
+            fw.find_min_left_with_right(&is_ok, 10),
+            9
+        );
         let is_ok = |x: &i32| *x < 9;
-        assert_eq!(fw.find_min_left_with_right(&is_ok, 10), 10);
+        assert_eq!(
+            fw.find_min_left_with_right(&is_ok, 10),
+            10
+        );
     }
 }

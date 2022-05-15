@@ -1,26 +1,29 @@
-pub fn tree_bfs(
-    g: &Vec<(usize, usize)>,
+use crate::tree_edges_to_graph::tree_edges_to_graph;
+
+pub fn tree_bfs<T, F>(
+    tree_edges: &[(usize, usize)],
     root: usize,
-) -> (Vec<usize>, Vec<usize>) {
-    let n = g.len() + 1;
-    let mut t = vec![vec![]; n];
-    for &(u, v) in g.iter() {
-        t[u].push(v);
-        t[v].push(u);
-    }
-    let mut parent = vec![n; n];
-    let mut depth = vec![0; n];
+    default_data: Vec<T>,
+    mut assign: F,
+) -> Vec<T>
+where
+    F: FnMut(&mut Vec<T>, usize, usize),
+{
+    let graph = tree_edges_to_graph(tree_edges);
+    let n = graph.len();
     let mut que = std::collections::VecDeque::new();
+    let mut parent = vec![None; n];
+    let mut data = default_data;
     que.push_back(root);
     while let Some(u) = que.pop_front() {
-        for &v in t[u].iter() {
-            if v == parent[u] {
+        for &v in graph[u].iter() {
+            if Some(v) == parent[u] {
                 continue;
             }
-            parent[v] = u;
-            depth[v] = depth[u] + 1;
+            parent[v] = Some(u);
+            assign(&mut data, u, v);
             que.push_back(v);
         }
     }
-    (parent, depth)
+    data
 }

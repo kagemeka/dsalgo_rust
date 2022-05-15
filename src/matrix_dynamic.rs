@@ -46,7 +46,10 @@ impl<T> DynamicShapedMatrix<T> {
         let (height, width) = if self.data.len() == 0 {
             (0, 0)
         } else {
-            (self.data.len(), self.data[0].len())
+            (
+                self.data.len(),
+                self.data[0].len(),
+            )
         };
         crate::matrix::Shape { height, width }
     }
@@ -56,7 +59,10 @@ impl<T> DynamicShapedMatrix<T> {
         T: Default + Clone,
     {
         let original_shape = self.shape();
-        let mut result = DynamicShapedMatrix::new(original_shape.width, original_shape.height);
+        let mut result = DynamicShapedMatrix::new(
+            original_shape.width,
+            original_shape.height,
+        );
         for i in 0..original_shape.height {
             for j in 0..original_shape.width {
                 result.data[j][i] = self.data[i][j].clone();
@@ -69,9 +75,7 @@ impl<T> DynamicShapedMatrix<T> {
     where
         T: Clone,
     {
-        let mut result = Self {
-            data: self.data.clone(),
-        };
+        let mut result = Self { data: self.data.clone() };
         let height = self.shape().height;
         for i in 0..height / 2 {
             result.data.swap(i, height - i - 1);
@@ -97,7 +101,9 @@ impl<T> DynamicShapedMatrix<T> {
 impl<T> std::ops::Index<(usize, usize)> for DynamicShapedMatrix<T> {
     type Output = T;
 
-    fn index(&self, index: (usize, usize)) -> &Self::Output { &self.data[index.0][index.1] }
+    fn index(&self, index: (usize, usize)) -> &Self::Output {
+        &self.data[index.0][index.1]
+    }
 }
 
 impl<T> std::ops::IndexMut<(usize, usize)> for DynamicShapedMatrix<T> {
@@ -111,7 +117,8 @@ mod tests {
     #[test]
     fn test() {
         let (height, width) = (3, 4);
-        let mut matrix = super::DynamicShapedMatrix::<usize>::new(height, width);
+        let mut matrix =
+            super::DynamicShapedMatrix::<usize>::new(height, width);
         assert_eq!(
             matrix,
             super::DynamicShapedMatrix::<usize>::from(vec![

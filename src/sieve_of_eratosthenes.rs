@@ -27,7 +27,8 @@ mod tests {
         assert_eq!(
             sieve.into_iter().take(10).collect::<Vec<_>>(),
             vec![
-                false, false, true, true, false, true, false, true, false, false
+                false, false, true, true, false, true, false, true, false,
+                false
             ],
         );
     }

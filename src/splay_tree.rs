@@ -22,7 +22,9 @@ impl<K: PartialOrd, V> Node<K, V> {
     }
 
     pub(crate) fn update(root: &mut Box<Self>) {
-        root.size = Self::get_size(root.left.as_ref()) + Self::get_size(root.right.as_ref()) + 1;
+        root.size = Self::get_size(root.left.as_ref())
+            + Self::get_size(root.right.as_ref())
+            + 1;
     }
 
     pub(crate) fn rotate_left(mut root: Box<Self>) -> Box<Self> {
@@ -89,7 +91,10 @@ impl<K: PartialOrd, V> Node<K, V> {
         Some(root)
     }
 
-    pub fn find<'a>(root: Option<&'a Box<Self>>, key: &K) -> Option<&'a Box<Self>> {
+    pub fn find<'a>(
+        root: Option<&'a Box<Self>>,
+        key: &K,
+    ) -> Option<&'a Box<Self>> {
         if root.is_none() {
             return None;
         }

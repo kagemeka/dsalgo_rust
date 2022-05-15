@@ -20,6 +20,9 @@ pub fn find_divisors(n: usize) -> Vec<usize> {
 mod tests {
     #[test]
     fn test_find_divisors() {
-        assert_eq!(super::find_divisors(25), vec![1, 5, 25]);
+        assert_eq!(
+            super::find_divisors(25),
+            vec![1, 5, 25]
+        );
     }
 }

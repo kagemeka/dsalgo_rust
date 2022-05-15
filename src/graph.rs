@@ -36,8 +36,16 @@ impl<U: Clone> From<&[UndirectedEdge<U>]> for DirectedGraph<(), U> {
     fn from(edges: &[UndirectedEdge<U>]) -> Self {
         let mut graph = Self::new(edges.len() + 1);
         for edge in edges {
-            graph.add_edge(edge.left, edge.right, edge.data.clone());
-            graph.add_edge(edge.right, edge.left, edge.data.clone());
+            graph.add_edge(
+                edge.left,
+                edge.right,
+                edge.data.clone(),
+            );
+            graph.add_edge(
+                edge.right,
+                edge.left,
+                edge.data.clone(),
+            );
         }
         graph
     }
@@ -141,7 +149,10 @@ impl<T, U> DenseGraph<T, U> {
         for from in 0..self.size() {
             self.edge_datas[from].push(U::default());
         }
-        self.edge_datas.push(vec![U::default(); self.size() + 1]);
+        self.edge_datas.push(vec![
+            U::default();
+            self.size() + 1
+        ]);
     }
 }
 
@@ -172,11 +183,13 @@ mod tests {
     #[test]
     fn test_directed() {
         let edges = (0..2)
-            .map(|i| super::UndirectedEdge::<()> {
-                left: i,
-                right: i + 1,
-                data: (),
-            })
+            .map(
+                |i| super::UndirectedEdge::<()> {
+                    left: i,
+                    right: i + 1,
+                    data: (),
+                },
+            )
             .collect::<Vec<_>>();
         let graph = super::DirectedGraph::<(), ()>::from(edges.as_slice());
         println!("{:?}", graph);

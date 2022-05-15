@@ -10,11 +10,16 @@ impl RuntimeModulusCore {
         }
     }
 
-    pub fn get_value(&self) -> usize { self.value.load(std::sync::atomic::Ordering::SeqCst) }
+    pub fn get_value(&self) -> usize {
+        self.value.load(std::sync::atomic::Ordering::SeqCst)
+    }
 
     pub fn set_value(&self, value: usize) {
         assert!(value > 1);
-        self.value.store(value, std::sync::atomic::Ordering::SeqCst);
+        self.value.store(
+            value,
+            std::sync::atomic::Ordering::SeqCst,
+        );
     }
 }
 
@@ -51,7 +56,8 @@ mod tests {
 
             impl super::RuntimeModulus for ModRuntime {
                 fn core() -> &'static super::RuntimeModulusCore {
-                    static MODULUS: super::RuntimeModulusCore = super::RuntimeModulusCore::new(1);
+                    static MODULUS: super::RuntimeModulusCore =
+                        super::RuntimeModulusCore::new(1);
                     &MODULUS
                 }
             }

@@ -36,8 +36,8 @@ where
         //     &self.potential_from_parent[node],
         //     &self.potential_from_parent[parent],
         // );
-        self.potential_from_parent[node] =
-            self.potential_from_parent[node].operate(self.potential_from_parent[parent]);
+        self.potential_from_parent[node] = self.potential_from_parent[node]
+            .operate(self.potential_from_parent[parent]);
         self.data[node] as usize
     }
 
@@ -48,8 +48,12 @@ where
         // self.potential_from_parent[node])
     }
 
-    pub fn unite(&mut self, mut left_node: usize, mut right_node: usize, potential_left_to_right: S)
-    where
+    pub fn unite(
+        &mut self,
+        mut left_node: usize,
+        mut right_node: usize,
+        potential_left_to_right: S,
+    ) where
         S: PartialEq + std::fmt::Debug,
     {
         assert!(left_node < self.size() && right_node < self.size());
@@ -63,7 +67,10 @@ where
         left_node = self.find_root(left_node);
         right_node = self.find_root(right_node);
         if left_node == right_node {
-            assert_eq!(potential_left_to_right, S::identity());
+            assert_eq!(
+                potential_left_to_right,
+                S::identity()
+            );
             return;
         }
         if self.data[left_node] > self.data[right_node] {
@@ -83,7 +90,11 @@ where
         -self.data[root] as usize
     }
 
-    pub fn potential_difference(&mut self, from: usize, to: usize) -> Option<S> {
+    pub fn potential_difference(
+        &mut self,
+        from: usize,
+        to: usize,
+    ) -> Option<S> {
         if self.find_root(from) != self.find_root(to) {
             None
         } else {
@@ -106,7 +117,13 @@ mod tests {
         // uf.unite(3, 9, &5);
         uf.unite(3, 9, 5);
         assert_eq!(uf.size_of(3), 2);
-        assert_eq!(uf.potential_difference(3, 9), Some(5));
-        assert_eq!(uf.potential_difference(1, 3), None);
+        assert_eq!(
+            uf.potential_difference(3, 9),
+            Some(5)
+        );
+        assert_eq!(
+            uf.potential_difference(1, 3),
+            None
+        );
     }
 }

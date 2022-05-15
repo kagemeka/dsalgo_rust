@@ -89,11 +89,29 @@ pub fn miller_rabin_test_64_v2(n: usize) -> bool {
 mod tests {
     #[test]
     fn test() {
-        assert_eq!(super::miller_rabin_test_32(998_244_353), true);
-        assert_eq!(super::miller_rabin_test_32(1_000_000_007), true);
-        assert_eq!(super::miller_rabin_test_32(1_000_000_007), true);
-        assert_eq!(super::miller_rabin_test_32(561), false);
-        assert_eq!(super::miller_rabin_test_32(512461), false);
-        assert_eq!(super::miller_rabin_test(512461, 20), false);
+        assert_eq!(
+            super::miller_rabin_test_32(998_244_353),
+            true
+        );
+        assert_eq!(
+            super::miller_rabin_test_32(1_000_000_007),
+            true
+        );
+        assert_eq!(
+            super::miller_rabin_test_32(1_000_000_007),
+            true
+        );
+        assert_eq!(
+            super::miller_rabin_test_32(561),
+            false
+        );
+        assert_eq!(
+            super::miller_rabin_test_32(512461),
+            false
+        );
+        assert_eq!(
+            super::miller_rabin_test(512461, 20),
+            false
+        );
     }
 }
