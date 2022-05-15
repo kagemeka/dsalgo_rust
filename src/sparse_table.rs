@@ -30,9 +30,10 @@ where
             data.push(
                 (0..row_size)
                     .map(|index| {
-                        // S::operate(&data[log - 1][index], &data[log - 1][index + (1
-                        // << (log - 1))])
-                        data[log - 1][index].operate(data[log - 1][index + (1 << (log - 1))])
+                        // S::operate(&data[log - 1][index], &data[log -
+                        // 1][index + (1 << (log - 1))])
+                        data[log - 1][index]
+                            .operate(data[log - 1][index + (1 << (log - 1))])
                     })
                     .collect(),
             );
@@ -86,7 +87,8 @@ where
                     let index = border - delta;
                     // data[log][index - 1] = S::operate(&data[log][index - 1],
                     // &data[log][index]);
-                    data[log][index - 1] = data[log][index - 1].operate(data[log][index]);
+                    data[log][index - 1] =
+                        data[log][index - 1].operate(data[log][index]);
                 }
                 for delta in 0..(1 << log) - 1 {
                     // prod to right
@@ -97,7 +99,8 @@ where
                     }
                     // data[log][index + 1] = S::operate(&data[log][index],
                     // &data[log][index + 1]);
-                    data[log][index + 1] = data[log][index].operate(data[log][index + 1]);
+                    data[log][index + 1] =
+                        data[log][index].operate(data[log][index + 1]);
                 }
             }
         }

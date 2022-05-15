@@ -86,7 +86,9 @@ mod tests {
         {
             type Data = T;
 
-            fn insert(&mut self, index: usize, data: Self::Data) { let size = self.root.size(); }
+            fn insert(&mut self, index: usize, data: Self::Data) {
+                let size = self.root.size();
+            }
         }
     }
 }

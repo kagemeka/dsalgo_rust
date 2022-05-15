@@ -1,4 +1,8 @@
-use crate::{accumulate::accumulate, factorial::factorial, multiplicative_inverse::MulInv};
+use crate::{
+    accumulate::accumulate,
+    factorial::factorial,
+    multiplicative_inverse::MulInv,
+};
 
 pub fn inverse_factorial_table<T>(size: usize) -> Vec<T>
 where

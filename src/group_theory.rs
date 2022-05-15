@@ -9,7 +9,9 @@ pub trait BinaryOperation<F: ?Sized, T: ?Sized, I: BinaryOperationIdentifier> {
 }
 
 /// first * second * third
-pub trait AssociativeProperty<I: BinaryOperationIdentifier>: BinaryOperation<Self, Self, I> {
+pub trait AssociativeProperty<I: BinaryOperationIdentifier>:
+    BinaryOperation<Self, Self, I>
+{
     fn assert_associative(first: Self, second: Self, third: Self)
     where
         Self: Copy + PartialEq + Debug,
@@ -21,7 +23,9 @@ pub trait AssociativeProperty<I: BinaryOperationIdentifier>: BinaryOperation<Sel
     }
 }
 
-pub trait Idempotence<I: BinaryOperationIdentifier>: BinaryOperation<Self, Self, I> {
+pub trait Idempotence<I: BinaryOperationIdentifier>:
+    BinaryOperation<Self, Self, I>
+{
     fn assert_idempotent(self)
     where
         Self: Copy + PartialEq + Debug,
@@ -30,7 +34,9 @@ pub trait Idempotence<I: BinaryOperationIdentifier>: BinaryOperation<Self, Self,
     }
 }
 
-pub trait CommutativeProperty<T: Sized, I: BinaryOperationIdentifier>: BinaryOperation<Self, T, I> + Sized {
+pub trait CommutativeProperty<T: Sized, I: BinaryOperationIdentifier>:
+    BinaryOperation<Self, T, I> + Sized
+{
     fn assert_commutative(self, operator: Self)
     where
         Self: Copy,
@@ -43,7 +49,9 @@ pub trait CommutativeProperty<T: Sized, I: BinaryOperationIdentifier>: BinaryOpe
     }
 }
 
-pub trait IdentityElement<I: BinaryOperationIdentifier>: BinaryOperation<Self, Self, I> {
+pub trait IdentityElement<I: BinaryOperationIdentifier>:
+    BinaryOperation<Self, Self, I>
+{
     fn identity() -> Self;
 }
 
@@ -58,20 +66,43 @@ pub trait IdentityElement<I: BinaryOperationIdentifier>: BinaryOperation<Self, S
 
 use std::fmt::Debug;
 
-pub trait InverseElement<I: BinaryOperationIdentifier>: IdentityElement<I> {
+pub trait InverseElement<I: BinaryOperationIdentifier>:
+    IdentityElement<I>
+{
     fn invert(self) -> Self;
 }
 
-pub trait Magma<I: BinaryOperationIdentifier>: BinaryOperation<Self, Self, I> {}
-impl<I: BinaryOperationIdentifier, S: BinaryOperation<Self, Self, I>> Magma<I> for S {}
+pub trait Magma<I: BinaryOperationIdentifier>:
+    BinaryOperation<Self, Self, I>
+{
+}
+impl<I: BinaryOperationIdentifier, S: BinaryOperation<Self, Self, I>> Magma<I>
+    for S
+{
+}
 
-pub trait Semigroup<I: BinaryOperationIdentifier>: Magma<I> + AssociativeProperty<I> {}
-impl<I: BinaryOperationIdentifier, S: Magma<I> + AssociativeProperty<I>> Semigroup<I> for S {}
+pub trait Semigroup<I: BinaryOperationIdentifier>:
+    Magma<I> + AssociativeProperty<I>
+{
+}
+impl<I: BinaryOperationIdentifier, S: Magma<I> + AssociativeProperty<I>>
+    Semigroup<I> for S
+{
+}
 
-pub trait Monoid<I: BinaryOperationIdentifier>: Semigroup<I> + IdentityElement<I> {}
-impl<I: BinaryOperationIdentifier, S: Semigroup<I> + IdentityElement<I>> Monoid<I> for S {}
+pub trait Monoid<I: BinaryOperationIdentifier>:
+    Semigroup<I> + IdentityElement<I>
+{
+}
+impl<I: BinaryOperationIdentifier, S: Semigroup<I> + IdentityElement<I>>
+    Monoid<I> for S
+{
+}
 
-pub trait CommutativeMonoid<I: BinaryOperationIdentifier>: Monoid<I> + CommutativeProperty<Self, I> + Sized {}
+pub trait CommutativeMonoid<I: BinaryOperationIdentifier>:
+    Monoid<I> + CommutativeProperty<Self, I> + Sized
+{
+}
 impl<I, S> CommutativeMonoid<I> for S
 where
     I: BinaryOperationIdentifier,
@@ -79,11 +110,23 @@ where
 {
 }
 
-pub trait Group<I: BinaryOperationIdentifier>: Monoid<I> + InverseElement<I> {}
-impl<I: BinaryOperationIdentifier, S: Monoid<I> + InverseElement<I>> Group<I> for S {}
+pub trait Group<I: BinaryOperationIdentifier>:
+    Monoid<I> + InverseElement<I>
+{
+}
+impl<I: BinaryOperationIdentifier, S: Monoid<I> + InverseElement<I>> Group<I>
+    for S
+{
+}
 
-pub trait AbelianGroup<I: BinaryOperationIdentifier>: Group<I> + CommutativeProperty<Self, I> {}
-impl<I: BinaryOperationIdentifier, S: Group<I> + CommutativeProperty<Self, I>> AbelianGroup<I> for S {}
+pub trait AbelianGroup<I: BinaryOperationIdentifier>:
+    Group<I> + CommutativeProperty<Self, I>
+{
+}
+impl<I: BinaryOperationIdentifier, S: Group<I> + CommutativeProperty<Self, I>>
+    AbelianGroup<I> for S
+{
+}
 
 pub trait Semiring<I, J>: CommutativeMonoid<I> + Monoid<J>
 where
@@ -112,7 +155,9 @@ where
 {
 }
 
-pub trait Default<I: BinaryOperationIdentifier>: BinaryOperation<Self, Self, I> + Sized {
+pub trait Default<I: BinaryOperationIdentifier>:
+    BinaryOperation<Self, Self, I> + Sized
+{
     fn default() -> Self;
 }
 
@@ -127,25 +172,33 @@ impl<S: AbelianGroup<Additive>> AdditiveGroup for S {}
 
 #[cfg(test)]
 mod tests {
-    fn need_semiring<S, I: super::BinaryOperationIdentifier, J: super::BinaryOperationIdentifier>()
+    fn need_semiring<
+        S,
+        I: super::BinaryOperationIdentifier,
+        J: super::BinaryOperationIdentifier,
+    >()
     where
         S: super::Semiring<I, J> + std::fmt::Debug + PartialEq + Copy,
     {
         let add_e = <S as super::IdentityElement<I>>::identity();
         // let value_add = add_e.operate(add_e);
-        let value_add = <S as super::BinaryOperation<_, _, I>>::operate(add_e, add_e);
+        let value_add =
+            <S as super::BinaryOperation<_, _, I>>::operate(add_e, add_e);
         // let value_add = <S as
         // super::BinaryOperation<T>>::operate(&add_e, &add_e);
         assert_eq!(value_add, add_e);
 
         let mul_e = <S as super::IdentityElement<J>>::identity();
         // let value_mul: S = mul_e.operate(mul_e);
-        let value_mul = <S as super::BinaryOperation<_, _, J>>::operate(mul_e, mul_e);
+        let value_mul =
+            <S as super::BinaryOperation<_, _, J>>::operate(mul_e, mul_e);
         // super::BinaryOperation<U>>::operate(&mul_e, &mul_e);
         assert_eq!(value_mul, mul_e);
         eprintln!("{:?}", value_add);
     }
 
     #[test]
-    fn test() { need_semiring::<usize, super::Additive, super::Multiplicative>(); }
+    fn test() {
+        need_semiring::<usize, super::Additive, super::Multiplicative>();
+    }
 }

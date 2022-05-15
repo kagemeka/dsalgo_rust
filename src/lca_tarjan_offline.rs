@@ -1,6 +1,10 @@
 use crate::{tree_edges_to_graph::tree_edges_to_graph, union_find::UnionFind};
 
-pub fn lca_tarjan_offline(edges: &[(usize, usize)], queries: &[(usize, usize)], root: usize) -> Vec<usize> {
+pub fn lca_tarjan_offline(
+    edges: &[(usize, usize)],
+    queries: &[(usize, usize)],
+    root: usize,
+) -> Vec<usize> {
     fn dfs(
         g: &Vec<Vec<usize>>,
         q: &Vec<Vec<(usize, usize)>>,

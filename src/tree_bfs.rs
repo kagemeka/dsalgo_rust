@@ -28,7 +28,12 @@ use crate::tree_edges_to_graph::tree_edges_to_graph;
 //     }
 // }
 
-pub fn tree_bfs<T, F>(edges: &[(usize, usize)], root: usize, default_data: Vec<T>, mut assign: F) -> Vec<T>
+pub fn tree_bfs<T, F>(
+    edges: &[(usize, usize)],
+    root: usize,
+    default_data: Vec<T>,
+    mut assign: F,
+) -> Vec<T>
 where
     F: FnMut(&mut Vec<T>, usize, usize),
 {

@@ -18,7 +18,9 @@ impl<T> AvlTree<T> {
 
     pub fn len(&self) -> usize { len(self.root.as_deref()) }
 
-    pub fn push_back(&mut self, value: T) { self.append(&mut Self { root: Some(new(value)) }) }
+    pub fn push_back(&mut self, value: T) {
+        self.append(&mut Self { root: Some(new(value)) })
+    }
 
     pub fn push_front(&mut self, value: T) {
         let mut swp = Self { root: Some(new(value)) };
@@ -44,7 +46,9 @@ impl<T> AvlTree<T> {
 
     pub fn front(&self) -> Option<&T> { self.get(0) }
 
-    pub fn back_mut(&mut self) -> Option<&mut T> { self.get_mut(self.len().checked_sub(1)?) }
+    pub fn back_mut(&mut self) -> Option<&mut T> {
+        self.get_mut(self.len().checked_sub(1)?)
+    }
 
     pub fn front_mut(&mut self) -> Option<&mut T> { self.get_mut(0) }
 
@@ -114,11 +118,18 @@ impl<T> AvlTree<T> {
         }
     }
 
-    pub fn binary_search_by(&self, f: impl FnMut(&T) -> Ordering) -> Result<usize, usize> {
+    pub fn binary_search_by(
+        &self,
+        f: impl FnMut(&T) -> Ordering,
+    ) -> Result<usize, usize> {
         binary_search_by(self.root.as_deref(), f)
     }
 
-    pub fn binary_search_by_key<B: Ord>(&self, b: &B, mut f: impl FnMut(&T) -> B) -> Result<usize, usize> {
+    pub fn binary_search_by_key<B: Ord>(
+        &self,
+        b: &B,
+        mut f: impl FnMut(&T) -> B,
+    ) -> Result<usize, usize> {
         self.binary_search_by(|x| f(x).cmp(b))
     }
 
@@ -129,7 +140,10 @@ impl<T> AvlTree<T> {
         self.binary_search_by(|x| x.borrow().cmp(value))
     }
 
-    pub fn partition_point(&self, mut is_right: impl FnMut(&T) -> bool) -> usize {
+    pub fn partition_point(
+        &self,
+        mut is_right: impl FnMut(&T) -> bool,
+    ) -> usize {
         partition_point(self.root.as_deref(), |node| {
             is_right(&node.value)
         })
@@ -182,16 +196,22 @@ where
 }
 impl<T: Eq> Eq for AvlTree<T> {}
 impl<T: PartialOrd> PartialOrd for AvlTree<T> {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> { self.iter().partial_cmp(other) }
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        self.iter().partial_cmp(other)
+    }
 }
 impl<T: Ord> Ord for AvlTree<T> {
     fn cmp(&self, other: &Self) -> Ordering { self.iter().cmp(other) }
 }
 impl<T: Debug> Debug for AvlTree<T> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { f.debug_list().entries(self).finish() }
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_list().entries(self).finish()
+    }
 }
 impl<T: Hash> Hash for AvlTree<T> {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) { self.iter().for_each(|elm| elm.hash(state)); }
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.iter().for_each(|elm| elm.hash(state));
+    }
 }
 impl<T> IntoIterator for AvlTree<T> {
     type IntoIter = IntoIter<T>;
@@ -222,7 +242,9 @@ impl<T> Index<usize> for AvlTree<T> {
 }
 impl<T> FromIterator<T> for AvlTree<T> {
     fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
-        fn from_slice_of_nodes<T>(nodes: &mut [Option<Box<Node<T>>>]) -> Option<Box<Node<T>>> {
+        fn from_slice_of_nodes<T>(
+            nodes: &mut [Option<Box<Node<T>>>],
+        ) -> Option<Box<Node<T>>> {
             if nodes.is_empty() {
                 None
             } else {
@@ -326,8 +348,12 @@ impl<T> Node<T> {
         self.ht = 1 + ht(self.left.as_deref()).max(ht(self.right.as_deref()));
     }
 }
-fn len<T>(tree: Option<&Node<T>>) -> usize { tree.as_ref().map_or(0, |node| node.len) }
-fn ht<T>(tree: Option<&Node<T>>) -> u8 { tree.as_ref().map_or(0, |node| node.ht) }
+fn len<T>(tree: Option<&Node<T>>) -> usize {
+    tree.as_ref().map_or(0, |node| node.len)
+}
+fn ht<T>(tree: Option<&Node<T>>) -> u8 {
+    tree.as_ref().map_or(0, |node| node.ht)
+}
 fn balance<T>(node: &mut Box<Node<T>>) {
     fn rotate_left<T>(node: &mut Box<Node<T>>) {
         let mut x = node.left.take().unwrap();
@@ -397,7 +423,10 @@ fn merge_with_root<T>(
         },
     }
 }
-fn merge<T>(left: Option<Box<Node<T>>>, mut right: Option<Box<Node<T>>>) -> Option<Box<Node<T>>> {
+fn merge<T>(
+    left: Option<Box<Node<T>>>,
+    mut right: Option<Box<Node<T>>>,
+) -> Option<Box<Node<T>>> {
     match right.take() {
         None => left,
         Some(right) => {
@@ -467,7 +496,10 @@ fn split<T>(
         None => (None, None),
     }
 }
-fn binary_search_by<T>(tree: Option<&Node<T>>, mut f: impl FnMut(&T) -> Ordering) -> Result<usize, usize> {
+fn binary_search_by<T>(
+    tree: Option<&Node<T>>,
+    mut f: impl FnMut(&T) -> Ordering,
+) -> Result<usize, usize> {
     let node = match tree {
         None => return Err(0),
         Some(node) => node,
@@ -481,7 +513,10 @@ fn binary_search_by<T>(tree: Option<&Node<T>>, mut f: impl FnMut(&T) -> Ordering
         Ordering::Greater => binary_search_by(node.left.as_deref(), f),
     }
 }
-fn partition_point<T>(tree: Option<&Node<T>>, mut is_right: impl FnMut(&Node<T>) -> bool) -> usize {
+fn partition_point<T>(
+    tree: Option<&Node<T>>,
+    mut is_right: impl FnMut(&Node<T>) -> bool,
+) -> usize {
     let node = match tree {
         None => return 0,
         Some(node) => node,

@@ -8,7 +8,9 @@ impl NegativeCycleError {
 }
 
 impl std::fmt::Display for NegativeCycleError {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result { write!(f, "{}", self.msg) }
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{}", self.msg)
+    }
 }
 
 impl std::error::Error for NegativeCycleError {

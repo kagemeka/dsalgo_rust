@@ -28,7 +28,9 @@ where
         } else if n >= self.fact.len() {
             Err(())
         } else {
-            Ok(self.fact[n].clone() * self.inv_fact[n - k].clone() * self.inv_fact[k].clone())
+            Ok(self.fact[n].clone()
+                * self.inv_fact[n - k].clone()
+                * self.inv_fact[k].clone())
         }
     }
 
@@ -38,7 +40,9 @@ where
         } else if n >= self.fact.len() {
             Err(())
         } else {
-            Ok(self.inv_fact[n].clone() * self.fact[k].clone() * self.fact[n - k].clone())
+            Ok(self.inv_fact[n].clone()
+                * self.fact[k].clone()
+                * self.fact[n - k].clone())
         }
     }
 }

@@ -36,7 +36,8 @@ where
         //     &self.potential_from_parent[node],
         //     &self.potential_from_parent[parent],
         // );
-        self.potential_from_parent[node] = self.potential_from_parent[node].operate(self.potential_from_parent[parent]);
+        self.potential_from_parent[node] = self.potential_from_parent[node]
+            .operate(self.potential_from_parent[parent]);
         self.data[node] as usize
     }
 
@@ -47,8 +48,12 @@ where
         // self.potential_from_parent[node])
     }
 
-    pub fn unite(&mut self, mut left_node: usize, mut right_node: usize, potential_left_to_right: S)
-    where
+    pub fn unite(
+        &mut self,
+        mut left_node: usize,
+        mut right_node: usize,
+        potential_left_to_right: S,
+    ) where
         S: PartialEq + std::fmt::Debug,
     {
         assert!(left_node < self.size() && right_node < self.size());
@@ -85,7 +90,11 @@ where
         -self.data[root] as usize
     }
 
-    pub fn potential_difference(&mut self, from: usize, to: usize) -> Option<S> {
+    pub fn potential_difference(
+        &mut self,
+        from: usize,
+        to: usize,
+    ) -> Option<S> {
         if self.find_root(from) != self.find_root(to) {
             None
         } else {

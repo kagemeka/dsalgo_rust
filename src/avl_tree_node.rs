@@ -20,13 +20,18 @@ impl<K: PartialOrd, V> Node<K, V> {
         })
     }
 
-    pub(crate) fn get_height(root: Option<&Box<Self>>) -> usize { if let Some(node) = root { node.height } else { 0 } }
+    pub(crate) fn get_height(root: Option<&Box<Self>>) -> usize {
+        if let Some(node) = root { node.height } else { 0 }
+    }
 
-    pub(crate) fn get_size(root: Option<&Box<Self>>) -> usize { if let Some(node) = root { node.size } else { 0 } }
+    pub(crate) fn get_size(root: Option<&Box<Self>>) -> usize {
+        if let Some(node) = root { node.size } else { 0 }
+    }
 
     pub(crate) fn get_balance(root: Option<&Box<Self>>) -> isize {
         if let Some(node) = root {
-            Self::get_height(node.right.as_ref()) as isize - Self::get_height(node.left.as_ref()) as isize
+            Self::get_height(node.right.as_ref()) as isize
+                - Self::get_height(node.left.as_ref()) as isize
         } else {
             0
         }
@@ -38,7 +43,9 @@ impl<K: PartialOrd, V> Node<K, V> {
             Self::get_height(root.left.as_ref()),
             Self::get_height(root.right.as_ref()),
         ) + 1;
-        root.size = Self::get_size(root.left.as_ref()) + Self::get_size(root.right.as_ref()) + 1;
+        root.size = Self::get_size(root.left.as_ref())
+            + Self::get_size(root.right.as_ref())
+            + 1;
     }
 
     pub(crate) fn rotate_left(mut root: Box<Self>) -> Box<Self> {
@@ -87,13 +94,16 @@ impl<K: PartialOrd, V> Node<K, V> {
     }
 
     /// return (popped, new_root)
-    pub(crate) fn pop_max_node(mut root: Box<Self>) -> (Box<Self>, Option<Box<Self>>) {
+    pub(crate) fn pop_max_node(
+        mut root: Box<Self>,
+    ) -> (Box<Self>, Option<Box<Self>>) {
         if root.right.is_none() {
             let new_root = root.left.take();
             root.left = None;
             return (root, new_root);
         }
-        let (max_node, new_right) = Self::pop_max_node(root.right.take().unwrap());
+        let (max_node, new_right) =
+            Self::pop_max_node(root.right.take().unwrap());
         root.right = new_right;
         (
             max_node,
@@ -133,7 +143,8 @@ impl<K: PartialOrd, V> Node<K, V> {
             if root.left.is_none() {
                 return root.right;
             }
-            let (max_node, new_left) = Self::pop_max_node(root.left.take().unwrap());
+            let (max_node, new_left) =
+                Self::pop_max_node(root.left.take().unwrap());
             root.left = new_left;
             root.key = max_node.key;
             root.value = max_node.value;
@@ -141,7 +152,10 @@ impl<K: PartialOrd, V> Node<K, V> {
         Some(Self::balance_tree(root))
     }
 
-    pub fn get_kth_node(root: Option<&Box<Self>>, k: usize) -> Option<&Box<Self>> {
+    pub fn get_kth_node(
+        root: Option<&Box<Self>>,
+        k: usize,
+    ) -> Option<&Box<Self>> {
         if root.is_none() {
             return None;
         }
@@ -168,7 +182,9 @@ impl<K: PartialOrd, V> Node<K, V> {
         if key <= &root.key {
             Self::lower_bound(root.left.as_ref(), key)
         } else {
-            Self::get_size(root.left.as_ref()) + 1 + Self::lower_bound(root.right.as_ref(), key)
+            Self::get_size(root.left.as_ref())
+                + 1
+                + Self::lower_bound(root.right.as_ref(), key)
         }
     }
 
@@ -180,11 +196,16 @@ impl<K: PartialOrd, V> Node<K, V> {
         if key < &root.key {
             Self::upper_bound(root.left.as_ref(), key)
         } else {
-            Self::get_size(root.left.as_ref()) + 1 + Self::upper_bound(root.right.as_ref(), key)
+            Self::get_size(root.left.as_ref())
+                + 1
+                + Self::upper_bound(root.right.as_ref(), key)
         }
     }
 
-    pub fn find<'a>(root: Option<&'a Box<Self>>, key: &K) -> Option<&'a Box<Self>> {
+    pub fn find<'a>(
+        root: Option<&'a Box<Self>>,
+        key: &K,
+    ) -> Option<&'a Box<Self>> {
         if root.is_none() {
             return None;
         }

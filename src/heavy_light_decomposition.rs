@@ -1,6 +1,9 @@
 use crate::{tree_edges_to_graph::tree_edges_to_graph, tree_sizes::tree_sizes};
 
-pub fn heavy_light_decompose(edges: &[(usize, usize)], root: usize) -> Vec<usize> {
+pub fn heavy_light_decompose(
+    edges: &[(usize, usize)],
+    root: usize,
+) -> Vec<usize> {
     let graph = tree_edges_to_graph(edges);
     let n = graph.len();
     let mut roots = (0..n).collect::<Vec<_>>();

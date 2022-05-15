@@ -1,17 +1,28 @@
 use crate::euclidean;
 
-pub fn crt_2_coprime(mod_0: usize, rem_0: usize, mod_1: usize, rem_1: usize) -> usize {
+pub fn crt_2_coprime(
+    mod_0: usize,
+    rem_0: usize,
+    mod_1: usize,
+    rem_1: usize,
+) -> usize {
     assert!(mod_0 > 1 && rem_0 < mod_0 && mod_1 > 1 && rem_1 < mod_1);
     crt_2(mod_0, rem_0, mod_1, rem_1).unwrap()
 }
 
-pub fn crt_2(mut mod_0: usize, mut rem_0: usize, mut mod_1: usize, mut rem_1: usize) -> Option<usize> {
+pub fn crt_2(
+    mut mod_0: usize,
+    mut rem_0: usize,
+    mut mod_1: usize,
+    mut rem_1: usize,
+) -> Option<usize> {
     assert!(mod_0 > 1 && rem_0 < mod_0 && mod_1 > 1 && rem_1 < mod_1);
     if rem_0 > rem_1 {
         (rem_0, rem_1) = (rem_1, rem_0);
         (mod_0, mod_1) = (mod_1, mod_0);
     }
-    let (gcd, x, _) = euclidean::extended_euclidean_recurse(mod_0 as isize, mod_1 as isize);
+    let (gcd, x, _) =
+        euclidean::extended_euclidean_recurse(mod_0 as isize, mod_1 as isize);
     if (rem_1 - rem_0) % gcd != 0 {
         return None;
     }
@@ -21,13 +32,19 @@ pub fn crt_2(mut mod_0: usize, mut rem_0: usize, mut mod_1: usize, mut rem_1: us
     Some((rem_0 + x * s % lcm * mod_0) % lcm)
 }
 
-pub fn safe_crt_2(mut mod_0: usize, mut rem_0: usize, mut mod_1: usize, mut rem_1: usize) -> Option<usize> {
+pub fn safe_crt_2(
+    mut mod_0: usize,
+    mut rem_0: usize,
+    mut mod_1: usize,
+    mut rem_1: usize,
+) -> Option<usize> {
     assert!(mod_0 > 1 && rem_0 < mod_0 && mod_1 > 1 && rem_1 < mod_1);
     if rem_0 > rem_1 {
         (rem_0, rem_1) = (rem_1, rem_0);
         (mod_0, mod_1) = (mod_1, mod_0);
     }
-    let (gcd, inv_u0) = euclidean::extended_euclidean_gcd_modular_inverse(mod_1, mod_0 % mod_1);
+    let (gcd, inv_u0) =
+        euclidean::extended_euclidean_gcd_modular_inverse(mod_1, mod_0 % mod_1);
     let inv_u0 = inv_u0.unwrap();
     if (rem_1 - rem_0) % gcd != 0 {
         return None;

@@ -69,8 +69,12 @@ where
         new_root.borrow_mut().parent = previous_root.borrow_mut().parent.take();
         if let Some(parent) = &new_root.borrow().parent {
             match Node::<T>::get_state(previous_root) {
-                State::LeftChild => parent.borrow_mut().left = Some(new_root.clone()),
-                State::RightChild => parent.borrow_mut().right = Some(new_root.clone()),
+                State::LeftChild => {
+                    parent.borrow_mut().left = Some(new_root.clone())
+                },
+                State::RightChild => {
+                    parent.borrow_mut().right = Some(new_root.clone())
+                },
                 _ => (),
             }
             parent.borrow_mut().update();
@@ -254,7 +258,9 @@ impl<K, V> size::Size for DefaultData<K, V> {
 }
 
 impl<K, V> binary_tree_node::Update for Node<DefaultData<K, V>> {
-    fn update(&mut self) { self.data.size = self.left.size() + self.right.size() + 1; }
+    fn update(&mut self) {
+        self.data.size = self.left.size() + self.right.size() + 1;
+    }
 }
 
 #[cfg(test)]

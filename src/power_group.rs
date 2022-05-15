@@ -16,6 +16,8 @@ pub trait PowerGroup<Id>: Group<Self, Id>
 where
     Self: Clone,
 {
-    fn pow_group(self, exponent: i64) -> Self { pow_group::<Self, Id, Self>(self, exponent) }
+    fn pow_group(self, exponent: i64) -> Self {
+        pow_group::<Self, Id, Self>(self, exponent)
+    }
 }
 impl<S, Id> PowerGroup<Id> for S where S: Group<S, Id> + Clone {}

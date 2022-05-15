@@ -1,6 +1,8 @@
 use crate::negative_cycle::NegativeCycleError;
 
-pub fn floyd_warshall(mut weight_matrix: Vec<Vec<i64>>) -> Result<Vec<Vec<i64>>, NegativeCycleError> {
+pub fn floyd_warshall(
+    mut weight_matrix: Vec<Vec<i64>>,
+) -> Result<Vec<Vec<i64>>, NegativeCycleError> {
     let n = weight_matrix.len();
     assert!((0..n).all(|i| weight_matrix[i].len() == n));
     for i in 0..n {

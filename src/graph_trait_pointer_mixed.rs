@@ -8,7 +8,9 @@ pub(crate) struct NodeData;
 pub(crate) trait Edge<T = Option<EdgeData>, U = Option<NodeData>> {}
 
 impl<T, U> std::fmt::Debug for dyn Edge<T, U> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "Edge") }
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Edge")
+    }
 }
 
 pub(crate) struct Node<T, U> {
@@ -65,7 +67,13 @@ impl<T: Default, U>
 }
 
 impl<T, U> DirectedEdge<T, U> {
-    pub(crate) fn new(from: Rc<RefCell<Node<U, T>>>, to: Rc<RefCell<Node<U, T>>>, data: T) -> Self { Self { from, to, data } }
+    pub(crate) fn new(
+        from: Rc<RefCell<Node<U, T>>>,
+        to: Rc<RefCell<Node<U, T>>>,
+        data: T,
+    ) -> Self {
+        Self { from, to, data }
+    }
 }
 
 #[derive(Debug)]
@@ -108,7 +116,11 @@ impl<T: Clone, U> From<&DirectedEdge<T, U>> for UndirectedEdge<T, U> {
 }
 
 impl<T, U> UndirectedEdge<T, U> {
-    pub(crate) fn new(left: Rc<RefCell<Node<U, T>>>, right: Rc<RefCell<Node<U, T>>>, data: T) -> Self {
+    pub(crate) fn new(
+        left: Rc<RefCell<Node<U, T>>>,
+        right: Rc<RefCell<Node<U, T>>>,
+        data: T,
+    ) -> Self {
         Self { left, right, data }
     }
 }

@@ -16,6 +16,8 @@ pub trait PowerMonoid<Id>: Monoid<Self, Id>
 where
     Self: Clone,
 {
-    fn pow_monoid(self, exponent: u64) -> Self { pow_monoid::<Self, Id, Self>(self, exponent) }
+    fn pow_monoid(self, exponent: u64) -> Self {
+        pow_monoid::<Self, Id, Self>(self, exponent)
+    }
 }
 impl<S, Id> PowerMonoid<Id> for S where S: Monoid<S, Id> + Clone {}

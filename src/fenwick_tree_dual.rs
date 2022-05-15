@@ -112,7 +112,12 @@ where
 {
     // pub fn set_range(&mut self, left: usize, right: usize,
     // value_to_operate: &S) {
-    pub fn set_range(&mut self, left: usize, right: usize, value_to_operate: S) {
+    pub fn set_range(
+        &mut self,
+        left: usize,
+        right: usize,
+        value_to_operate: S,
+    ) {
         assert!(left <= right && right <= self.size());
         if left < self.size() {
             self.set_half_range(left, value_to_operate);
@@ -175,7 +180,8 @@ mod tests {
     fn test_as_abelian_group() {
         use crate::group_theory::Additive;
         let deltas = vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-        let mut fw = super::FenwickTreeDual::<i32, Additive>::from_deltas(&deltas);
+        let mut fw =
+            super::FenwickTreeDual::<i32, Additive>::from_deltas(&deltas);
         assert_eq!(fw.get_point(1), 1);
         assert_eq!(fw.get_point(5), 15);
         assert_eq!(fw.get_point(9), 45);
@@ -203,7 +209,8 @@ mod tests {
             *x += acc;
             *x
         });
-        let mut fw = super::FenwickTreeDual::<i32, Additive>::from(arr.as_slice());
+        let mut fw =
+            super::FenwickTreeDual::<i32, Additive>::from(arr.as_slice());
         assert_eq!(fw.get_point(1), 1);
         assert_eq!(fw.get_point(5), 15);
         assert_eq!(fw.get_point(9), 45);

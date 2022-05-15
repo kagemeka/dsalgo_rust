@@ -1,4 +1,8 @@
-use crate::{heavy_light_decomposition::heavy_light_decompose, tree_depths::tree_depths, tree_parents::tree_parents};
+use crate::{
+    heavy_light_decomposition::heavy_light_decompose,
+    tree_depths::tree_depths,
+    tree_parents::tree_parents,
+};
 
 pub struct LCAHLD {
     parent: Vec<Option<usize>>,

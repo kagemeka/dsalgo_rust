@@ -20,7 +20,10 @@ impl<'a, S: Copy> SegmentTree<'a, S> {
         Self::from_vec(monoid, &arr)
     }
 
-    pub fn from_vec(monoid: abstract_structs::Monoid<'a, S>, a: &Vec<S>) -> Self {
+    pub fn from_vec(
+        monoid: abstract_structs::Monoid<'a, S>,
+        a: &Vec<S>,
+    ) -> Self {
         let size = a.len();
         let n = size.next_power_of_two();
         let mut data = vec![(monoid.identity)(); n << 1];
@@ -137,7 +140,8 @@ mod tests {
         assert_eq!(
             seg.data,
             [
-                45, 45, 28, 17, 6, 22, 17, 0, 1, 5, 9, 13, 17, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0
+                45, 45, 28, 17, 6, 22, 17, 0, 1, 5, 9, 13, 17, 0, 0, 0, 0, 1,
+                2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0
             ],
         );
         println!("{:?}", seg);

@@ -1,4 +1,7 @@
-fn is_composite<M: crate::modular_static::Modulus + Copy>(n: usize, base: crate::modular_static::Modular<M>) -> bool {
+fn is_composite<M: crate::modular_static::Modulus + Copy>(
+    n: usize,
+    base: crate::modular_static::Modular<M>,
+) -> bool {
     use crate::euclidean::greatest_common_divisor;
     if crate::primality::is_trivial_composite(n) {
         return true;

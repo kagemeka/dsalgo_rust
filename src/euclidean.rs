@@ -53,7 +53,10 @@ pub fn extended_euclidean(mut a: isize, mut b: isize) -> (usize, isize, isize) {
 
 /// compute g := \gcd(modulus, n),
 /// and modular inverse of n/g in Z[modulus/g].
-pub fn extended_euclidean_gcd_modular_inverse(modulus: usize, n: usize) -> (usize, Option<usize>) {
+pub fn extended_euclidean_gcd_modular_inverse(
+    modulus: usize,
+    n: usize,
+) -> (usize, Option<usize>) {
     assert!(modulus > 1 && n < modulus);
     if n == 0 {
         return (modulus, None);
@@ -147,7 +150,8 @@ mod tests {
         );
         assert_eq!(
             super::extended_euclidean_gcd_modular_inverse(111, 30),
-            (3, Some(26)) // 111 / 3 = 37, 30 / 3 = 10, 10^{-1} \equiv 26 \mod 37
+            (3, Some(26)) /* 111 / 3 = 37, 30 / 3 = 10, 10^{-1} \equiv 26
+                           * \mod 37 */
         );
     }
 }

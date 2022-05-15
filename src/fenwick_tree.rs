@@ -31,12 +31,14 @@ where
         let mut data = vec![S::identity(); size + 1];
         data[1..].clone_from_slice(slice);
         for node_index in 1..size as isize {
-            let parent_node_index = (node_index + (node_index & -node_index)) as usize;
+            let parent_node_index =
+                (node_index + (node_index & -node_index)) as usize;
             if parent_node_index <= size {
                 // data[parent_node_index] =
                 //     S::operate(&data[parent_node_index], &data[node_index as
                 // usize]);
-                data[parent_node_index] = data[parent_node_index].operate(data[node_index as usize]);
+                data[parent_node_index] =
+                    data[parent_node_index].operate(data[node_index as usize]);
             }
         }
         Self {
@@ -68,7 +70,8 @@ where
         while node_index <= self.size() {
             // self.data[node_index] = S::operate(&self.data[node_index],
             // value_to_operate);
-            self.data[node_index] = self.data[node_index].operate(value_to_operate);
+            self.data[node_index] =
+                self.data[node_index].operate(value_to_operate);
             node_index += lsb_number(node_index as u64) as usize;
         }
     }
@@ -96,7 +99,8 @@ where
         let mut value = S::identity();
         let mut right = 0;
         while length > 0 {
-            if right + length <= self.size() && is_ok(&value.operate(self.data[right + length]))
+            if right + length <= self.size()
+                && is_ok(&value.operate(self.data[right + length]))
             // && is_ok(&S::operate(&value, &self.data[right + length]))
             {
                 right += length;
@@ -143,7 +147,9 @@ where
         let mut value = self.get_half_range(left).invert();
         let mut right = 0;
         while length > 0 {
-            if right + length <= left || right + length <= self.size() && is_ok(&value.operate(self.data[right + length]))
+            if right + length <= left
+                || right + length <= self.size()
+                    && is_ok(&value.operate(self.data[right + length]))
             // && is_ok(&S::operate(&value, &self.data[right + length]))
             {
                 right += length;
@@ -170,8 +176,10 @@ where
         }
         let mut left = 1;
         while length > 0 {
-            if left + length <= right && !is_ok(&self.data[left - 1 + length].invert().operate(value))
-            // && !is_ok(&S::operate(&S::invert(&self.data[left - 1 + length]), &value))
+            if left + length <= right
+                && !is_ok(&self.data[left - 1 + length].invert().operate(value))
+            // && !is_ok(&S::operate(&S::invert(&self.data[left - 1 + length]),
+            // &value))
             {
                 left += length;
                 // value = S::operate(&S::invert(&self.data[left - 1]),

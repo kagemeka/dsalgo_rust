@@ -39,6 +39,8 @@ pub trait PowerSemigroup<Id>: Semigroup<Self, Id>
 where
     Self: Clone,
 {
-    fn pow_seimigroup(self, exponent: u64) -> Self { pow_semigroup::<Self, Id, Self>(self, exponent) }
+    fn pow_seimigroup(self, exponent: u64) -> Self {
+        pow_semigroup::<Self, Id, Self>(self, exponent)
+    }
 }
 impl<S, Id> PowerSemigroup<Id> for S where S: Semigroup<S, Id> + Clone {}

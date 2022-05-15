@@ -1,4 +1,6 @@
-pub fn least_significant_bit(n: u64) -> Option<usize> { if n == 0 { None } else { Some(n.trailing_zeros() as usize) } }
+pub fn least_significant_bit(n: u64) -> Option<usize> {
+    if n == 0 { None } else { Some(n.trailing_zeros() as usize) }
+}
 
 #[cfg(test)]
 mod tests {

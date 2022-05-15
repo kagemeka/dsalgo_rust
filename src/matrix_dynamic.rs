@@ -101,11 +101,15 @@ impl<T> DynamicShapedMatrix<T> {
 impl<T> std::ops::Index<(usize, usize)> for DynamicShapedMatrix<T> {
     type Output = T;
 
-    fn index(&self, index: (usize, usize)) -> &Self::Output { &self.data[index.0][index.1] }
+    fn index(&self, index: (usize, usize)) -> &Self::Output {
+        &self.data[index.0][index.1]
+    }
 }
 
 impl<T> std::ops::IndexMut<(usize, usize)> for DynamicShapedMatrix<T> {
-    fn index_mut(&mut self, index: (usize, usize)) -> &mut Self::Output { &mut self.data[index.0][index.1] }
+    fn index_mut(&mut self, index: (usize, usize)) -> &mut Self::Output {
+        &mut self.data[index.0][index.1]
+    }
 }
 
 #[cfg(test)]
@@ -113,7 +117,8 @@ mod tests {
     #[test]
     fn test() {
         let (height, width) = (3, 4);
-        let mut matrix = super::DynamicShapedMatrix::<usize>::new(height, width);
+        let mut matrix =
+            super::DynamicShapedMatrix::<usize>::new(height, width);
         assert_eq!(
             matrix,
             super::DynamicShapedMatrix::<usize>::from(vec![

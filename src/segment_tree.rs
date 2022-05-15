@@ -1,4 +1,8 @@
-use crate::{bit_shr_until_odd::bit_shr_until_odd, group_theory::Monoid, least_significant_bit_number::lsb_number};
+use crate::{
+    bit_shr_until_odd::bit_shr_until_odd,
+    group_theory::Monoid,
+    least_significant_bit_number::lsb_number,
+};
 
 /// Node Indices (case $4 \lt |given array| \le 8$)
 /// |1                      |2
@@ -52,7 +56,8 @@ where
     pub fn size(&self) -> usize { self.size }
 
     fn merge_childs(&mut self, node_index: usize) {
-        self.data[node_index] = self.data[node_index << 1].operate(self.data[node_index << 1 | 1]);
+        self.data[node_index] =
+            self.data[node_index << 1].operate(self.data[node_index << 1 | 1]);
         // S::operate(&self.data[node_index << 1],
         // &self.data[node_index << 1 | 1]);
     }
@@ -106,7 +111,8 @@ where
         let mut value = S::identity();
         let mut node_index = n + left;
         loop {
-            node_index = bit_shr_until_odd(node_index as u64).unwrap() as usize; // up to ceil
+            node_index = bit_shr_until_odd(node_index as u64).unwrap() as usize;
+            // up to ceil
             // if !is_ok(&S::operate(&value, &self.data[node_index])) {
             if !is_ok(&value.operate(self.data[node_index])) {
                 break;
@@ -204,7 +210,14 @@ where
         )
     }
 
-    fn _get_recurse(&self, left: usize, right: usize, current_left: usize, current_right: usize, node_index: usize) -> S {
+    fn _get_recurse(
+        &self,
+        left: usize,
+        right: usize,
+        current_left: usize,
+        current_right: usize,
+        node_index: usize,
+    ) -> S {
         if current_right <= left || right <= current_left {
             return S::identity();
         }
@@ -270,7 +283,9 @@ where
         if current_left >= self.size {
             return self.size;
         }
-        if left <= current_left && current_right <= self.size && is_ok(&current_value.operate(self.data[node_index]))
+        if left <= current_left
+            && current_right <= self.size
+            && is_ok(&current_value.operate(self.data[node_index]))
         // && is_ok(&S::operate(current_value, &self.data[node_index]))
         {
             // *current_value = S::operate(current_value,

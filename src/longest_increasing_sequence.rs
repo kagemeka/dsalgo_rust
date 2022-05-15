@@ -1,4 +1,7 @@
-pub(self) fn find_longest_sequence<T: Copy, F: Fn(&T, &T) -> bool>(slice: &[T], binary_relation: F) -> Vec<T> {
+pub(self) fn find_longest_sequence<T: Copy, F: Fn(&T, &T) -> bool>(
+    slice: &[T],
+    binary_relation: F,
+) -> Vec<T> {
     let mut result = vec![None; slice.len()];
     for &value in slice {
         let is_ok = |x: &Option<T>| {
@@ -14,11 +17,15 @@ pub(self) fn find_longest_sequence<T: Copy, F: Fn(&T, &T) -> bool>(slice: &[T], 
     result[..index].iter().map(|x| x.unwrap()).collect()
 }
 
-pub fn longest_increasing_sequence<T: PartialOrd + Clone + Copy>(slice: &[T]) -> Vec<T> {
+pub fn longest_increasing_sequence<T: PartialOrd + Clone + Copy>(
+    slice: &[T],
+) -> Vec<T> {
     find_longest_sequence(slice, |x, value| x >= value)
 }
 
-pub fn longest_non_decreasing_sequence<T: PartialOrd + Clone + Copy>(slice: &[T]) -> Vec<T> {
+pub fn longest_non_decreasing_sequence<T: PartialOrd + Clone + Copy>(
+    slice: &[T],
+) -> Vec<T> {
     find_longest_sequence(slice, |x, value| x > value)
 }
 

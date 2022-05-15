@@ -1,4 +1,8 @@
-use crate::{choose::Choose, combination::Combination, multiplicative_inverse::MulInv};
+use crate::{
+    choose::Choose,
+    combination::Combination,
+    multiplicative_inverse::MulInv,
+};
 
 impl<T> Choose<T> for Combination<T>
 where

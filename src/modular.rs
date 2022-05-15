@@ -7,7 +7,9 @@ pub struct Modular<M: Modulus> {
 }
 
 impl<M: Modulus> std::fmt::Display for Modular<M> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "{}", self.value) }
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.value)
+    }
 }
 
 impl<M: Modulus> Modular<M> {

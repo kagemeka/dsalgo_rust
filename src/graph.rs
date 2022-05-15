@@ -183,7 +183,13 @@ mod tests {
     #[test]
     fn test_directed() {
         let edges = (0..2)
-            .map(|i| super::UndirectedEdge::<()> { left: i, right: i + 1, data: () })
+            .map(
+                |i| super::UndirectedEdge::<()> {
+                    left: i,
+                    right: i + 1,
+                    data: (),
+                },
+            )
             .collect::<Vec<_>>();
         let graph = super::DirectedGraph::<(), ()>::from(edges.as_slice());
         println!("{:?}", graph);

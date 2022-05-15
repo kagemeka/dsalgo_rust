@@ -7,4 +7,6 @@ use crate::least_significant_bit_number::lsb_number;
 /// assert_eq!(bit_shr_until_odd(2), Ok(1));
 /// assert_eq!(bit_shr_until_odd(12), Ok(3));
 /// ```
-pub fn bit_shr_until_odd(n: u64) -> Result<u64, ()> { if n == 0 { Err(()) } else { Ok(n / lsb_number(n)) } }
+pub fn bit_shr_until_odd(n: u64) -> Result<u64, ()> {
+    if n == 0 { Err(()) } else { Ok(n / lsb_number(n)) }
+}

@@ -1,4 +1,8 @@
-use crate::{bit_length::bit_length, tree_depths::tree_depths, tree_parents::tree_parents};
+use crate::{
+    bit_length::bit_length,
+    tree_depths::tree_depths,
+    tree_parents::tree_parents,
+};
 
 pub struct LCABinaryLifting {
     ancestors: Vec<Vec<usize>>,

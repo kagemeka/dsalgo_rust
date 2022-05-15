@@ -89,7 +89,8 @@ where
         if node_index < self.lazy_operators.len() {
             // self.lazy_operators[node_index] =
             // F::operate(operator, &self.lazy_operators[node_index]);
-            self.lazy_operators[node_index] = self.lazy_operators[node_index].operate(operator);
+            self.lazy_operators[node_index] =
+                self.lazy_operators[node_index].operate(operator);
         }
     }
 
@@ -296,7 +297,12 @@ where
 {
     // pub fn set_range_recurse(&mut self, left: usize, right:
     // usize, operator: &F) {
-    pub fn set_range_recurse(&mut self, left: usize, right: usize, operator: F) {
+    pub fn set_range_recurse(
+        &mut self,
+        left: usize,
+        right: usize,
+        operator: F,
+    ) {
         assert!(left <= right && right <= self.size);
         self._set_range_recurse(
             left,
@@ -430,7 +436,10 @@ where
         if current_left >= self.size {
             return self.size;
         }
-        if left <= current_left && current_right <= self.size && is_ok(&current_value.operate(self.data[node_index])) {
+        if left <= current_left
+            && current_right <= self.size
+            && is_ok(&current_value.operate(self.data[node_index]))
+        {
             *current_value = current_value.operate(self.data[node_index]);
             return current_right;
         }
@@ -490,7 +499,9 @@ where
         if current_left >= right {
             return right;
         }
-        if current_right <= right && is_ok(&self.data[node_index].operate(*current_value)) {
+        if current_right <= right
+            && is_ok(&self.data[node_index].operate(*current_value))
+        {
             *current_value = self.data[node_index].operate(*current_value);
             return current_left;
         }
@@ -560,7 +571,13 @@ mod tests {
             }
         }
 
-        let mut seg = super::SegmentTreeLazy::<Data, isize, Map, RARS, group_theory::Additive>::new(10);
+        let mut seg = super::SegmentTreeLazy::<
+            Data,
+            isize,
+            Map,
+            RARS,
+            group_theory::Additive,
+        >::new(10);
 
         assert_eq!(
             seg.get_range(0, 10),
