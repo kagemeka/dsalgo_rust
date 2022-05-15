@@ -124,24 +124,5 @@ mod tests {
         assert_eq!(seg.fold(0, 10), 5);
         seg.set(5, 10);
         assert_eq!(seg.fold(0, 10), 10);
-
-        // assert_eq!(seg.find_min_left(is_ok, 10), 6);
-        // assert_eq!(
-        //     seg.find_min_left_recurse(is_ok, 10),
-        //     6
-        // );
-        // assert_eq!(seg.find_min_left(is_ok, 5), 0);
-        // assert_eq!(
-        //     seg.find_min_left_recurse(is_ok, 5),
-        //     0
-        // );
-        // assert_eq!(seg.find_min_left(is_ok, 6), 6);
-        // assert_eq!(
-        //     seg.find_min_left_recurse(is_ok, 6),
-        //     6
-        // );
-
-        // seg = super::SegmentTree::<usize, Additive>::new(0);
-        // assert_eq!(seg.get_range(0, 0), 0);
     }
 }

@@ -127,6 +127,7 @@ pub mod ring;
 pub mod segment_tree;
 pub mod segment_tree_beats;
 pub mod segment_tree_binary_search;
+pub mod segment_tree_binary_search_recurse;
 pub mod segment_tree_fold_recurse;
 pub mod segment_tree_from_slice;
 pub mod segment_tree_indexing;

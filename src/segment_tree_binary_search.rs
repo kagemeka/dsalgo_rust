@@ -116,5 +116,9 @@ mod tests {
         assert_eq!(seg.max_right(is_ok, 10), 10);
         assert_eq!(seg.max_right(is_ok, 5), 5);
         assert_eq!(seg.max_right(is_ok, 6), 10);
+
+        assert_eq!(seg.min_left(is_ok, 10), 6);
+        assert_eq!(seg.min_left(is_ok, 5), 0);
+        assert_eq!(seg.min_left(is_ok, 6), 6);
     }
 }
