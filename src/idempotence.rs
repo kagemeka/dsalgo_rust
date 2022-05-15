@@ -5,6 +5,12 @@ pub trait Idempotence<S, Id>: BinaryOperation<S, S, S, Id> {
     where
         S: Clone + PartialEq + std::fmt::Debug,
     {
-        assert_eq!(Self::operate(element.clone(), element.clone()), element);
+        assert_eq!(
+            Self::operate(
+                element.clone(),
+                element.clone()
+            ),
+            element
+        );
     }
 }

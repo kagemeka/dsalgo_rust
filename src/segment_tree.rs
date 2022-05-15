@@ -195,7 +195,13 @@ where
 {
     pub fn get_range_recurse(&self, left: usize, right: usize) -> S {
         assert!(left <= right && right <= self.size);
-        self._get_recurse(left, right, 0, self.data.len() >> 1, 1)
+        self._get_recurse(
+            left,
+            right,
+            0,
+            self.data.len() >> 1,
+            1,
+        )
     }
 
     fn _get_recurse(&self, left: usize, right: usize, current_left: usize, current_right: usize, node_index: usize) -> S {
@@ -212,8 +218,20 @@ where
         // node_index << 1),     &self._get_recurse(left,
         // right, center, current_right, node_index << 1 | 1),
         // )
-        self._get_recurse(left, right, current_left, center, node_index << 1)
-            .operate(self._get_recurse(left, right, center, current_right, node_index << 1 | 1))
+        self._get_recurse(
+            left,
+            right,
+            current_left,
+            center,
+            node_index << 1,
+        )
+        .operate(self._get_recurse(
+            left,
+            right,
+            center,
+            current_right,
+            node_index << 1 | 1,
+        ))
     }
 
     pub fn find_max_right_recurse<F>(&self, is_ok: &F, left: usize) -> usize
@@ -221,7 +239,14 @@ where
         F: Fn(&S) -> bool,
     {
         assert!(left <= self.size);
-        self._max_right_recurse(is_ok, left, 0, self.data.len() >> 1, &mut S::identity(), 1)
+        self._max_right_recurse(
+            is_ok,
+            left,
+            0,
+            self.data.len() >> 1,
+            &mut S::identity(),
+            1,
+        )
     }
 
     /// find max right (current_left < right <= current_right)
@@ -283,7 +308,14 @@ where
         F: Fn(&S) -> bool,
     {
         assert!(right <= self.size);
-        self._min_left_recurse(is_ok, right, 0, self.data.len() >> 1, &mut S::identity(), 1)
+        self._min_left_recurse(
+            is_ok,
+            right,
+            0,
+            self.data.len() >> 1,
+            &mut S::identity(),
+            1,
+        )
     }
 
     fn _min_left_recurse<F>(
@@ -303,7 +335,12 @@ where
         }
         // if current_right <= right &&
         // is_ok(&S::operate(&self.data[node_index], current_value)) {
-        if current_right <= right && is_ok(&S::operate(self.data[node_index], *current_value)) {
+        if current_right <= right
+            && is_ok(&S::operate(
+                self.data[node_index],
+                *current_value,
+            ))
+        {
             // *current_value = S::operate(&self.data[node_index],
             // current_value);
             *current_value = self.data[node_index].operate(*current_value);
@@ -351,17 +388,38 @@ mod tests {
         assert_eq!(seg[0], 0);
         let is_ok = &|sum: &usize| *sum < 10;
         assert_eq!(seg.find_max_right(is_ok, 0), 5);
-        assert_eq!(seg.find_max_right_recurse(is_ok, 0), 5);
-        assert_eq!(seg.find_max_right(is_ok, 10), 10);
-        assert_eq!(seg.find_max_right_recurse(is_ok, 10), 10);
+        assert_eq!(
+            seg.find_max_right_recurse(is_ok, 0),
+            5
+        );
+        assert_eq!(
+            seg.find_max_right(is_ok, 10),
+            10
+        );
+        assert_eq!(
+            seg.find_max_right_recurse(is_ok, 10),
+            10
+        );
         assert_eq!(seg.find_max_right(is_ok, 5), 5);
-        assert_eq!(seg.find_max_right_recurse(is_ok, 5), 5);
+        assert_eq!(
+            seg.find_max_right_recurse(is_ok, 5),
+            5
+        );
         assert_eq!(seg.find_min_left(is_ok, 10), 6);
-        assert_eq!(seg.find_min_left_recurse(is_ok, 10), 6);
+        assert_eq!(
+            seg.find_min_left_recurse(is_ok, 10),
+            6
+        );
         assert_eq!(seg.find_min_left(is_ok, 5), 0);
-        assert_eq!(seg.find_min_left_recurse(is_ok, 5), 0);
+        assert_eq!(
+            seg.find_min_left_recurse(is_ok, 5),
+            0
+        );
         assert_eq!(seg.find_min_left(is_ok, 6), 6);
-        assert_eq!(seg.find_min_left_recurse(is_ok, 6), 6);
+        assert_eq!(
+            seg.find_min_left_recurse(is_ok, 6),
+            6
+        );
 
         seg = super::SegmentTree::<usize, Additive>::new(0);
         assert_eq!(seg.get_range(0, 0), 0);

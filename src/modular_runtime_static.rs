@@ -14,7 +14,10 @@ impl RuntimeModulusCore {
 
     pub fn set_value(&self, value: usize) {
         assert!(value > 1);
-        self.value.store(value, std::sync::atomic::Ordering::SeqCst);
+        self.value.store(
+            value,
+            std::sync::atomic::Ordering::SeqCst,
+        );
     }
 }
 

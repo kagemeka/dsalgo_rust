@@ -54,9 +54,21 @@ pub fn fermat_test(n: usize, check_times: usize) -> bool {
 mod tests {
     #[test]
     fn test() {
-        assert_eq!(super::fermat_test(998_244_353, 100), true);
-        assert_eq!(super::fermat_test(1_000_000_007, 100), true);
-        assert_eq!(super::fermat_test(561, 100), false);
-        assert_eq!(super::fermat_test(512461, 100), false);
+        assert_eq!(
+            super::fermat_test(998_244_353, 100),
+            true
+        );
+        assert_eq!(
+            super::fermat_test(1_000_000_007, 100),
+            true
+        );
+        assert_eq!(
+            super::fermat_test(561, 100),
+            false
+        );
+        assert_eq!(
+            super::fermat_test(512461, 100),
+            false
+        );
     }
 }

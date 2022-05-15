@@ -27,7 +27,10 @@ impl<Id> DynamicMod<Id> {
 
     pub fn set(value: u32) {
         assert!(value > 1);
-        Self::core().store(value, std::sync::atomic::Ordering::SeqCst);
+        Self::core().store(
+            value,
+            std::sync::atomic::Ordering::SeqCst,
+        );
     }
 }
 

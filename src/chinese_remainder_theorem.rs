@@ -69,10 +69,22 @@ pub fn safe_crt(mod_rem_pairs: &[(usize, usize)]) -> Option<usize> {
 mod tests {
     #[test]
     fn test() {
-        assert_eq!(super::crt_2_coprime(5, 3, 7, 4), 18);
-        assert_eq!(super::crt_2(5, 3, 7, 4), Some(18));
-        assert_eq!(super::safe_crt_2(5, 3, 7, 4), Some(18));
+        assert_eq!(
+            super::crt_2_coprime(5, 3, 7, 4),
+            18
+        );
+        assert_eq!(
+            super::crt_2(5, 3, 7, 4),
+            Some(18)
+        );
+        assert_eq!(
+            super::safe_crt_2(5, 3, 7, 4),
+            Some(18)
+        );
         let mod_rem_pairs = vec![(5, 3), (7, 4), (8, 3)];
-        assert_eq!(super::safe_crt(&mod_rem_pairs), Some(123));
+        assert_eq!(
+            super::safe_crt(&mod_rem_pairs),
+            Some(123)
+        );
     }
 }

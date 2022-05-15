@@ -4,7 +4,13 @@ pub fn least_significant_bit(n: u64) -> Option<usize> { if n == 0 { None } else 
 mod tests {
     #[test]
     fn bitwise() {
-        assert_eq!(super::least_significant_bit(0), None);
-        assert_eq!(super::least_significant_bit(1), Some(0));
+        assert_eq!(
+            super::least_significant_bit(0),
+            None
+        );
+        assert_eq!(
+            super::least_significant_bit(1),
+            Some(0)
+        );
     }
 }

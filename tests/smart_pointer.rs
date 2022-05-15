@@ -14,8 +14,14 @@ mod tests {
         p3 = &a.borrow() as *const _;
         println!("{:?}", p3);
         println!("{:?}", a.as_ptr());
-        println!("{:?}", &*a.borrow() as *const _);
-        assert!(std::ptr::eq(a.as_ptr(), &*a.borrow()));
+        println!(
+            "{:?}",
+            &*a.borrow() as *const _
+        );
+        assert!(std::ptr::eq(
+            a.as_ptr(),
+            &*a.borrow()
+        ));
 
         let a = cell::RefCell::new(1);
         let p1 = &a as *const _;

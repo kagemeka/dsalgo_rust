@@ -119,7 +119,10 @@ where
         }
         if right < self.size() {
             // self.set_half_range(right, &S::invert(value_to_operate));
-            self.set_half_range(right, value_to_operate.invert());
+            self.set_half_range(
+                right,
+                value_to_operate.invert(),
+            );
         }
     }
 
@@ -144,7 +147,12 @@ where
         };
         self.fenwick.find_max_right_with_left(
             // &|prod: &S| !is_ok(&S::operate(&prod_less_than_left, prod)),
-            &|prod: &S| !is_ok(&S::operate(prod_less_than_left, *prod)),
+            &|prod: &S| {
+                !is_ok(&S::operate(
+                    prod_less_than_left,
+                    *prod,
+                ))
+            },
             left,
         )
     }
@@ -176,9 +184,18 @@ mod tests {
         assert_eq!(fw.get_point(1), 1);
         assert_eq!(fw.get_point(5), 17);
         assert_eq!(fw.get_point(9), 47);
-        assert_eq!(fw.binary_search(&|value: &i32| *value >= 23), 6);
-        assert_eq!(fw.binary_search(&|value: &i32| *value >= 47), 9);
-        assert_eq!(fw.binary_search(&|value: &i32| *value > 47), 10);
+        assert_eq!(
+            fw.binary_search(&|value: &i32| *value >= 23),
+            6
+        );
+        assert_eq!(
+            fw.binary_search(&|value: &i32| *value >= 47),
+            9
+        );
+        assert_eq!(
+            fw.binary_search(&|value: &i32| *value > 47),
+            10
+        );
 
         // abelian group
         let mut arr = deltas;
@@ -195,9 +212,18 @@ mod tests {
         assert_eq!(fw.get_point(1), 1);
         assert_eq!(fw.get_point(5), 17);
         assert_eq!(fw.get_point(9), 47);
-        assert_eq!(fw.binary_search(&|value: &i32| *value >= 23), 6);
-        assert_eq!(fw.binary_search(&|value: &i32| *value >= 47), 9);
-        assert_eq!(fw.binary_search(&|value: &i32| *value > 47), 10);
+        assert_eq!(
+            fw.binary_search(&|value: &i32| *value >= 23),
+            6
+        );
+        assert_eq!(
+            fw.binary_search(&|value: &i32| *value >= 47),
+            9
+        );
+        assert_eq!(
+            fw.binary_search(&|value: &i32| *value > 47),
+            10
+        );
         // fw.set_range(2, 6, &1);
         fw.set_range(2, 6, 1);
         assert_eq!(fw.get_point(1), 1);
@@ -205,12 +231,27 @@ mod tests {
         assert_eq!(fw.get_point(9), 47);
         // fw.set_range(2, 6, &-1);
         fw.set_range(2, 6, -1);
-        assert_eq!(fw.binary_search_from_left(&|value: &i32| *value >= 23, 0), 6);
-        assert_eq!(fw.binary_search_from_left(&|value: &i32| *value >= 47, 0), 9);
-        assert_eq!(fw.binary_search_from_left(&|value: &i32| *value > 47, 0), 10);
+        assert_eq!(
+            fw.binary_search_from_left(&|value: &i32| *value >= 23, 0),
+            6
+        );
+        assert_eq!(
+            fw.binary_search_from_left(&|value: &i32| *value >= 47, 0),
+            9
+        );
+        assert_eq!(
+            fw.binary_search_from_left(&|value: &i32| *value > 47, 0),
+            10
+        );
 
         // [0, 1, 3, 6, 10, 17, 23, 30, 38, 47]
-        assert_eq!(fw.binary_search_from_left(&|value: &i32| *value >= 23, 7), 7);
-        assert_eq!(fw.binary_search_from_left(&|value: &i32| *value >= 23, 5), 6);
+        assert_eq!(
+            fw.binary_search_from_left(&|value: &i32| *value >= 23, 7),
+            7
+        );
+        assert_eq!(
+            fw.binary_search_from_left(&|value: &i32| *value >= 23, 5),
+            6
+        );
     }
 }

@@ -36,7 +36,10 @@ pub trait CommutativeProperty<T: Sized, I: BinaryOperationIdentifier>: BinaryOpe
         Self: Copy,
         T: PartialEq + Debug,
     {
-        assert_eq!(self.operate(operator), operator.operate(self));
+        assert_eq!(
+            self.operate(operator),
+            operator.operate(self)
+        );
     }
 }
 

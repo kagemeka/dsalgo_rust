@@ -72,14 +72,20 @@ where
     pub fn size(&self) -> usize { self.size }
 
     fn merge_childs(&mut self, node_index: usize) {
-        self.data[node_index] = S::operate(self.data[node_index << 1], self.data[node_index << 1 | 1]);
+        self.data[node_index] = S::operate(
+            self.data[node_index << 1],
+            self.data[node_index << 1 | 1],
+        );
         // S::operate(&self.data[node_index << 1],
         // &self.data[node_index << 1 | 1]);
     }
 
     // fn apply(&mut self, node_index: usize, operator: &F) {
     fn apply(&mut self, node_index: usize, operator: F) {
-        self.data[node_index] = M::map(&operator, &self.data[node_index]);
+        self.data[node_index] = M::map(
+            &operator,
+            &self.data[node_index],
+        );
         if node_index < self.lazy_operators.len() {
             // self.lazy_operators[node_index] =
             // F::operate(operator, &self.lazy_operators[node_index]);
@@ -292,7 +298,14 @@ where
     // usize, operator: &F) {
     pub fn set_range_recurse(&mut self, left: usize, right: usize, operator: F) {
         assert!(left <= right && right <= self.size);
-        self._set_range_recurse(left, right, 0, self.data.len() >> 1, 1, operator);
+        self._set_range_recurse(
+            left,
+            right,
+            0,
+            self.data.len() >> 1,
+            1,
+            operator,
+        );
     }
 
     fn _set_range_recurse(
@@ -314,7 +327,14 @@ where
         }
         self.propagate(node_index);
         let center = (current_left + current_right) >> 1;
-        self._set_range_recurse(left, right, current_left, center, node_index << 1, operator);
+        self._set_range_recurse(
+            left,
+            right,
+            current_left,
+            center,
+            node_index << 1,
+            operator,
+        );
         self._set_range_recurse(
             left,
             right,
@@ -328,7 +348,13 @@ where
 
     pub fn get_range_recurse(&mut self, left: usize, right: usize) -> S {
         assert!(left <= right && right <= self.size);
-        self._get_range_recurse(left, right, 0, self.data.len() >> 1, 1)
+        self._get_range_recurse(
+            left,
+            right,
+            0,
+            self.data.len() >> 1,
+            1,
+        )
     }
 
     fn _get_range_recurse(
@@ -355,8 +381,20 @@ where
         // center, node_index << 1),
         //     &self._get_range_recurse(left, right, center,
         // current_right, node_index << 1 | 1), )
-        self._get_range_recurse(left, right, current_left, center, node_index << 1)
-            .operate(self._get_range_recurse(left, right, center, current_right, node_index << 1 | 1))
+        self._get_range_recurse(
+            left,
+            right,
+            current_left,
+            center,
+            node_index << 1,
+        )
+        .operate(self._get_range_recurse(
+            left,
+            right,
+            center,
+            current_right,
+            node_index << 1 | 1,
+        ))
     }
 
     pub fn find_max_right_recurse<G>(&mut self, is_ok: &G, left: usize) -> usize
@@ -364,7 +402,14 @@ where
         G: Fn(&S) -> bool,
     {
         assert!(left <= self.size);
-        self._max_right_recurse(is_ok, left, 0, self.data.len() >> 1, &mut S::identity(), 1)
+        self._max_right_recurse(
+            is_ok,
+            left,
+            0,
+            self.data.len() >> 1,
+            &mut S::identity(),
+            1,
+        )
     }
 
     fn _max_right_recurse<G>(
@@ -420,7 +465,14 @@ where
         G: Fn(&S) -> bool,
     {
         assert!(right <= self.size);
-        self._min_left_recurse(is_ok, right, 0, self.data.len() >> 1, &mut S::identity(), 1)
+        self._min_left_recurse(
+            is_ok,
+            right,
+            0,
+            self.data.len() >> 1,
+            &mut S::identity(),
+            1,
+        )
     }
 
     fn _min_left_recurse<G>(
@@ -510,33 +562,87 @@ mod tests {
 
         let mut seg = super::SegmentTreeLazy::<Data, isize, Map, RARS, group_theory::Additive>::new(10);
 
-        assert_eq!(seg.get_range(0, 10), Data { sum: 0, length: 10 });
+        assert_eq!(
+            seg.get_range(0, 10),
+            Data { sum: 0, length: 10 }
+        );
         // seg.set_range(0, 5, &2);
         seg.set_range(0, 5, 2);
 
-        assert_eq!(seg.get_range(2, 6), Data { sum: 6, length: 4 });
+        assert_eq!(
+            seg.get_range(2, 6),
+            Data { sum: 6, length: 4 }
+        );
 
-        assert_eq!(seg.get_range_recurse(2, 6), Data { sum: 6, length: 4 });
+        assert_eq!(
+            seg.get_range_recurse(2, 6),
+            Data { sum: 6, length: 4 }
+        );
 
-        assert_eq!(seg.get_range(0, 10), Data { sum: 10, length: 10 });
-        assert_eq!(seg.get_range_recurse(0, 10), Data { sum: 10, length: 10 });
-        assert_eq!(seg.find_max_right(&|x: &Data| x.sum <= 3, 4), 10);
-        assert_eq!(seg.find_max_right_recurse(&|x: &Data| x.sum <= 3, 4), 10);
-        assert_eq!(seg.find_max_right(&|x: &Data| x.sum <= 3, 2), 3);
-        assert_eq!(seg.find_max_right_recurse(&|x: &Data| x.sum <= 3, 2), 3);
-        assert_eq!(seg.find_min_left(&|x: &Data| x.sum <= 3, 4), 3);
-        assert_eq!(seg.find_min_left_recurse(&|x: &Data| x.sum <= 3, 4), 3);
-        assert_eq!(seg.find_min_left(&|x: &Data| x.sum <= 3, 10), 4);
-        assert_eq!(seg.find_min_left_recurse(&|x: &Data| x.sum <= 3, 10), 4);
-        assert_eq!(seg.find_min_left(&|x: &Data| x.sum < 0, 10), 10);
-        assert_eq!(seg.find_min_left_recurse(&|x: &Data| x.sum < 0, 10), 10);
+        assert_eq!(
+            seg.get_range(0, 10),
+            Data { sum: 10, length: 10 }
+        );
+        assert_eq!(
+            seg.get_range_recurse(0, 10),
+            Data { sum: 10, length: 10 }
+        );
+        assert_eq!(
+            seg.find_max_right(&|x: &Data| x.sum <= 3, 4),
+            10
+        );
+        assert_eq!(
+            seg.find_max_right_recurse(&|x: &Data| x.sum <= 3, 4),
+            10
+        );
+        assert_eq!(
+            seg.find_max_right(&|x: &Data| x.sum <= 3, 2),
+            3
+        );
+        assert_eq!(
+            seg.find_max_right_recurse(&|x: &Data| x.sum <= 3, 2),
+            3
+        );
+        assert_eq!(
+            seg.find_min_left(&|x: &Data| x.sum <= 3, 4),
+            3
+        );
+        assert_eq!(
+            seg.find_min_left_recurse(&|x: &Data| x.sum <= 3, 4),
+            3
+        );
+        assert_eq!(
+            seg.find_min_left(&|x: &Data| x.sum <= 3, 10),
+            4
+        );
+        assert_eq!(
+            seg.find_min_left_recurse(&|x: &Data| x.sum <= 3, 10),
+            4
+        );
+        assert_eq!(
+            seg.find_min_left(&|x: &Data| x.sum < 0, 10),
+            10
+        );
+        assert_eq!(
+            seg.find_min_left_recurse(&|x: &Data| x.sum < 0, 10),
+            10
+        );
 
         seg.update_point(2, Data { sum: -1, length: 1 });
-        assert_eq!(seg.get_range(0, 10), Data { sum: 7, length: 10 });
-        assert_eq!(seg.get_range_recurse(0, 10), Data { sum: 7, length: 10 });
+        assert_eq!(
+            seg.get_range(0, 10),
+            Data { sum: 7, length: 10 }
+        );
+        assert_eq!(
+            seg.get_range_recurse(0, 10),
+            Data { sum: 7, length: 10 }
+        );
 
         // seg.set_range_recurse(1, 7, &3);
         seg.set_range_recurse(1, 7, 3);
-        assert_eq!(seg.get_range(0, 10), Data { sum: 25, length: 10 });
+        assert_eq!(
+            seg.get_range(0, 10),
+            Data { sum: 25, length: 10 }
+        );
     }
 }

@@ -46,7 +46,10 @@ impl<T> DynamicShapedMatrix<T> {
         let (height, width) = if self.data.len() == 0 {
             (0, 0)
         } else {
-            (self.data.len(), self.data[0].len())
+            (
+                self.data.len(),
+                self.data[0].len(),
+            )
         };
         crate::matrix::Shape { height, width }
     }
@@ -56,7 +59,10 @@ impl<T> DynamicShapedMatrix<T> {
         T: Default + Clone,
     {
         let original_shape = self.shape();
-        let mut result = DynamicShapedMatrix::new(original_shape.width, original_shape.height);
+        let mut result = DynamicShapedMatrix::new(
+            original_shape.width,
+            original_shape.height,
+        );
         for i in 0..original_shape.height {
             for j in 0..original_shape.width {
                 result.data[j][i] = self.data[i][j].clone();

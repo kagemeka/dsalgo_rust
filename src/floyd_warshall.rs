@@ -9,7 +9,10 @@ pub fn floyd_warshall(mut weight_matrix: Vec<Vec<i64>>) -> Result<Vec<Vec<i64>>,
     for k in 0..n {
         for i in 0..n {
             for j in 0..n {
-                weight_matrix[i][j] = std::cmp::min(weight_matrix[i][j], weight_matrix[i][k] + weight_matrix[k][j]);
+                weight_matrix[i][j] = std::cmp::min(
+                    weight_matrix[i][j],
+                    weight_matrix[i][k] + weight_matrix[k][j],
+                );
             }
         }
     }

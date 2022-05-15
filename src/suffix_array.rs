@@ -205,7 +205,10 @@ mod tests {
             15, 14, 10, 6, 2, 11, 7, 3, 1, 0, 13, 12, 9, 5, 8, 4,
         ];
         assert_eq!(super::sais_recurse(&s), answer,);
-        assert_eq!(super::doubling_counting_sort(&s), answer,);
+        assert_eq!(
+            super::doubling_counting_sort(&s),
+            answer,
+        );
         assert_eq!(super::doubling(&s), answer,);
     }
 }

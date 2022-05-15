@@ -3,7 +3,10 @@ pub fn solve_ghost_leg(n: usize, edges: Vec<usize>) -> Result<Vec<usize>, String
     let mut res = (0..n).collect::<Vec<_>>();
     for &i in edges.iter().rev() {
         if i >= n - 1 {
-            return Err(format!("invalid edge index: {}", i));
+            return Err(format!(
+                "invalid edge index: {}",
+                i
+            ));
         }
         res.swap(i, i + 1);
     }

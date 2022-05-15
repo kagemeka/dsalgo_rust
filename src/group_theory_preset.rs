@@ -52,6 +52,9 @@ mod tests {
     fn test() {
         // assert_eq!(<usize as
         // crate::power::Power<Multiplicative>>::pow(&4, 2), 16,);
-        assert_eq!(<usize as crate::power::Power<Multiplicative>>::pow(4, 2), 16);
+        assert_eq!(
+            <usize as crate::power::Power<Multiplicative>>::pow(4, 2),
+            16
+        );
     }
 }

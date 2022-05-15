@@ -20,8 +20,17 @@ mod tests {
 
     #[test]
     fn test() {
-        println!("The map has {} entries.", *COUNT);
-        println!("The entry for `0` is \"{}\".", HASHMAP.get(&0).unwrap());
-        println!("A expensive calculation on a static results in: {}.", *NUMBER);
+        println!(
+            "The map has {} entries.",
+            *COUNT
+        );
+        println!(
+            "The entry for `0` is \"{}\".",
+            HASHMAP.get(&0).unwrap()
+        );
+        println!(
+            "A expensive calculation on a static results in: {}.",
+            *NUMBER
+        );
     }
 }

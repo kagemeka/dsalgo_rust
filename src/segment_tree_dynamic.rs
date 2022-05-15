@@ -34,7 +34,12 @@ impl<'a, S: Copy> SegmentTree<'a, S> {
         seg
     }
 
-    fn merge(&mut self, i: usize) { self.data[i] = (self.monoid.operate)(&self.data[i << 1], &self.data[i << 1 | 1]); }
+    fn merge(&mut self, i: usize) {
+        self.data[i] = (self.monoid.operate)(
+            &self.data[i << 1],
+            &self.data[i << 1 | 1],
+        );
+    }
 
     pub fn set(&mut self, mut i: usize, x: S) {
         assert!(i < self.size);
@@ -75,7 +80,10 @@ impl<'a, S: Copy> SegmentTree<'a, S> {
         let mut i = (l + n) as i32;
         loop {
             i /= i & -i;
-            if is_ok(&(self.monoid.operate)(&v, &self.data[i as usize])) {
+            if is_ok(&(self.monoid.operate)(
+                &v,
+                &self.data[i as usize],
+            )) {
                 v = (self.monoid.operate)(&v, &self.data[i as usize]);
                 i += 1;
                 if i & -i == i {
@@ -85,7 +93,10 @@ impl<'a, S: Copy> SegmentTree<'a, S> {
             }
             while i < n as i32 {
                 i <<= 1;
-                if is_ok(&(self.monoid.operate)(&v, &self.data[i as usize])) {
+                if is_ok(&(self.monoid.operate)(
+                    &v,
+                    &self.data[i as usize],
+                )) {
                     v = (self.monoid.operate)(&v, &self.data[i as usize]);
                 }
             }

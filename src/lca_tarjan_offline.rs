@@ -16,7 +16,9 @@ pub fn lca_tarjan_offline(edges: &[(usize, usize)], queries: &[(usize, usize)], 
             if visited[v] {
                 continue;
             }
-            dfs(g, q, visited, uf, ancestor, lca, v);
+            dfs(
+                g, q, visited, uf, ancestor, lca, v,
+            );
             uf.unite(u, v);
             ancestor[uf.find_root(u)] = u;
         }

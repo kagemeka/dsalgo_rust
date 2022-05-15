@@ -9,7 +9,10 @@ impl LCABinaryLifting {
     pub fn new(tree_edges: &[(usize, usize)], root: usize) -> Self {
         let n = tree_edges.len() + 1;
         let depth = tree_depths(&tree_edges, root);
-        let k = std::cmp::max(1, bit_length(*depth.iter().max().unwrap() as u64)) as usize;
+        let k = std::cmp::max(
+            1,
+            bit_length(*depth.iter().max().unwrap() as u64),
+        ) as usize;
         let mut ancestors = vec![vec![n; n]; k];
         let mut parent = tree_parents(&tree_edges, root);
         parent[root] = Some(root);

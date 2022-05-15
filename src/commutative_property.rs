@@ -6,6 +6,9 @@ pub trait CommutativeProperty<S, T, Id>: BinaryOperation<S, S, T, Id> {
         S: Clone,
         T: PartialEq + std::fmt::Debug,
     {
-        assert_eq!(Self::operate(a.clone(), b.clone()), Self::operate(b, a));
+        assert_eq!(
+            Self::operate(a.clone(), b.clone()),
+            Self::operate(b, a)
+        );
     }
 }

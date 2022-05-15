@@ -205,23 +205,65 @@ mod tests {
         assert_eq!(fw.get_point(5), 15);
         let is_ok = |x: &i32| *x <= 25;
         assert_eq!(fw.find_max_right(&is_ok), 6);
-        assert_eq!(fw.find_max_right_with_left(&is_ok, 0), 6);
+        assert_eq!(
+            fw.find_max_right_with_left(&is_ok, 0),
+            6
+        );
         let is_ok = |x: &i32| *x < 25;
         assert_eq!(fw.find_max_right(&is_ok), 5);
-        assert_eq!(fw.find_max_right_with_left(&is_ok, 0), 5);
-        assert_eq!(fw.find_max_right_with_left(&is_ok, 4), 6);
-        assert_eq!(fw.find_max_right_with_left(&is_ok, 5), 7);
-        assert_eq!(fw.find_max_right_with_left(&is_ok, 6), 9);
-        assert_eq!(fw.find_max_right_with_left(&is_ok, 9), 10);
-        assert_eq!(fw.find_min_left_with_right(&is_ok, 10), 7);
-        assert_eq!(fw.find_min_left_with_right(&is_ok, 0), 0);
-        assert_eq!(fw.find_min_left_with_right(&is_ok, 6), 2);
-        assert_eq!(fw.find_min_left_with_right(&is_ok, 5), 0);
+        assert_eq!(
+            fw.find_max_right_with_left(&is_ok, 0),
+            5
+        );
+        assert_eq!(
+            fw.find_max_right_with_left(&is_ok, 4),
+            6
+        );
+        assert_eq!(
+            fw.find_max_right_with_left(&is_ok, 5),
+            7
+        );
+        assert_eq!(
+            fw.find_max_right_with_left(&is_ok, 6),
+            9
+        );
+        assert_eq!(
+            fw.find_max_right_with_left(&is_ok, 9),
+            10
+        );
+        assert_eq!(
+            fw.find_min_left_with_right(&is_ok, 10),
+            7
+        );
+        assert_eq!(
+            fw.find_min_left_with_right(&is_ok, 0),
+            0
+        );
+        assert_eq!(
+            fw.find_min_left_with_right(&is_ok, 6),
+            2
+        );
+        assert_eq!(
+            fw.find_min_left_with_right(&is_ok, 5),
+            0
+        );
         let is_ok = |x: &i32| *x < 15;
-        assert_eq!(fw.find_max_right_with_left(&is_ok, 5), 5);
-        assert_eq!(fw.find_min_left_with_right(&is_ok, 6), 6);
-        assert_eq!(fw.find_min_left_with_right(&is_ok, 10), 9);
+        assert_eq!(
+            fw.find_max_right_with_left(&is_ok, 5),
+            5
+        );
+        assert_eq!(
+            fw.find_min_left_with_right(&is_ok, 6),
+            6
+        );
+        assert_eq!(
+            fw.find_min_left_with_right(&is_ok, 10),
+            9
+        );
         let is_ok = |x: &i32| *x < 9;
-        assert_eq!(fw.find_min_left_with_right(&is_ok, 10), 10);
+        assert_eq!(
+            fw.find_min_left_with_right(&is_ok, 10),
+            10
+        );
     }
 }

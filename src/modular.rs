@@ -129,7 +129,10 @@ impl<M: Modulus> std::ops::Div<Self> for Modular<M> {
 
 impl<M: Modulus> Modular<M> {
     fn inverse(self) -> Option<Self> {
-        let (g, inv) = extgcd_modinv(M::value() as i64, self.value() as i64);
+        let (g, inv) = extgcd_modinv(
+            M::value() as i64,
+            self.value() as i64,
+        );
         if g != 1 || inv.is_none() {
             None
         } else {
@@ -139,7 +142,12 @@ impl<M: Modulus> Modular<M> {
 
     pub fn invert(self) -> Result<Self, String> {
         let v = self.value;
-        self.inverse()
-            .ok_or_else(|| format!("{} is not invertible for the modulus {}", v, M::value()))
+        self.inverse().ok_or_else(|| {
+            format!(
+                "{} is not invertible for the modulus {}",
+                v,
+                M::value()
+            )
+        })
     }
 }

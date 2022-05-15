@@ -9,13 +9,19 @@ impl<'a, S: Default + Clone> SparseTable<'a, S> {
         assert!(sg.idempotent && sg.commutative);
         let n = a.len();
         assert!(n > 0);
-        let k = std::cmp::max(1, bit_length((n - 1) as u64) as usize);
+        let k = std::cmp::max(
+            1,
+            bit_length((n - 1) as u64) as usize,
+        );
         let mut data = vec![vec![S::default(); n]; k];
         data[0] = a.clone();
         for i in 0..k - 1 {
             data[i + 1] = data[i].clone();
             for j in 0..n - (1 << i) {
-                data[i + 1][j] = (sg.operate)(&data[i][j], &data[i][j + (1 << i)])
+                data[i + 1][j] = (sg.operate)(
+                    &data[i][j],
+                    &data[i][j + (1 << i)],
+                )
             }
         }
         Self { sg: sg, data: data }
@@ -27,7 +33,10 @@ impl<'a, S: Default + Clone> SparseTable<'a, S> {
             return self.data[0][l].clone();
         }
         let k = bit_length((r - 1 - l) as u64) as usize - 1;
-        (self.sg.operate)(&self.data[k][l], &self.data[k][r - (1 << k)])
+        (self.sg.operate)(
+            &self.data[k][l],
+            &self.data[k][r - (1 << k)],
+        )
     }
 }
 
@@ -40,20 +49,29 @@ impl<'a, S: Default + Clone> DisjointSparseTable<'a, S> {
     pub fn new(sg: abstract_structs::Semigroup<'a, S>, a: &Vec<S>) -> Self {
         let n = a.len();
         assert!(n > 0);
-        let k = std::cmp::max(1, bit_length((n - 1) as u64) as usize);
+        let k = std::cmp::max(
+            1,
+            bit_length((n - 1) as u64) as usize,
+        );
         let mut data = vec![vec![S::default(); n]; k];
         data[0] = a.clone();
         for i in 1..k {
             data[i] = a.clone();
             for j in (1 << i..n + 1).step_by(2 << i) {
                 for k in 1..(1 << i) {
-                    data[i][j - k - 1] = (sg.operate)(&data[i][j - k - 1], &data[i][j - k]);
+                    data[i][j - k - 1] = (sg.operate)(
+                        &data[i][j - k - 1],
+                        &data[i][j - k],
+                    );
                 }
                 for k in 0..(1 << i) - 1 {
                     if j + k + 1 >= n {
                         break;
                     }
-                    data[i][j + k + 1] = (sg.operate)(&data[i][j + k], &data[i][j + k + 1]);
+                    data[i][j + k + 1] = (sg.operate)(
+                        &data[i][j + k],
+                        &data[i][j + k + 1],
+                    );
                 }
             }
         }
@@ -66,7 +84,10 @@ impl<'a, S: Default + Clone> DisjointSparseTable<'a, S> {
             return self.data[0][l].clone();
         }
         let log = bit_length((l ^ (r - 1)) as u64) as usize - 1;
-        (self.sg.operate)(&self.data[log][l], &self.data[log][r - 1])
+        (self.sg.operate)(
+            &self.data[log][l],
+            &self.data[log][r - 1],
+        )
     }
 }
 

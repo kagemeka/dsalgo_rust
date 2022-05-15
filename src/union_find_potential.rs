@@ -62,7 +62,10 @@ where
         left_node = self.find_root(left_node);
         right_node = self.find_root(right_node);
         if left_node == right_node {
-            assert_eq!(potential_left_to_right, S::identity());
+            assert_eq!(
+                potential_left_to_right,
+                S::identity()
+            );
             return;
         }
         if self.data[left_node] > self.data[right_node] {
@@ -105,7 +108,13 @@ mod tests {
         // uf.unite(3, 9, &5);
         uf.unite(3, 9, 5);
         assert_eq!(uf.size_of(3), 2);
-        assert_eq!(uf.potential_difference(3, 9), Some(5));
-        assert_eq!(uf.potential_difference(1, 3), None);
+        assert_eq!(
+            uf.potential_difference(3, 9),
+            Some(5)
+        );
+        assert_eq!(
+            uf.potential_difference(1, 3),
+            None
+        );
     }
 }

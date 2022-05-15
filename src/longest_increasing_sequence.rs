@@ -7,7 +7,10 @@ pub(self) fn find_longest_sequence<T: Copy, F: Fn(&T, &T) -> bool>(slice: &[T], 
         let index = crate::binary_search::binary_search(&is_ok, &result);
         result[index] = Some(value);
     }
-    let index = crate::binary_search::binary_search(|value: &Option<T>| value.is_none(), &result);
+    let index = crate::binary_search::binary_search(
+        |value: &Option<T>| value.is_none(),
+        &result,
+    );
     result[..index].iter().map(|x| x.unwrap()).collect()
 }
 
@@ -24,7 +27,13 @@ mod tests {
     #[test]
     fn test() {
         let arr = [4, 2, 8, 5, 6, 6];
-        assert_eq!(super::longest_increasing_sequence(&arr), vec![2, 5, 6]);
-        assert_eq!(super::longest_non_decreasing_sequence(&arr), vec![2, 5, 6, 6]);
+        assert_eq!(
+            super::longest_increasing_sequence(&arr),
+            vec![2, 5, 6]
+        );
+        assert_eq!(
+            super::longest_non_decreasing_sequence(&arr),
+            vec![2, 5, 6, 6]
+        );
     }
 }

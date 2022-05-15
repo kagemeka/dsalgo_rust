@@ -9,7 +9,9 @@ use crate::choose::Choose;
 ///     static_modulus::Mod1_000_000_007,
 /// };
 /// type Mint = Modular<Mod1_000_000_007>;
-/// let hom = HomogeneousProduct::<Mint>::new(Box::new(Combination::<Mint>::new(100)));
+/// let hom = HomogeneousProduct::<Mint>::new(Box::new(
+///     Combination::<Mint>::new(100),
+/// ));
 /// assert_eq!(hom.calc(5, 2).value(), 15);
 /// ```
 pub struct HomogeneousProduct<T>

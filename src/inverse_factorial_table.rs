@@ -7,8 +7,11 @@ where
     let mut v = (0..size).map(|i| (i + 1).into()).collect::<Vec<T>>();
     v[size - 1] = factorial::<T>(size - 1).mul_inv();
     let op = |a: T, b: T| -> T { a * b };
-    accumulate(v.into_iter().rev().collect(), op)
-        .into_iter()
-        .rev()
-        .collect()
+    accumulate(
+        v.into_iter().rev().collect(),
+        op,
+    )
+    .into_iter()
+    .rev()
+    .collect()
 }

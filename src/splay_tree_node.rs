@@ -80,10 +80,18 @@ where
 
     fn rotate_up(node: &Rc<RefCell<Self>>) {
         let parent = node.borrow().parent.as_ref().unwrap().clone();
-        if parent.borrow().left.is_some() && Rc::ptr_eq(parent.borrow().left.as_ref().unwrap(), node) {
+        if parent.borrow().left.is_some()
+            && Rc::ptr_eq(
+                parent.borrow().left.as_ref().unwrap(),
+                node,
+            )
+        {
             parent.rotate_right();
         } else {
-            assert!(Rc::ptr_eq(parent.borrow().right.as_ref().unwrap(), node));
+            assert!(Rc::ptr_eq(
+                parent.borrow().right.as_ref().unwrap(),
+                node
+            ));
 
             parent.rotate_left();
         }
@@ -92,7 +100,12 @@ where
     fn get_state(node: &Rc<RefCell<Self>>) -> State {
         match &node.borrow().parent {
             Some(parent) => {
-                if parent.borrow().left.is_some() && Rc::ptr_eq(parent.borrow().left.as_ref().unwrap(), node) {
+                if parent.borrow().left.is_some()
+                    && Rc::ptr_eq(
+                        parent.borrow().left.as_ref().unwrap(),
+                        node,
+                    )
+                {
                     State::LeftChild
                 } else {
                     State::RightChild
@@ -184,7 +197,10 @@ where
             return self;
         }
 
-        let left_root = Node::<T>::get(self.as_ref().unwrap(), self.size() - 1);
+        let left_root = Node::<T>::get(
+            self.as_ref().unwrap(),
+            self.size() - 1,
+        );
         rhs.as_ref().unwrap().borrow_mut().parent = Some(left_root.clone());
         left_root.borrow_mut().right = rhs;
         left_root.borrow_mut().update();
@@ -249,16 +265,26 @@ mod tests {
         use crate::tree_node::{Insert, Pop};
         type Data = DefaultData<usize, usize>;
         type Root = Option<Rc<RefCell<Node<Data>>>>;
-        let mut root = Some(Rc::new(RefCell::new(Node::new(Data::default()))));
+        let mut root = Some(Rc::new(RefCell::new(
+            Node::new(Data::default()),
+        )));
         assert_eq!(root.size(), 1);
         root = <Root as Insert>::insert(
             root,
             0,
-            Some(Rc::new(RefCell::new(Node::new(Data::new(1, 1))))),
+            Some(Rc::new(RefCell::new(
+                Node::new(Data::new(1, 1)),
+            ))),
         );
         assert_eq!(root.size(), 2);
-        assert_eq!(root.as_ref().unwrap().borrow().left.size(), 0);
-        assert_eq!(root.as_ref().unwrap().borrow().right.size(), 1);
+        assert_eq!(
+            root.as_ref().unwrap().borrow().left.size(),
+            0
+        );
+        assert_eq!(
+            root.as_ref().unwrap().borrow().right.size(),
+            1
+        );
         let (mut root, mut popped) = <Root as Pop>::pop(root, 0);
         assert_eq!(root.size(), 1);
         assert_eq!(popped.size(), 1);
