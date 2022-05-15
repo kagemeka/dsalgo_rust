@@ -1,13 +1,13 @@
 use crate::{tree_edges_to_graph::tree_edges_to_graph, tree_sizes::tree_sizes};
 
 pub fn heavy_light_decompose(
-    edges: &[(usize, usize)],
+    tree_edges: &[(usize, usize)],
     root: usize,
 ) -> Vec<usize> {
-    let graph = tree_edges_to_graph(edges);
+    let graph = tree_edges_to_graph(tree_edges);
     let n = graph.len();
     let mut roots = (0..n).collect::<Vec<_>>();
-    let sizes = tree_sizes(edges, root);
+    let sizes = tree_sizes(tree_edges, root);
     let mut stack = vec![(root, root)];
     while let Some((u, parent)) = stack.pop() {
         let mut heavy_node = None;

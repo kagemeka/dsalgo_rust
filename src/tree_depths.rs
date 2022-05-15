@@ -1,10 +1,10 @@
 use crate::tree_bfs::tree_bfs;
 
-pub fn tree_depths(edges: &[(usize, usize)], root: usize) -> Vec<usize> {
+pub fn tree_depths(tree_edges: &[(usize, usize)], root: usize) -> Vec<usize> {
     tree_bfs::<usize, _>(
-        edges,
+        tree_edges,
         root,
-        vec![0; edges.len() + 1],
+        vec![0; tree_edges.len() + 1],
         |depth, u, v| {
             depth[v] = depth[u] + 1;
         },

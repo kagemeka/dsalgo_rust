@@ -1,7 +1,7 @@
 use crate::{tree_edges_to_graph::tree_edges_to_graph, union_find::UnionFind};
 
 pub fn lca_tarjan_offline(
-    edges: &[(usize, usize)],
+    tree_edges: &[(usize, usize)],
     queries: &[(usize, usize)],
     root: usize,
 ) -> Vec<usize> {
@@ -32,8 +32,8 @@ pub fn lca_tarjan_offline(
             }
         }
     }
-    let n = edges.len() + 1;
-    let graph = tree_edges_to_graph(edges);
+    let n = tree_edges.len() + 1;
+    let graph = tree_edges_to_graph(tree_edges);
     let mut q = vec![vec![]; n];
     for (i, &(u, v)) in queries.iter().enumerate() {
         q[u].push((v, i));

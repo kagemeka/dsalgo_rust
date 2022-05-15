@@ -1,7 +1,7 @@
 use crate::tree_edges_to_graph::tree_edges_to_graph;
 
 pub fn tree_dfs<T, F>(
-    edges: &[(usize, usize)],
+    tree_edges: &[(usize, usize)],
     root: usize,
     default_data: Vec<T>,
     mut assign: F,
@@ -9,7 +9,7 @@ pub fn tree_dfs<T, F>(
 where
     F: FnMut(&mut Vec<T>, usize, usize),
 {
-    let graph = tree_edges_to_graph(edges);
+    let graph = tree_edges_to_graph(tree_edges);
     let n = graph.len();
     assert_eq!(default_data.len(), n);
     let mut parent = vec![None; n];

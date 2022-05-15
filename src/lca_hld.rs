@@ -11,11 +11,11 @@ pub struct LCAHLD {
 }
 
 impl LCAHLD {
-    pub fn new(edges: &[(usize, usize)], root: usize) -> Self {
+    pub fn new(tree_edges: &[(usize, usize)], root: usize) -> Self {
         Self {
-            parent: tree_parents(edges, root),
-            depth: tree_depths(edges, root),
-            roots: heavy_light_decompose(edges, root),
+            parent: tree_parents(tree_edges, root),
+            depth: tree_depths(tree_edges, root),
+            roots: heavy_light_decompose(tree_edges, root),
         }
     }
 
