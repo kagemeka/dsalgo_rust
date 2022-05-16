@@ -4,11 +4,7 @@ pub struct Vector<T, const DIM: usize> {
 }
 
 impl<T: Default + Copy, const DIM: usize> Default for Vector<T, DIM> {
-    fn default() -> Self {
-        Self {
-            data: [T::default(); DIM],
-        }
-    }
+    fn default() -> Self { Self { data: [T::default(); DIM] } }
 }
 
 impl<T: Default + Copy + std::ops::Add<Output = T>, const DIM: usize>

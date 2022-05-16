@@ -8,9 +8,7 @@ use crate::modulus::Modulus;
 /// assert_eq!(Mod::value(), 1_000_000_007);
 /// ```
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct DynamicMod<Id> {
-    phantom: std::marker::PhantomData<Id>,
-}
+pub struct DynamicMod<Id>(std::marker::PhantomData<Id>);
 
 impl<Id> DynamicMod<Id> {
     fn core() -> &'static std::sync::atomic::AtomicU32 {

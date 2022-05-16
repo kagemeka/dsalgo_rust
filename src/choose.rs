@@ -1,3 +1,3 @@
 pub trait Choose<T> {
-    fn choose(&self, n: usize, k: usize) -> T;
+    fn choose(&mut self, n: usize, k: usize) -> T;
 }

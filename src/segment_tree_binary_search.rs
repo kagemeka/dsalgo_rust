@@ -35,7 +35,6 @@ where
         while i < n {
             i <<= 1;
             let nv = M::operate(v.clone(), self.data[i].clone());
-            // if !is_ok(&S::operate(&value, &self.data[node_index])) {
             if !is_ok(&nv) {
                 continue;
             }

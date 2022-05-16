@@ -32,7 +32,7 @@ where
             size,
             data,
         };
-        (1..n).rev().for_each(|i| seg.merge(i));
+        (1..n).rev().for_each(|i| seg.update(i));
         seg
     }
 }
@@ -58,7 +58,7 @@ where
         Self::from_iter((0..size).map(|_| default()))
     }
 
-    pub(crate) fn merge(&mut self, i: usize) {
+    pub(crate) fn update(&mut self, i: usize) {
         self.data[i] = M::operate(
             self.data[i << 1].clone(),
             self.data[i << 1 | 1].clone(),
@@ -71,7 +71,7 @@ where
         self.data[i] = x;
         while i > 1 {
             i >>= 1;
-            self.merge(i);
+            self.update(i);
         }
     }
 

@@ -1,11 +1,11 @@
-pub struct CachedPascalTriangle<T>
+pub struct PascalRule<T>
 where
     T: std::ops::Add<Output = T> + From<usize> + Clone,
 {
     cache: std::collections::HashMap<usize, T>,
 }
 
-impl<T> CachedPascalTriangle<T>
+impl<T> PascalRule<T>
 where
     T: std::ops::Add<Output = T> + From<usize> + Copy,
 {
@@ -15,19 +15,22 @@ where
         }
     }
 
-    pub fn calc(&mut self, n: usize, k: usize) -> T {
+    pub fn calc(&mut self, n: usize, k: usize) -> Result<T, ()> {
         if n < k {
-            return 0.into();
+            return Ok(0.into());
         }
         if k == 0 {
-            return 1.into();
+            return Ok(1.into());
+        }
+        if n >= 1 << 32 {
+            return Err(());
         }
         let key = n << 32 | k;
         if !self.cache.contains_key(&key) {
-            let mut v = self.calc(n - 1, k - 1);
-            v = v + self.calc(n - 1, k);
+            let mut v = self.calc(n - 1, k - 1)?;
+            v = v + self.calc(n - 1, k)?;
             self.cache.insert(key, v);
         }
-        *self.cache.get(&key).unwrap()
+        Ok(*self.cache.get(&key).unwrap())
     }
 }
