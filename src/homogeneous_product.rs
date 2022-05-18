@@ -1,19 +1,16 @@
 use crate::choose::Choose;
 
-pub struct HomogeneousProduct<T>
-where
-    T: From<usize>,
-{
+pub struct HomogeneousProduct<T> {
     chooser: Box<dyn Choose<T>>,
 }
 
-impl<T> HomogeneousProduct<T>
-where
-    T: From<usize>,
-{
+impl<T> HomogeneousProduct<T> {
     pub fn new(chooser: Box<dyn Choose<T>>) -> Self { Self { chooser } }
 
-    pub fn calc(&mut self, n: usize, k: usize) -> T {
+    pub fn calc(&mut self, n: u64, k: u64) -> T
+    where
+        T: From<u64>,
+    {
         if n == 0 {
             0.into()
         } else {

@@ -4,16 +4,13 @@ use crate::{
     semigroup::Semigroup,
 };
 
-pub struct SparseTable<S, Id, G>
-where
-    G: Semigroup<S, Id> + Idempotence<S, Id> + CommutativeProperty<S, S, Id>,
-{
-    phantom_id: std::marker::PhantomData<Id>,
-    phandom_g: std::marker::PhantomData<G>,
+// TODO: use Semigroup2 after language update on AtCoder
+pub struct SparseTable<S, G, Id> {
+    phantom: std::marker::PhantomData<(G, Id)>,
     data: Vec<Vec<S>>,
 }
 
-impl<S, Id, G> std::iter::FromIterator<S> for SparseTable<S, Id, G>
+impl<S, G, Id> std::iter::FromIterator<S> for SparseTable<S, G, Id>
 where
     G: Semigroup<S, Id> + Idempotence<S, Id> + CommutativeProperty<S, S, Id>,
     S: Clone,
@@ -42,22 +39,23 @@ where
             );
         }
         Self {
-            phantom_id: std::marker::PhantomData,
-            phandom_g: std::marker::PhantomData,
+            phantom: std::marker::PhantomData,
             data,
         }
     }
 }
 
-impl<S, Id, G> SparseTable<S, Id, G>
+impl<S, G, Id> SparseTable<S, G, Id>
 where
     G: Semigroup<S, Id> + Idempotence<S, Id> + CommutativeProperty<S, S, Id>,
     S: Clone,
 {
     pub fn new(slice: &[S]) -> Self { Self::from_iter(slice.iter().cloned()) }
 
-    pub fn fold(&self, l: usize, r: usize) -> S {
-        assert!(l < r && r <= self.data[0].len());
+    pub fn size(&self) -> usize { self.data[0].len() }
+
+    pub fn reduce(&self, l: usize, r: usize) -> S {
+        assert!(l < r && r <= self.size());
         if r - l == 1 {
             return self.data[0][l].clone();
         }
@@ -92,9 +90,9 @@ mod tests {
         impl CommutativeProperty<usize, usize, Min> for usize {}
 
         let arr: Vec<usize> = vec![0, 4, 2, 8, 5, 1];
-        let sp = super::SparseTable::<usize, Min, usize>::new(&arr);
-        assert_eq!(sp.fold(0, 4), 0);
-        assert_eq!(sp.fold(3, 4), 8);
-        assert_eq!(sp.fold(1, 6), 1);
+        let sp = super::SparseTable::<usize, usize, Min>::new(&arr);
+        assert_eq!(sp.reduce(0, 4), 0);
+        assert_eq!(sp.reduce(3, 4), 8);
+        assert_eq!(sp.reduce(1, 6), 1);
     }
 }

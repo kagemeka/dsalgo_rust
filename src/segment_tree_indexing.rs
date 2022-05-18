@@ -1,6 +1,5 @@
 use crate::{monoid::Monoid, segment_tree::SegmentTree};
-
-impl<S, Id, M> std::ops::Index<usize> for SegmentTree<S, Id, M>
+impl<S, M, Id> std::ops::Index<usize> for SegmentTree<S, M, Id>
 where
     M: Monoid<S, Id>,
 {
@@ -32,7 +31,7 @@ mod tests {
         impl IdentityElement<usize, Additive> for Mon {
             fn identity() -> usize { 0 }
         }
-        let mut seg = super::SegmentTree::<_, _, Mon>::new(10, || 0);
+        let mut seg = super::SegmentTree::<_, Mon, _>::new(10, || 0);
         seg.set(5, 10);
         assert_eq!(seg[5], 10);
     }

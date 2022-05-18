@@ -1,16 +1,16 @@
 use crate::{monoid::Monoid, segment_tree::SegmentTree};
 
-impl<S, Id, M> SegmentTree<S, Id, M>
+impl<S, M, Id> SegmentTree<S, M, Id>
 where
-    S: Clone,
     M: Monoid<S, Id>,
+    S: Clone,
 {
-    pub fn fold_recurse(&self, l: usize, r: usize) -> S {
+    pub fn reduce_recurse(&self, l: usize, r: usize) -> S {
         assert!(l <= r && r <= self.size);
-        self._fold_recurse(l, r, 0, self.n(), 1)
+        self._reduce_recurse(l, r, 0, self.n(), 1)
     }
 
-    fn _fold_recurse(
+    fn _reduce_recurse(
         &self,
         l: usize,
         r: usize,
@@ -26,8 +26,8 @@ where
         }
         let c = (cur_l + cur_r) >> 1;
         M::operate(
-            self._fold_recurse(l, r, cur_l, c, i << 1),
-            self._fold_recurse(l, r, c, cur_r, i << 1 | 1),
+            self._reduce_recurse(l, r, cur_l, c, i << 1),
+            self._reduce_recurse(l, r, c, cur_r, i << 1 | 1),
         )
     }
 }
@@ -52,11 +52,11 @@ mod tests {
         impl IdentityElement<usize, Additive> for Mon {
             fn identity() -> usize { 0 }
         }
-        let mut seg = super::SegmentTree::<_, _, Mon>::new(10, || 0);
-        assert_eq!(seg.fold_recurse(0, 10), 0);
+        let mut seg = super::SegmentTree::<_, Mon, _>::new(10, || 0);
+        assert_eq!(seg.reduce_recurse(0, 10), 0);
         seg.set(5, 5);
-        assert_eq!(seg.fold_recurse(0, 10), 5);
+        assert_eq!(seg.reduce_recurse(0, 10), 5);
         seg.set(5, 10);
-        assert_eq!(seg.fold_recurse(0, 10), 10);
+        assert_eq!(seg.reduce_recurse(0, 10), 10);
     }
 }

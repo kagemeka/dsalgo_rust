@@ -1,6 +1,6 @@
 use crate::semigroup::Semigroup;
 
-pub fn pow_semigroup_recurse<S, Id, G>(x: S, exponent: u64) -> S
+pub fn pow_semigroup_recurse<S, G, Id>(x: S, exponent: u64) -> S
 where
     S: Clone,
     G: Semigroup<S, Id>,
@@ -9,7 +9,7 @@ where
     if exponent == 1 {
         return x;
     }
-    let mut y = pow_semigroup_recurse::<S, Id, G>(x.clone(), exponent >> 1);
+    let mut y = pow_semigroup_recurse::<S, G, Id>(x.clone(), exponent >> 1);
     y = G::operate(y.clone(), y);
     if exponent & 1 == 1 {
         y = G::operate(y, x);
@@ -17,10 +17,10 @@ where
     y
 }
 
-pub fn pow_semigroup<S, Id, G>(mut x: S, mut exponent: u64) -> S
+pub fn pow_semigroup<S, G, Id>(mut x: S, mut exponent: u64) -> S
 where
-    S: Clone,
     G: Semigroup<S, Id>,
+    S: Clone,
 {
     assert!(exponent > 0);
     let mut y = x.clone();
@@ -40,7 +40,7 @@ where
     Self: Clone,
 {
     fn pow_seimigroup(self, exponent: u64) -> Self {
-        pow_semigroup::<Self, Id, Self>(self, exponent)
+        pow_semigroup::<Self, Self, Id>(self, exponent)
     }
 }
 impl<S, Id> PowerSemigroup<Id> for S where S: Semigroup<S, Id> + Clone {}

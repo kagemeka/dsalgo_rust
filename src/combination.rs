@@ -4,45 +4,41 @@ use crate::{
     multiplicative_inverse::MulInv,
 };
 
-pub struct Combination<T>
-where
-    T: std::ops::Mul + MulInv<Output = T> + From<usize> + Clone,
-{
+pub struct Combination<T> {
     fact: Vec<T>,
     inv_fact: Vec<T>,
 }
 
 impl<T> Combination<T>
 where
-    T: std::ops::Mul<Output = T> + MulInv<Output = T> + From<usize> + Clone,
+    T: std::ops::Mul<Output = T> + From<u64> + Clone,
 {
-    pub fn new(size: usize) -> Self {
+    pub fn new(size: usize) -> Self
+    where
+        T: MulInv<Output = T>,
+    {
         let fact = factorial_table::<T>(size);
         let inv_fact = inverse_factorial_table::<T>(size);
         Self { fact, inv_fact }
     }
 
-    pub fn calc(&self, n: usize, k: usize) -> Result<T, ()> {
-        if n < k {
-            Ok(0.into())
-        } else if n >= self.fact.len() {
-            Err(())
-        } else {
-            Ok(self.fact[n].clone()
-                * self.inv_fact[n - k].clone()
-                * self.inv_fact[k].clone())
+    pub fn calc(&self, n: u64, k: u64) -> T {
+        if k > n {
+            return 0.into();
         }
+        let n = n as usize;
+        let k = k as usize;
+        self.fact[n].clone()
+            * self.inv_fact[n - k].clone()
+            * self.inv_fact[k].clone()
     }
 
-    pub fn inv(&self, n: usize, k: usize) -> Result<T, ()> {
-        if n < k {
-            Ok(0.into())
-        } else if n >= self.fact.len() {
-            Err(())
-        } else {
-            Ok(self.inv_fact[n].clone()
-                * self.fact[k].clone()
-                * self.fact[n - k].clone())
-        }
+    pub fn inv(&self, n: u64, k: u64) -> T {
+        assert!(k <= n); // (n, k) := 0 if k > n, so the inverse is undefined.
+        let n = n as usize;
+        let k = k as usize;
+        self.inv_fact[n].clone()
+            * self.fact[k].clone()
+            * self.fact[n - k].clone()
     }
 }

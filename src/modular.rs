@@ -1,18 +1,18 @@
 use crate::{extgcd_modinv::extgcd_modinv, modulus::Modulus};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Modular<M: Modulus> {
+pub struct Modular<M> {
     phantom: std::marker::PhantomData<M>,
     value: u32,
 }
 
-impl<M: Modulus> std::fmt::Display for Modular<M> {
+impl<M> std::fmt::Display for Modular<M> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.value)
     }
 }
 
-impl<M: Modulus> Modular<M> {
+impl<M> Modular<M> {
     // new version, cannot compile AtCoder yet.
     // pub const fn value(&self) -> u32 { self.value }
 
@@ -130,26 +130,22 @@ impl<M: Modulus> std::ops::Div<Self> for Modular<M> {
 }
 
 impl<M: Modulus> Modular<M> {
-    fn inverse(self) -> Option<Self> {
+    /// unlike extgcd, the caller cannot eunsure the inverse exist.
+    /// with additional constant run time cost before calling this function.
+    /// so if the inverse element does not exit,
+    /// handle execption inside the method, and return Result<T, E>
+    pub fn invert(self) -> Result<Self, &'static str> {
+        if self.value() == 0 {
+            return Err("0 is not invertible");
+        }
         let (g, inv) = extgcd_modinv(
             M::value() as i64,
             self.value() as i64,
         );
-        if g != 1 || inv.is_none() {
-            None
+        if g != 1 {
+            Err("value and modulus are not coprime")
         } else {
-            Some(inv.unwrap().into())
+            Ok(inv.into())
         }
-    }
-
-    pub fn invert(self) -> Result<Self, String> {
-        let v = self.value;
-        self.inverse().ok_or_else(|| {
-            format!(
-                "{} is not invertible for the modulus {}",
-                v,
-                M::value()
-            )
-        })
     }
 }

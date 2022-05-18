@@ -24,3 +24,8 @@ pub fn floyd_warshall(
         Ok(weight_matrix)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    fn test() {}
+}

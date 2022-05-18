@@ -5,21 +5,16 @@ use crate::{
     tree_depths::tree_depths,
 };
 
-pub struct LCAEulerTourRMQ<Q>
-where
-    Q: RangeMinimumQuery<(usize, usize)>
-        + std::iter::FromIterator<(usize, usize)>,
-{
+pub struct LCAEulerTourRMQ<Q> {
     first_pos: Vec<usize>,
     rmq: Q,
 }
 
-impl<Q> LCAEulerTourRMQ<Q>
-where
-    Q: RangeMinimumQuery<(usize, usize)>
-        + std::iter::FromIterator<(usize, usize)>,
-{
-    pub fn new(tree_edges: &[(usize, usize)], root: usize) -> Self {
+impl<Q> LCAEulerTourRMQ<Q> {
+    pub fn new(tree_edges: &[(usize, usize)], root: usize) -> Self
+    where
+        Q: std::iter::FromIterator<(usize, usize)>,
+    {
         let tour_nodes = euler_tour_nodes(tree_edges, root);
         let depth = tree_depths(tree_edges, root);
         let first_pos = first_positions(&tour_nodes);
@@ -28,12 +23,15 @@ where
         Self { first_pos, rmq }
     }
 
-    pub fn get(&mut self, u: usize, v: usize) -> usize {
+    pub fn get(&mut self, u: usize, v: usize) -> usize
+    where
+        Q: RangeMinimumQuery<(usize, usize)>,
+    {
         let mut left = self.first_pos[u];
         let mut right = self.first_pos[v];
         if left > right {
             std::mem::swap(&mut left, &mut right);
         }
-        self.rmq.query(left, right + 1).1
+        self.rmq.range_minimum(left, right + 1).1
     }
 }
