@@ -1,13 +1,13 @@
 use crate::{monoid::Monoid, segment_tree::SegmentTree};
 
-impl<S, M, Id> SegmentTree<S, M, Id>
+impl<M, Id> SegmentTree<M, Id>
 where
-    M: Monoid<S, Id>,
-    S: Clone,
+    M: Monoid<Id>,
+    M::S: Clone,
 {
     pub fn max_right_recurse<F>(&self, is_ok: &F, l: usize) -> usize
     where
-        F: Fn(&S) -> bool,
+        F: Fn(&M::S) -> bool,
     {
         assert!(l <= self.size);
         self._max_right_recurse(
@@ -29,11 +29,11 @@ where
         l: usize,
         cur_l: usize,
         cur_r: usize,
-        v: &mut S,
+        v: &mut M::S,
         i: usize,
     ) -> usize
     where
-        F: Fn(&S) -> bool,
+        F: Fn(&M::S) -> bool,
     {
         if cur_r <= l {
             return l;
@@ -66,7 +66,7 @@ where
 
     pub fn min_left_recurse<F>(&self, is_ok: &F, r: usize) -> usize
     where
-        F: Fn(&S) -> bool,
+        F: Fn(&M::S) -> bool,
     {
         assert!(r <= self.size);
         self._min_left_recurse(
@@ -85,11 +85,11 @@ where
         r: usize,
         cur_l: usize,
         cur_r: usize,
-        v: &mut S,
+        v: &mut M::S,
         i: usize,
     ) -> usize
     where
-        F: Fn(&S) -> bool,
+        F: Fn(&M::S) -> bool,
     {
         if cur_l >= r {
             return r;
@@ -131,14 +131,20 @@ mod tests {
             identity_element::IdentityElement,
         };
         struct Mon;
-        impl BinaryOperation<usize, usize, usize, Additive> for Mon {
+        impl BinaryOperation<Additive> for Mon {
+            type Codomain = usize;
+            type Lhs = usize;
+            type Rhs = usize;
+
             fn map(x: usize, y: usize) -> usize { x + y }
         }
-        impl AssociativeProperty<usize, Additive> for Mon {}
-        impl IdentityElement<usize, Additive> for Mon {
+        impl AssociativeProperty<Additive> for Mon {}
+        impl IdentityElement<Additive> for Mon {
+            type X = usize;
+
             fn identity() -> usize { 0 }
         }
-        let mut seg = super::SegmentTree::<_, Mon, _>::new(10, || 0);
+        let mut seg = super::SegmentTree::<Mon, _>::new(10, || 0);
         assert_eq!(seg.reduce(0, 10), 0);
         seg.set(5, 10);
         let is_ok = &|sum: &usize| *sum < 10;

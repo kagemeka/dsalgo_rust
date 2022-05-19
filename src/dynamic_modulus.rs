@@ -4,13 +4,6 @@ pub trait DynamicModId {}
 
 impl<T> DynamicModId for T {}
 
-/// ```
-/// use dsalgo::dynamic_modulus::DynamicMod;
-/// struct Foo;
-/// type Mod = DynamicMod<Foo>;
-/// Mod::set(1_000_000_007);
-/// assert_eq!(Mod::value(), 1_000_000_007);
-/// ```
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct DynamicMod<Id: DynamicModId>(std::marker::PhantomData<Id>);
 
@@ -40,4 +33,16 @@ impl<I: DynamicModId> DynamicMod<I> {
 
 impl<I: DynamicModId> Modulus for DynamicMod<I> {
     fn value() -> u32 { Self::core().load(std::sync::atomic::Ordering::SeqCst) }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test() {
+        struct Foo;
+        type Mod = DynamicMod<Foo>;
+        Mod::set(1_000_000_007);
+        assert_eq!(Mod::value(), 1_000_000_007);
+    }
 }

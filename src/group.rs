@@ -1,28 +1,17 @@
-use crate::{inverse_element::InverseElement, monoid::Monoid};
-
-pub trait Group<S, Id>: Monoid<S, Id> {
-    fn invert(element: S) -> S;
-}
-
-impl<S, Id, T: Monoid<S, Id> + InverseElement<S, Id>> Group<S, Id> for T {
-    fn invert(element: S) -> S { T::invert(element) }
-}
-
 use crate::{
     binary_operation::BinaryOperationId,
-    inverse_element::InverseElement2,
-    monoid::Monoid2,
+    inverse_element::InverseElement,
+    monoid::Monoid,
 };
 
-pub trait Group2<Id>: Monoid2<Id> + InverseElement2<Id, X = Self::S>
-where
-    Id: BinaryOperationId,
-{
+pub trait Group<Id: BinaryOperationId>: Monoid<Id> {
+    fn invert(element: Self::S) -> Self::S;
 }
 
-impl<Id, T> Group2<Id> for T
+impl<Id, T> Group<Id> for T
 where
-    T: Monoid2<Id> + InverseElement2<Id, X = Self::S>,
+    T: Monoid<Id> + InverseElement<Id, X = Self::S>,
     Id: BinaryOperationId,
 {
+    fn invert(element: Self::S) -> Self::S { T::invert(element) }
 }

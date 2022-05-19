@@ -6,4 +6,4 @@ use crate::{
 
 #[allow(dead_code)]
 type LCAEulerTourRMQSparseTable =
-    LCAEulerTourRMQ<SparseTable<(usize, usize), (usize, usize), Min>>;
+    LCAEulerTourRMQ<SparseTable<(usize, usize), Min>>;

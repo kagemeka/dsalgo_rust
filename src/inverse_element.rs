@@ -1,23 +1,6 @@
-pub fn has_inverse<F, X>(f: &F, x: X) -> bool
-where
-    F: Fn(X) -> X,
-    X: Clone + PartialEq,
-{
-    f(f(x.clone())) == x
-}
+use crate::binary_operation::BinaryOperationId;
 
-pub trait InverseElement<X, Id> {
-    fn invert(element: X) -> X;
-}
-
-use crate::{
-    binary_operation::BinaryOperationId,
-    identity_element::IdentityElement2,
-};
-
-pub trait InverseElement2<Id>: IdentityElement2<Id>
-where
-    Id: BinaryOperationId,
-{
+pub trait InverseElement<Id: BinaryOperationId> {
+    type X;
     fn invert(element: Self::X) -> Self::X;
 }

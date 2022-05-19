@@ -6,10 +6,10 @@ use crate::{
     sparse_table::SparseTable,
 };
 
-impl<S, G, Id> RangeGetQuery<S, Id> for SparseTable<S, G, Id>
+impl<G, Id> RangeGetQuery<G::S, Id> for SparseTable<G, Id>
 where
-    G: Semigroup<S, Id> + Idempotence<S, Id> + CommutativeProperty<S, S, Id>,
-    S: Clone,
+    G: Semigroup<Id> + Idempotence<Id> + CommutativeProperty<Id>,
+    G::S: Clone,
 {
-    fn get_range(&mut self, l: usize, r: usize) -> S { self.reduce(l, r) }
+    fn get_range(&mut self, l: usize, r: usize) -> G::S { self.reduce(l, r) }
 }

@@ -1,12 +1,12 @@
 use crate::{semigroup::Semigroup, sqrt_decomposition::SqrtDecomposition};
 
-impl<S, G, Id> SqrtDecomposition<S, G, Id>
+impl<G, Id> SqrtDecomposition<G, Id>
 where
-    G: Semigroup<S, Id>,
-    S: Clone,
+    G: Semigroup<Id>,
+    G::S: Clone,
 {
     /// faster with constant time optimization.
-    pub fn fast_reduce(&self, mut l: usize, r: usize) -> S {
+    pub fn fast_reduce(&self, mut l: usize, r: usize) -> G::S {
         assert!(l < r && r <= self.size());
         let n = self.sqrt();
         let mut v = self.data[l].clone();

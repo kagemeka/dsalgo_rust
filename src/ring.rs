@@ -1,32 +1,24 @@
-use crate::{commutative_monoid::CommutativeMonoid, monoid::Monoid};
-
-pub trait Ring<S, Add, Mul>:
-    CommutativeMonoid<S, Add> + Monoid<S, Mul>
-{
-}
-
-impl<S, Add, Mul, T> Ring<S, Add, Mul> for T where
-    T: CommutativeMonoid<S, Add> + Monoid<S, Mul>
-{
-}
-
 use crate::{
     binary_operation::BinaryOperationId,
-    inverse_element::InverseElement2,
-    semiring::Semiring2,
+    inverse_element::InverseElement,
+    semiring::Semiring,
 };
 
-pub trait Ring2<Add, Mul>: Semiring2<Add, Mul> + InverseElement2<Add>
+pub trait Ring<Add, Mul>: Semiring<Add, Mul>
 where
     Add: BinaryOperationId,
     Mul: BinaryOperationId,
 {
+    fn add_inv(element: Self::S) -> Self::S;
 }
 
-impl<Add, Mul, T> Ring2<Add, Mul> for T
+impl<S, Add, Mul, T> Ring<Add, Mul> for T
 where
-    T: Semiring2<Add, Mul> + InverseElement2<Add>,
+    T: Semiring<Add, Mul, S = S> + InverseElement<Add, X = S>,
     Add: BinaryOperationId,
     Mul: BinaryOperationId,
 {
+    fn add_inv(element: Self::S) -> Self::S {
+        <T as InverseElement<Add>>::invert(element)
+    }
 }

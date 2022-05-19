@@ -4,18 +4,16 @@ use crate::{
     semigroup::Semigroup,
 };
 
-// TODO: use Semigroup2 after language update on AtCoder
-pub struct DisjointSparseTable<S, G, Id> {
-    phantom: std::marker::PhantomData<(G, Id)>,
-    data: Vec<Vec<S>>,
+pub struct DisjointSparseTable<G: Semigroup<Id>, Id> {
+    data: Vec<Vec<G::S>>,
 }
 
-impl<S, G, Id> std::iter::FromIterator<S> for DisjointSparseTable<S, G, Id>
+impl<G, Id> std::iter::FromIterator<G::S> for DisjointSparseTable<G, Id>
 where
-    G: Semigroup<S, Id> + CommutativeProperty<S, S, Id>,
-    S: Clone,
+    G: Semigroup<Id> + CommutativeProperty<Id>,
+    G::S: Clone,
 {
-    fn from_iter<T: IntoIterator<Item = S>>(iter: T) -> Self {
+    fn from_iter<T: IntoIterator<Item = G::S>>(iter: T) -> Self {
         let mut data = vec![iter.into_iter().collect::<Vec<_>>()];
         let size = data[0].len();
         let height = if size <= 1 {
@@ -46,24 +44,23 @@ where
             }
             data.push(row);
         }
-        Self {
-            phantom: std::marker::PhantomData,
-            data,
-        }
+        Self { data }
     }
 }
 
-impl<S, G, Id> DisjointSparseTable<S, G, Id>
+impl<G, Id> DisjointSparseTable<G, Id>
 where
-    G: Semigroup<S, Id> + CommutativeProperty<S, S, Id>,
-    S: Clone,
+    G: Semigroup<Id> + CommutativeProperty<Id>,
+    G::S: Clone,
 {
-    pub fn new(slice: &[S]) -> Self { Self::from_iter(slice.iter().cloned()) }
+    pub fn new(slice: &[G::S]) -> Self {
+        Self::from_iter(slice.iter().cloned())
+    }
 
     pub fn size(&self) -> usize { self.data[0].len() }
 
     /// [l, r)
-    pub fn reduce(&self, l: usize, mut r: usize) -> S {
+    pub fn reduce(&self, l: usize, mut r: usize) -> G::S {
         assert!(l < r && r <= self.size());
         r -= 1; // internally, consider [l, r]
         if l == r {
@@ -104,14 +101,18 @@ mod tests {
 
         struct Min;
 
-        impl BinaryOperation<usize, usize, usize, Min> for usize {
+        impl BinaryOperation<Min> for usize {
+            type Codomain = Self;
+            type Lhs = Self;
+            type Rhs = Self;
+
             fn map(lhs: usize, rhs: usize) -> usize { std::cmp::min(lhs, rhs) }
         }
-        impl AssociativeProperty<usize, Min> for usize {}
-        impl CommutativeProperty<usize, usize, Min> for usize {}
+        impl AssociativeProperty<Min> for usize {}
+        impl CommutativeProperty<Min> for usize {}
 
         let arr: Vec<usize> = vec![0, 4, 2, 8, 5, 1];
-        let sp = super::DisjointSparseTable::<usize, usize, Min>::new(&arr);
+        let sp = super::DisjointSparseTable::<usize, Min>::new(&arr);
         assert_eq!(sp.reduce(0, 4), 0);
         assert_eq!(sp.reduce(3, 4), 8);
         assert_eq!(sp.reduce(1, 6), 1);
