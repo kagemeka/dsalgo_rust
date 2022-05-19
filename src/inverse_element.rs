@@ -1,6 +1,12 @@
-use crate::identity_element::IdentityElement;
+pub fn has_inverse<F, X>(f: &F, x: X) -> bool
+where
+    F: Fn(X) -> X,
+    X: Clone + PartialEq,
+{
+    f(f(x.clone())) == x
+}
 
-pub trait InverseElement<X, Id>: IdentityElement<X, Id> {
+pub trait InverseElement<X, Id> {
     fn invert(element: X) -> X;
 }
 

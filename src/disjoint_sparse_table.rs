@@ -105,9 +105,7 @@ mod tests {
         struct Min;
 
         impl BinaryOperation<usize, usize, usize, Min> for usize {
-            fn operate(lhs: usize, rhs: usize) -> usize {
-                std::cmp::min(lhs, rhs)
-            }
+            fn map(lhs: usize, rhs: usize) -> usize { std::cmp::min(lhs, rhs) }
         }
         impl AssociativeProperty<usize, Min> for usize {}
         impl CommutativeProperty<usize, usize, Min> for usize {}

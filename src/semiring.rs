@@ -5,6 +5,7 @@ pub trait Semiring<S, Add, Mul>:
 {
 }
 
+// TODO: + distributive + zero-element.
 impl<S, Add, Mul, T> Semiring<S, Add, Mul> for T where
     T: CommutativeMonoid<S, Add> + Monoid<S, Mul>
 {

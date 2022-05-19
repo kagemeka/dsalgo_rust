@@ -1,22 +1,16 @@
 use crate::binary_operation::BinaryOperation;
 
-pub trait AssociativeProperty<X, Id>: BinaryOperation<X, X, X, Id> {
-    fn assert_associative(first: X, second: X, third: X)
-    where
-        X: Clone + PartialEq + std::fmt::Debug,
-    {
-        assert_eq!(
-            Self::operate(
-                Self::operate(first.clone(), second.clone()),
-                third.clone()
-            ),
-            Self::operate(
-                first,
-                Self::operate(second, third)
-            ),
-        );
-    }
+pub fn is_associative<F, X>(f: &F, first: X, second: X, third: X) -> bool
+where
+    F: Fn(X, X) -> X,
+    X: Clone + PartialEq,
+{
+    f(
+        f(first.clone(), second.clone()),
+        third.clone(),
+    ) == f(first, f(second, third))
 }
+pub trait AssociativeProperty<X, Id>: BinaryOperation<X, X, X, Id> {}
 
 use crate::binary_operation::{BinaryOperation2, BinaryOperationId};
 

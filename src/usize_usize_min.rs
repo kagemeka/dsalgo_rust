@@ -10,7 +10,7 @@ use crate::{
 impl BinaryOperation<(usize, usize), (usize, usize), (usize, usize), Min>
     for (usize, usize)
 {
-    fn operate(lhs: (usize, usize), rhs: (usize, usize)) -> (usize, usize) {
+    fn map(lhs: (usize, usize), rhs: (usize, usize)) -> (usize, usize) {
         std::cmp::min(lhs, rhs)
     }
 }

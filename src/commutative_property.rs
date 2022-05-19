@@ -1,17 +1,15 @@
 use crate::binary_operation::BinaryOperation;
 
-pub trait CommutativeProperty<X, Y, Id>: BinaryOperation<X, X, Y, Id> {
-    fn assert_commutative(a: X, b: X)
-    where
-        X: Clone,
-        Y: PartialEq + std::fmt::Debug,
-    {
-        assert_eq!(
-            Self::operate(a.clone(), b.clone()),
-            Self::operate(b, a)
-        );
-    }
+pub fn is_commutative<F, X, Y>(f: &F, a: X, b: X) -> bool
+where
+    F: Fn(X, X) -> Y,
+    X: Clone,
+    Y: PartialEq,
+{
+    f(a.clone(), b.clone()) == f(b, a)
 }
+
+pub trait CommutativeProperty<X, Y, Id>: BinaryOperation<X, X, Y, Id> {}
 
 use crate::binary_operation::{BinaryOperation2, BinaryOperationId};
 

@@ -1,10 +1,14 @@
 use crate::{identity_element::IdentityElement, semigroup::Semigroup};
 
-pub trait Monoid<S, Id>: Semigroup<S, Id> + IdentityElement<S, Id> {}
+pub trait Monoid<S, Id>: Semigroup<S, Id> {
+    fn identity() -> S;
+}
 
-impl<S, Id, T> Monoid<S, Id> for T where
-    T: Semigroup<S, Id> + IdentityElement<S, Id>
+impl<S, Id, T> Monoid<S, Id> for T
+where
+    T: Semigroup<S, Id> + IdentityElement<S, Id>,
 {
+    fn identity() -> S { T::identity() }
 }
 
 use crate::{

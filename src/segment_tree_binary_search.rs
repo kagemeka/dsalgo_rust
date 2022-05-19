@@ -101,7 +101,7 @@ mod tests {
         };
         struct Mon;
         impl BinaryOperation<usize, usize, usize, Additive> for Mon {
-            fn operate(x: usize, y: usize) -> usize { x + y }
+            fn map(x: usize, y: usize) -> usize { x + y }
         }
         impl AssociativeProperty<usize, Additive> for Mon {}
         impl IdentityElement<usize, Additive> for Mon {

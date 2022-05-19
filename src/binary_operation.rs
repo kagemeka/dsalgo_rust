@@ -10,7 +10,7 @@ impl<T> BinaryOperationId for T {}
 /// because mathematically right implementations are still
 /// not supported on atcoder yet (this is bug for old Rust versions).
 pub trait BinaryOperation<Lhs, Rhs, Codomain, Id> {
-    fn operate(lhs: Lhs, rhs: Rhs) -> Codomain;
+    fn map(lhs: Lhs, rhs: Rhs) -> Codomain;
 }
 
 /// new and mathematically right implementations.

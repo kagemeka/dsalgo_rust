@@ -1,6 +1,29 @@
-use crate::binary_operation::BinaryOperation;
+pub fn is_left_identity<F, S>(f: &F, identity: S, x: S) -> bool
+where
+    F: Fn(S, S) -> S,
+    S: Clone + PartialEq,
+{
+    f(identity, x.clone()) == x
+}
 
-pub trait IdentityElement<X, Id>: BinaryOperation<X, X, X, Id> {
+pub fn is_right_identity<F, S>(f: &F, identity: S, x: S) -> bool
+where
+    F: Fn(S, S) -> S,
+    S: Clone + PartialEq,
+{
+    f(x.clone(), identity) == x
+}
+
+pub fn is_identity<F, S>(f: &F, identity: S, x: S) -> bool
+where
+    F: Fn(S, S) -> S,
+    S: Clone + PartialEq,
+{
+    is_left_identity(f, identity.clone(), x.clone())
+        && is_right_identity(f, identity, x)
+}
+
+pub trait IdentityElement<X, Id> {
     fn identity() -> X;
 }
 
