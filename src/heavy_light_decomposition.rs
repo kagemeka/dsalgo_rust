@@ -12,19 +12,17 @@ pub fn heavy_light_decompose(
     while let Some((u, parent)) = stack.pop() {
         let mut heavy_node = None;
         let mut max_size = 0;
-        graph[u].iter().for_each(|&v| {
-            if v != parent && sizes[v] > max_size {
+        graph[u].iter().filter(|&&v| v != parent).for_each(|&v| {
+            if sizes[v] > max_size {
                 max_size = sizes[v];
                 heavy_node = Some(v);
             }
         });
-        graph[u].iter().for_each(|&v| {
-            if v != parent {
-                if Some(v) == heavy_node {
-                    roots[v] = roots[u];
-                }
-                stack.push((v, u));
+        graph[u].iter().filter(|&&v| v != parent).for_each(|&v| {
+            if Some(v) == heavy_node {
+                roots[v] = roots[u];
             }
+            stack.push((v, u));
         });
     }
     roots

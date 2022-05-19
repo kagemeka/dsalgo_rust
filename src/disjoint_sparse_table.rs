@@ -4,16 +4,13 @@ use crate::{
     semigroup::Semigroup,
 };
 
-pub struct DisjointSparseTable<S, Id, G>
-where
-    G: Semigroup<S, Id> + CommutativeProperty<S, S, Id>,
-{
-    phantom_id: std::marker::PhantomData<Id>,
-    phandom_g: std::marker::PhantomData<G>,
+// TODO: use Semigroup2 after language update on AtCoder
+pub struct DisjointSparseTable<S, G, Id> {
+    phantom: std::marker::PhantomData<(G, Id)>,
     data: Vec<Vec<S>>,
 }
 
-impl<S, Id, G> std::iter::FromIterator<S> for DisjointSparseTable<S, Id, G>
+impl<S, G, Id> std::iter::FromIterator<S> for DisjointSparseTable<S, G, Id>
 where
     G: Semigroup<S, Id> + CommutativeProperty<S, S, Id>,
     S: Clone,
@@ -50,23 +47,24 @@ where
             data.push(row);
         }
         Self {
-            phantom_id: std::marker::PhantomData,
-            phandom_g: std::marker::PhantomData,
+            phantom: std::marker::PhantomData,
             data,
         }
     }
 }
 
-impl<S, Id, G> DisjointSparseTable<S, Id, G>
+impl<S, G, Id> DisjointSparseTable<S, G, Id>
 where
     G: Semigroup<S, Id> + CommutativeProperty<S, S, Id>,
     S: Clone,
 {
     pub fn new(slice: &[S]) -> Self { Self::from_iter(slice.iter().cloned()) }
 
+    pub fn size(&self) -> usize { self.data[0].len() }
+
     /// [l, r)
-    pub fn fold(&self, l: usize, mut r: usize) -> S {
-        assert!(l < r && r <= self.data[0].len());
+    pub fn reduce(&self, l: usize, mut r: usize) -> S {
+        assert!(l < r && r <= self.size());
         r -= 1; // internally, consider [l, r]
         if l == r {
             return self.data[0][l].clone();
@@ -107,17 +105,15 @@ mod tests {
         struct Min;
 
         impl BinaryOperation<usize, usize, usize, Min> for usize {
-            fn operate(lhs: usize, rhs: usize) -> usize {
-                std::cmp::min(lhs, rhs)
-            }
+            fn map(lhs: usize, rhs: usize) -> usize { std::cmp::min(lhs, rhs) }
         }
         impl AssociativeProperty<usize, Min> for usize {}
         impl CommutativeProperty<usize, usize, Min> for usize {}
 
         let arr: Vec<usize> = vec![0, 4, 2, 8, 5, 1];
-        let sp = super::DisjointSparseTable::<usize, Min, usize>::new(&arr);
-        assert_eq!(sp.fold(0, 4), 0);
-        assert_eq!(sp.fold(3, 4), 8);
-        assert_eq!(sp.fold(1, 6), 1);
+        let sp = super::DisjointSparseTable::<usize, usize, Min>::new(&arr);
+        assert_eq!(sp.reduce(0, 4), 0);
+        assert_eq!(sp.reduce(3, 4), 8);
+        assert_eq!(sp.reduce(1, 6), 1);
     }
 }

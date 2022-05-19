@@ -8,17 +8,15 @@ impl UnionFind {
 
     pub fn size(&self) -> usize { self.data.len() }
 
-    pub fn find_root(&mut self, node: usize) -> usize {
-        assert!(node < self.size());
-        if self.data[node] < 0 {
-            return node;
+    pub fn find_root(&mut self, u: usize) -> usize {
+        if self.data[u] < 0 {
+            return u;
         }
-        self.data[node] = self.find_root(self.data[node] as usize) as isize;
-        self.data[node] as usize
+        self.data[u] = self.find_root(self.data[u] as usize) as isize;
+        self.data[u] as usize
     }
 
     pub fn unite(&mut self, u: usize, v: usize) {
-        assert!(u < self.size() && v < self.size());
         let mut u = self.find_root(u);
         let mut v = self.find_root(v);
         if u == v {

@@ -1,6 +1,6 @@
 use crate::{monoid::Monoid, power_semigroup::pow_semigroup};
 
-pub fn pow_monoid<S, Id, M>(x: S, exponent: u64) -> S
+pub fn pow_monoid<S, M, Id>(x: S, exponent: u64) -> S
 where
     S: Clone,
     M: Monoid<S, Id>,
@@ -8,7 +8,7 @@ where
     if exponent == 0 {
         M::identity()
     } else {
-        pow_semigroup::<S, Id, M>(x, exponent)
+        pow_semigroup::<S, M, Id>(x, exponent)
     }
 }
 
@@ -17,7 +17,7 @@ where
     Self: Clone,
 {
     fn pow_monoid(self, exponent: u64) -> Self {
-        pow_monoid::<Self, Id, Self>(self, exponent)
+        pow_monoid::<Self, Self, Id>(self, exponent)
     }
 }
 impl<S, Id> PowerMonoid<Id> for S where S: Monoid<S, Id> + Clone {}

@@ -11,9 +11,9 @@ pub fn ford_fulkerson(
     ) -> bool {
         visited[u] = true;
         for &v in g[u].iter() {
-            if !pair[v]
-                .map_or(true, |v| !visited[v] && dfs(g, pair, visited, v))
-            {
+            if !pair[v].map_or(true, |v| {
+                !visited[v] && dfs(g, pair, visited, v)
+            }) {
                 continue;
             }
             pair[v] = Some(u);
@@ -33,7 +33,12 @@ pub fn ford_fulkerson(
         if pair[i].is_some() {
             continue;
         }
-        dfs(&t, &mut pair, &mut vec![false; n], i);
+        dfs(
+            &t,
+            &mut pair,
+            &mut vec![false; n],
+            i,
+        );
     }
     pair.into_iter().take(size_a).collect()
 }
@@ -82,7 +87,9 @@ pub fn hopcroft_karp(
             it[u] = i + 1;
             if !pair_a[v].map_or(true, |u2| {
                 level[u2] == level[u] + 1
-                    && dfs(g, level, it, pair_a, matched, u2)
+                    && dfs(
+                        g, level, it, pair_a, matched, u2,
+                    )
             }) {
                 continue;
             }
@@ -106,8 +113,14 @@ pub fn hopcroft_karp(
         let mut updated = false;
         for u in 0..size_b {
             if !matched[u] {
-                updated |=
-                    dfs(&t, &level, &mut it, &mut pair_a, &mut matched, u);
+                updated |= dfs(
+                    &t,
+                    &level,
+                    &mut it,
+                    &mut pair_a,
+                    &mut matched,
+                    u,
+                );
             }
         }
         if !updated {

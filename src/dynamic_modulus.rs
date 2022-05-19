@@ -1,18 +1,20 @@
 use crate::modulus::Modulus;
 
+pub trait DynamicModId {}
+
+impl<T> DynamicModId for T {}
+
 /// ```
-/// use dsalgo::{dynamic_modulus::DynamicMod, modulus::Modulus};
+/// use dsalgo::dynamic_modulus::DynamicMod;
 /// struct Foo;
 /// type Mod = DynamicMod<Foo>;
 /// Mod::set(1_000_000_007);
 /// assert_eq!(Mod::value(), 1_000_000_007);
 /// ```
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct DynamicMod<Id> {
-    phantom: std::marker::PhantomData<Id>,
-}
+pub struct DynamicMod<Id: DynamicModId>(std::marker::PhantomData<Id>);
 
-impl<Id> DynamicMod<Id> {
+impl<I: DynamicModId> DynamicMod<I> {
     fn core() -> &'static std::sync::atomic::AtomicU32 {
         // cannot return &'static mut VALUE because it can be changed by
         // multiple threads.
@@ -21,6 +23,7 @@ impl<Id> DynamicMod<Id> {
         // `Sync`;
         // we should use std::sync types instead.
         // atomic types are lighter than mutex.
+
         static VALUE: std::sync::atomic::AtomicU32 =
             std::sync::atomic::AtomicU32::new(0);
         &VALUE
@@ -35,6 +38,6 @@ impl<Id> DynamicMod<Id> {
     }
 }
 
-impl<Id> Modulus for DynamicMod<Id> {
+impl<I: DynamicModId> Modulus for DynamicMod<I> {
     fn value() -> u32 { Self::core().load(std::sync::atomic::Ordering::SeqCst) }
 }

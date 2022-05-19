@@ -11,6 +11,7 @@ where
 {
     let graph = tree_edges_to_graph(tree_edges);
     let n = graph.len();
+    assert!(default_data.len() == n);
     let mut que = std::collections::VecDeque::new();
     let mut parent = vec![None; n];
     let mut data = default_data;

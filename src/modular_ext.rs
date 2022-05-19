@@ -20,7 +20,7 @@ impl<M: Modulus> From<usize> for Modular<M> {
 impl<M: Modulus> BinaryOperation<Self, Self, Self, Multiplicative>
     for Modular<M>
 {
-    fn operate(lhs: Self, rhs: Self) -> Self { lhs * rhs }
+    fn map(lhs: Self, rhs: Self) -> Self { lhs * rhs }
 }
 
 impl<M: Modulus> IdentityElement<Self, Multiplicative> for Modular<M> {

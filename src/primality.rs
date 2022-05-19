@@ -1,3 +1,5 @@
+pub trait Primality {}
+
 pub fn is_prime(n: usize) -> bool {
     crate::divisor::find_divisors(n).len() == 2
 }

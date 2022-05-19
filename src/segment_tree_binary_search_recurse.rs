@@ -1,9 +1,9 @@
 use crate::{monoid::Monoid, segment_tree::SegmentTree};
 
-impl<S, Id, M> SegmentTree<S, Id, M>
+impl<S, M, Id> SegmentTree<S, M, Id>
 where
-    S: Clone,
     M: Monoid<S, Id>,
+    S: Clone,
 {
     pub fn max_right_recurse<F>(&self, is_ok: &F, l: usize) -> usize
     where
@@ -132,14 +132,14 @@ mod tests {
         };
         struct Mon;
         impl BinaryOperation<usize, usize, usize, Additive> for Mon {
-            fn operate(x: usize, y: usize) -> usize { x + y }
+            fn map(x: usize, y: usize) -> usize { x + y }
         }
         impl AssociativeProperty<usize, Additive> for Mon {}
         impl IdentityElement<usize, Additive> for Mon {
             fn identity() -> usize { 0 }
         }
-        let mut seg = super::SegmentTree::<_, _, Mon>::new(10, || 0);
-        assert_eq!(seg.fold(0, 10), 0);
+        let mut seg = super::SegmentTree::<_, Mon, _>::new(10, || 0);
+        assert_eq!(seg.reduce(0, 10), 0);
         seg.set(5, 10);
         let is_ok = &|sum: &usize| *sum < 10;
         assert_eq!(

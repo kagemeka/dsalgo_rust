@@ -26,11 +26,9 @@ pub fn offline_lca_tarjan(
             uf.unite(u, v);
             ancestor[uf.find_root(u)] = u;
         }
-        for &(v, i) in q[u].iter() {
-            if visited[v] {
-                lca[i] = ancestor[uf.find_root(v)];
-            }
-        }
+        q[u].iter().filter(|&&(v, _)| visited[v]).for_each(|&(v, i)| {
+            lca[i] = ancestor[uf.find_root(v)];
+        });
     }
     let n = tree_edges.len() + 1;
     let graph = tree_edges_to_graph(tree_edges);
