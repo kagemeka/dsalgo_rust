@@ -2,19 +2,17 @@ use std::iter::FromIterator;
 
 use crate::monoid::Monoid;
 
-// TODO: use Monoid2 after language update on AtCoder
-pub struct SegmentTree<S, M, Id> {
-    phantom: std::marker::PhantomData<(Id, M)>,
+pub struct SegmentTree<M: Monoid<Id>, Id> {
     pub(crate) size: usize,
-    pub(crate) data: Vec<S>,
+    pub(crate) data: Vec<M::S>,
 }
 
-impl<S, M, Id> std::iter::FromIterator<S> for SegmentTree<S, M, Id>
+impl<M, Id> std::iter::FromIterator<M::S> for SegmentTree<M, Id>
 where
-    M: Monoid<S, Id>,
-    S: Clone,
+    M: Monoid<Id>,
+    M::S: Clone,
 {
-    fn from_iter<T: IntoIterator<Item = S>>(iter: T) -> Self {
+    fn from_iter<T: IntoIterator<Item = M::S>>(iter: T) -> Self {
         let mut data = iter.into_iter().collect::<Vec<_>>();
         let size = data.len();
         let n = size.next_power_of_two();
@@ -23,30 +21,26 @@ where
             .chain(data.into_iter())
             .chain((0..n - size).map(|_| M::identity()))
             .collect::<Vec<_>>();
-        let mut seg = Self {
-            phantom: std::marker::PhantomData,
-            size,
-            data,
-        };
+        let mut seg = Self { size, data };
         (1..n).rev().for_each(|i| seg.update(i));
         seg
     }
 }
 
-impl<S, M, Id> SegmentTree<S, M, Id> {
+impl<M: Monoid<Id>, Id> SegmentTree<M, Id> {
     pub fn size(&self) -> usize { self.size }
 
     pub(crate) fn n(&self) -> usize { self.data.len() >> 1 }
 }
 
-impl<S, M, Id> SegmentTree<S, M, Id>
+impl<M, Id> SegmentTree<M, Id>
 where
-    M: Monoid<S, Id>,
-    S: Clone,
+    M: Monoid<Id>,
+    M::S: Clone,
 {
     pub fn new<F>(size: usize, default: F) -> Self
     where
-        F: Fn() -> S,
+        F: Fn() -> M::S,
     {
         Self::from_iter((0..size).map(|_| default()))
     }
@@ -58,7 +52,7 @@ where
         );
     }
 
-    pub fn set(&mut self, mut i: usize, x: S) {
+    pub fn set(&mut self, mut i: usize, x: M::S) {
         assert!(i < self.size);
         i += self.n();
         self.data[i] = x;
@@ -68,7 +62,7 @@ where
         }
     }
 
-    pub fn reduce(&self, mut l: usize, mut r: usize) -> S {
+    pub fn reduce(&self, mut l: usize, mut r: usize) -> M::S {
         assert!(l < r && r <= self.size);
         let n = self.n();
         l += n;
@@ -104,14 +98,20 @@ mod tests {
             identity_element::IdentityElement,
         };
         struct Mon;
-        impl BinaryOperation<usize, usize, usize, Additive> for Mon {
+        impl BinaryOperation<Additive> for Mon {
+            type Codomain = usize;
+            type Lhs = usize;
+            type Rhs = usize;
+
             fn map(x: usize, y: usize) -> usize { x + y }
         }
-        impl AssociativeProperty<usize, Additive> for Mon {}
-        impl IdentityElement<usize, Additive> for Mon {
+        impl AssociativeProperty<Additive> for Mon {}
+        impl IdentityElement<Additive> for Mon {
+            type X = usize;
+
             fn identity() -> usize { 0 }
         }
-        let mut seg = super::SegmentTree::<_, Mon, _>::new(10, || 0);
+        let mut seg = super::SegmentTree::<Mon, _>::new(10, || 0);
         assert_eq!(seg.reduce(0, 10), 0);
         seg.set(5, 5);
         assert_eq!(seg.reduce(0, 10), 5);

@@ -1,13 +1,11 @@
 use crate::{floor_sqrt::floor_sqrt, monoid::Monoid, semigroup::Semigroup};
 
-// TODO: use Semigroup2 after language update on AtCoder
-pub struct SqrtDecomposition<S, G, Id> {
-    phantom: std::marker::PhantomData<(G, Id)>,
-    pub(crate) data: Vec<S>,
-    pub(crate) buckets: Vec<S>,
+pub struct SqrtDecomposition<G: Semigroup<Id>, Id> {
+    pub(crate) data: Vec<G::S>,
+    pub(crate) buckets: Vec<G::S>,
 }
 
-impl<S, G, Id> SqrtDecomposition<S, G, Id> {
+impl<G: Semigroup<Id>, Id> SqrtDecomposition<G, Id> {
     pub fn size(&self) -> usize { self.data.len() }
 
     pub(crate) fn sqrt(&self) -> usize {
@@ -16,12 +14,12 @@ impl<S, G, Id> SqrtDecomposition<S, G, Id> {
     }
 }
 
-impl<S, G, Id> std::iter::FromIterator<S> for SqrtDecomposition<S, G, Id>
+impl<G, Id> std::iter::FromIterator<G::S> for SqrtDecomposition<G, Id>
 where
-    G: Semigroup<S, Id>,
-    S: Clone,
+    G: Semigroup<Id>,
+    G::S: Clone,
 {
-    fn from_iter<T: IntoIterator<Item = S>>(iter: T) -> Self {
+    fn from_iter<T: IntoIterator<Item = G::S>>(iter: T) -> Self {
         let data = iter.into_iter().collect::<Vec<_>>();
         let size = data.len();
         let n = floor_sqrt(size as u64) as usize;
@@ -44,18 +42,14 @@ where
                 v
             })
             .collect();
-        Self {
-            phantom: std::marker::PhantomData,
-            data,
-            buckets,
-        }
+        Self { data, buckets }
     }
 }
 
-impl<S, G, Id> SqrtDecomposition<S, G, Id>
+impl<G, Id> SqrtDecomposition<G, Id>
 where
-    G: Semigroup<S, Id>,
-    S: Clone,
+    G: Semigroup<Id>,
+    G::S: Clone,
 {
     pub(crate) fn update(&mut self, bucket: usize) {
         let j = bucket;
@@ -80,7 +74,7 @@ where
 
     pub fn apply<F>(&mut self, i: usize, f: F)
     where
-        F: FnOnce(&S) -> S,
+        F: FnOnce(&G::S) -> G::S,
     {
         self.data[i] = f(&self.data[i]);
         self.update(i / self.sqrt());
@@ -88,12 +82,12 @@ where
 
     // TODO: move out from core implementation. (the core is apply method)
     /// set is defined as the application of 'replacement'
-    pub fn set(&mut self, i: usize, x: S) {
+    pub fn set(&mut self, i: usize, x: G::S) {
         self.apply(i, |_| x);
         self.update(i / self.sqrt());
     }
 
-    pub fn reduce(&self, l: usize, r: usize) -> S {
+    pub fn reduce(&self, l: usize, r: usize) -> G::S {
         assert!(l < r && r <= self.size());
         // just for early panic. it's not necessary to be checked here.
         let n = self.sqrt();

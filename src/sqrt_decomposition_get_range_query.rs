@@ -4,10 +4,12 @@ use crate::{
     sqrt_decomposition::SqrtDecomposition,
 };
 
-impl<S, G, Id> RangeGetQuery<S, Id> for SqrtDecomposition<S, G, Id>
+impl<G, Id> RangeGetQuery<G::S, Id> for SqrtDecomposition<G, Id>
 where
-    G: Semigroup<S, Id>,
-    S: Clone,
+    G: Semigroup<Id>,
+    G::S: Clone,
 {
-    fn get_range(&mut self, l: usize, r: usize) -> S { self.reduce(l, r) }
+    fn get_range(&mut self, l: usize, r: usize) -> G::S {
+        self.fast_reduce(l, r)
+    }
 }

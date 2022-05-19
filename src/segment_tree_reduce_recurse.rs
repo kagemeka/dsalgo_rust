@@ -1,11 +1,11 @@
 use crate::{monoid::Monoid, segment_tree::SegmentTree};
 
-impl<S, M, Id> SegmentTree<S, M, Id>
+impl<M, Id> SegmentTree<M, Id>
 where
-    M: Monoid<S, Id>,
-    S: Clone,
+    M: Monoid<Id>,
+    M::S: Clone,
 {
-    pub fn reduce_recurse(&self, l: usize, r: usize) -> S {
+    pub fn reduce_recurse(&self, l: usize, r: usize) -> M::S {
         assert!(l <= r && r <= self.size);
         self._reduce_recurse(l, r, 0, self.n(), 1)
     }
@@ -17,7 +17,7 @@ where
         cur_l: usize,
         cur_r: usize,
         i: usize,
-    ) -> S {
+    ) -> M::S {
         if cur_r <= l || r <= cur_l {
             return M::identity();
         }
@@ -31,7 +31,6 @@ where
         )
     }
 }
-
 #[cfg(test)]
 mod tests {
 
@@ -45,14 +44,20 @@ mod tests {
             identity_element::IdentityElement,
         };
         struct Mon;
-        impl BinaryOperation<usize, usize, usize, Additive> for Mon {
+        impl BinaryOperation<Additive> for Mon {
+            type Codomain = usize;
+            type Lhs = usize;
+            type Rhs = usize;
+
             fn map(x: usize, y: usize) -> usize { x + y }
         }
-        impl AssociativeProperty<usize, Additive> for Mon {}
-        impl IdentityElement<usize, Additive> for Mon {
+        impl AssociativeProperty<Additive> for Mon {}
+        impl IdentityElement<Additive> for Mon {
+            type X = usize;
+
             fn identity() -> usize { 0 }
         }
-        let mut seg = super::SegmentTree::<_, Mon, _>::new(10, || 0);
+        let mut seg = super::SegmentTree::<Mon, _>::new(10, || 0);
         assert_eq!(seg.reduce_recurse(0, 10), 0);
         seg.set(5, 5);
         assert_eq!(seg.reduce_recurse(0, 10), 5);

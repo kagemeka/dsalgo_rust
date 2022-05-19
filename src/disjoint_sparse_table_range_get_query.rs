@@ -5,10 +5,10 @@ use crate::{
     semigroup::Semigroup,
 };
 
-impl<S, G, I> RangeGetQuery<S, I> for DisjointSparseTable<S, G, I>
+impl<G, I> RangeGetQuery<G::S, I> for DisjointSparseTable<G, I>
 where
-    G: Semigroup<S, I> + CommutativeProperty<S, S, I>,
-    S: Clone,
+    G: Semigroup<I> + CommutativeProperty<I>,
+    G::S: Clone,
 {
-    fn get_range(&mut self, l: usize, r: usize) -> S { self.reduce(l, r) }
+    fn get_range(&mut self, l: usize, r: usize) -> G::S { self.reduce(l, r) }
 }

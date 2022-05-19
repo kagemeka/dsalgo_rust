@@ -4,10 +4,10 @@ use crate::{
     segment_tree::SegmentTree,
 };
 
-impl<S, M, Id> RangeGetQuery<S, Id> for SegmentTree<S, M, Id>
+impl<M, Id> RangeGetQuery<M::S, Id> for SegmentTree<M, Id>
 where
-    M: Monoid<S, Id>,
-    S: Clone,
+    M: Monoid<Id>,
+    M::S: Clone,
 {
-    fn get_range(&mut self, l: usize, r: usize) -> S { self.reduce(l, r) }
+    fn get_range(&mut self, l: usize, r: usize) -> M::S { self.reduce(l, r) }
 }

@@ -1,14 +1,13 @@
 use crate::{monoid::Monoid, segment_tree::SegmentTree};
 
-// binary search
-impl<S, M, Id> SegmentTree<S, M, Id>
+impl<M, Id> SegmentTree<M, Id>
 where
-    M: Monoid<S, Id>,
-    S: Clone,
+    M: Monoid<Id>,
+    M::S: Clone,
 {
     pub fn max_right<F>(&self, is_ok: &F, l: usize) -> usize
     where
-        F: Fn(&S) -> bool,
+        F: Fn(&M::S) -> bool,
     {
         assert!(l <= self.size);
         if l == self.size {
@@ -46,7 +45,7 @@ where
 
     pub fn min_left<F>(&self, is_ok: &F, r: usize) -> usize
     where
-        F: Fn(&S) -> bool,
+        F: Fn(&M::S) -> bool,
     {
         assert!(r <= self.size);
         if r == 0 {
@@ -100,14 +99,20 @@ mod tests {
             identity_element::IdentityElement,
         };
         struct Mon;
-        impl BinaryOperation<usize, usize, usize, Additive> for Mon {
+        impl BinaryOperation<Additive> for Mon {
+            type Codomain = usize;
+            type Lhs = usize;
+            type Rhs = usize;
+
             fn map(x: usize, y: usize) -> usize { x + y }
         }
-        impl AssociativeProperty<usize, Additive> for Mon {}
-        impl IdentityElement<usize, Additive> for Mon {
+        impl AssociativeProperty<Additive> for Mon {}
+        impl IdentityElement<Additive> for Mon {
+            type X = usize;
+
             fn identity() -> usize { 0 }
         }
-        let mut seg = super::SegmentTree::<_, Mon, _>::new(10, || 0);
+        let mut seg = super::SegmentTree::<Mon, _>::new(10, || 0);
         assert_eq!(seg.reduce(0, 10), 0);
         seg.set(5, 10);
         let is_ok = &|sum: &usize| *sum < 10;

@@ -1,3 +1,4 @@
+// TODO: rename group_theory_id -> binary_operation_id
 pub struct Additive;
 pub struct Multiplicative;
 

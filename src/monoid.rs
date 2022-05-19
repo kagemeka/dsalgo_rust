@@ -1,32 +1,17 @@
-use crate::{identity_element::IdentityElement, semigroup::Semigroup};
-
-pub trait Monoid<S, Id>: Semigroup<S, Id> {
-    fn identity() -> S;
-}
-
-impl<S, Id, T> Monoid<S, Id> for T
-where
-    T: Semigroup<S, Id> + IdentityElement<S, Id>,
-{
-    fn identity() -> S { T::identity() }
-}
-
 use crate::{
     binary_operation::BinaryOperationId,
-    identity_element::IdentityElement2,
-    semigroup::Semigroup2,
+    identity_element::IdentityElement,
+    semigroup::Semigroup,
 };
 
-pub trait Monoid2<Id>:
-    Semigroup2<Id> + IdentityElement2<Id, X = Self::S>
-where
-    Id: BinaryOperationId,
-{
+pub trait Monoid<Id: BinaryOperationId>: Semigroup<Id> {
+    fn identity() -> Self::S;
 }
 
-impl<Id, T> Monoid2<Id> for T
+impl<Id, T> Monoid<Id> for T
 where
-    T: Semigroup2<Id> + IdentityElement2<Id, X = Self::S>,
+    T: Semigroup<Id> + IdentityElement<Id, X = Self::S>,
     Id: BinaryOperationId,
 {
+    fn identity() -> Self::S { T::identity() }
 }

@@ -1,11 +1,11 @@
 use crate::{monoid::Monoid, segment_tree::SegmentTree};
 
-impl<S, M, Id> From<&[S]> for SegmentTree<S, M, Id>
+impl<M, Id> From<&[M::S]> for SegmentTree<M, Id>
 where
-    M: Monoid<S, Id>,
-    S: Clone,
+    M: Monoid<Id>,
+    M::S: Clone,
 {
-    fn from(slice: &[S]) -> Self { Self::from_iter(slice.iter().cloned()) }
+    fn from(slice: &[M::S]) -> Self { Self::from_iter(slice.iter().cloned()) }
 }
 
 #[cfg(test)]
