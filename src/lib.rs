@@ -76,7 +76,7 @@ pub mod group;
 pub mod group_theory;
 pub mod group_theory_id;
 pub mod group_theory_preset;
-pub mod has_inverse;
+pub mod is_invertible;
 pub mod heavy_light_decomposition;
 pub mod height;
 pub mod homogeneous_product;

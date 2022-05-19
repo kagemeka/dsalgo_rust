@@ -1,4 +1,4 @@
-pub fn has_inverse<F, X>(f: &F, x: X) -> bool
+pub fn is_invertible<F, X>(f: &F, x: X) -> bool
 where
     F: Fn(X) -> X,
     X: Clone + PartialEq,
