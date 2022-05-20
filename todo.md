@@ -1,25 +1,26 @@
+- [ ]binary GCD
+- [ ]brouvka
+- [ ]cipolla
+- [ ]dinic
+- [ ]dual fenwick tree
 - [ ]dual segment tree
+- [ ]edmonds karp
+- [ ]fenwick tree
+- [ ]fibonacci heap
+- [ ]ford fulkerson
+- [ ]general tree path query with BinaryLifting
+- [ ]general tree path query with HLD
+- [ ]hopkroft karp
+- [ ]kruskal
 - [ ]lazy segment tree
 - [ ]lazy sqrt decomposition
-- [ ]fenwick tree
-- [ ]dual fenwick tree
-- [ ]tonelli shanks
-- [ ]cipolla
-- [ ]splay tree
 - [ ]linkcut tree
-- [ ]tetoration mod
-- [ ]pow of pow mod. (x^{y^z} mod p)
-- [ ]binary GCD
 - [ ]pollard rho
-- [ ]hopkroft karp
-- [ ]ford fulkerson
-- [ ]edmonds karp
-- [ ]dinic
-- [ ]kruskal
+- [ ]pow of pow mod. (x^{y^z} mod p)
 - [ ]prim
-- [ ]brouvka
-- [ ]general tree path query with HLD
-- [ ]general tree path query with BinaryLifting
+- [ ]splay tree
+- [ ]tetoration mod
+- [ ]tonelli shanks
 
 
 // TODO: add Generic Type F to segment tree for applying.

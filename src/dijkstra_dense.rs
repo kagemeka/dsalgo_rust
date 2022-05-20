@@ -1,3 +1,4 @@
+// TODO: refactor
 /// O(V^2)
 pub fn dijkstra_dense(g: &Vec<Vec<i64>>, src: usize) -> Vec<i64> {
     let n = g.len();

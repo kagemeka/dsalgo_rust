@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct NegativeCycleError {
     msg: &'static str,
 }

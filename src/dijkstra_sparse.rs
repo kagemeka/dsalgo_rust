@@ -1,12 +1,12 @@
 // TODO: use generic type for priority queues instead of binary heap.
 pub fn dijkstra_sparse(
-    sparse_graph: &[Vec<(usize, i64)>],
+    sparse_graph: &[Vec<(usize, u64)>],
     src: usize,
-) -> Vec<Option<i64>> {
+) -> Vec<Option<u64>> {
     use std::cmp::Reverse;
     let n = sparse_graph.len();
     let mut dist = vec![None; n];
-    let mut hq = std::collections::BinaryHeap::<Reverse<(i64, _)>>::new();
+    let mut hq = std::collections::BinaryHeap::<Reverse<(u64, _)>>::new();
     dist[src] = Some(0);
     hq.push(Reverse((0, src)));
     while let Some(Reverse((du, u))) = hq.pop() {
