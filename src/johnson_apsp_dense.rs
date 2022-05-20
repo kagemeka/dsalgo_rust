@@ -6,6 +6,7 @@ use crate::{
 };
 
 /// O(V^3)
+/// all pairs shortest path
 pub fn johnson_dense(
     g: &Vec<Vec<i64>>,
 ) -> Result<Vec<Vec<i64>>, NegativeCycleError> {

@@ -2,7 +2,7 @@
 use crate::negative_cycle::NegativeCycleError;
 
 /// O(V^3)
-pub fn bellman_ford_dense(
+pub(crate) fn bellman_ford_dense(
     g: &Vec<Vec<i64>>,
     src: usize,
 ) -> Result<Vec<i64>, NegativeCycleError> {
