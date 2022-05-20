@@ -29,7 +29,7 @@ impl<T, U> Vertex<T, U> {
     }
 
     pub fn connect(
-        from: &mut Rc<RefCell<Self>>,
+        from: &Rc<RefCell<Self>>,
         to: &Rc<RefCell<Self>>,
         edge_data: U,
     ) {
@@ -81,11 +81,11 @@ mod tests {
     fn test() {
         type V = Vertex<Option<usize>, Rc<RefCell<usize>>>;
 
-        let mut a = V::new_rc_refcell(None);
+        let a = V::new_rc_refcell(None);
         let b = V::new_rc_refcell(Some(1));
         debug_print(&a.borrow());
 
-        V::connect(&mut a, &b, new_rc_refcell(1));
+        V::connect(&a, &b, new_rc_refcell(1));
         debug_print(&a.borrow());
         debug_print(&b.borrow());
         *a.borrow().edges[0].value.borrow_mut() += 1;
