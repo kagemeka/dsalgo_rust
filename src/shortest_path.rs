@@ -18,87 +18,10 @@ pub fn bfs(g: &[Vec<usize>], src: usize) -> Vec<usize> {
     dist
 }
 
-/// O((E + V)\log{E})
-pub fn dijkstra_sparse(g: &Vec<Vec<(usize, i64)>>, src: usize) -> Vec<i64> {
-    let n = g.len();
-    let mut dist = vec![std::i64::MAX; n];
-    dist[src] = 0;
-    let mut hq = std::collections::BinaryHeap::<(i64, usize)>::new();
-    hq.push((0, src));
-    while let Some((mut du, u)) = hq.pop() {
-        du = -du;
-        if du > dist[u] {
-            continue;
-        }
-        for (v, w) in g[u].iter() {
-            let dv = du + w;
-            if dv >= dist[*v] {
-                continue;
-            }
-            dist[*v] = dv;
-            hq.push((-dv, *v));
-        }
-    }
-    dist
-}
-
-/// O(V^2)
-pub fn dijkstra_dense(g: &Vec<Vec<i64>>, src: usize) -> Vec<i64> {
-    let n = g.len();
-    let inf = std::i64::MAX;
-    let mut dist = vec![inf; n];
-    dist[src] = 0;
-    let mut visited = vec![false; n];
-    loop {
-        let mut u = -1;
-        let mut du = inf;
-        for i in 0..n {
-            if !visited[i] && dist[i] < du {
-                u = i as i32;
-                du = dist[i];
-            }
-        }
-        if u == -1 {
-            break;
-        }
-        let u = u as usize;
-        visited[u] = true;
-        for v in 0..n {
-            if g[u][v] == inf {
-                continue;
-            }
-            let dv = du + g[u][v];
-            if dv >= dist[v] {
-                continue;
-            }
-            dist[v] = dv;
-        }
-    }
-    dist
-}
-
-#[derive(Debug)]
-pub struct NegativeCycleError {
-    msg: &'static str,
-}
-
-impl NegativeCycleError {
-    fn new() -> Self {
-        Self {
-            msg: "Negative Cycle Found.",
-        }
-    }
-}
-
-impl std::fmt::Display for NegativeCycleError {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{}", self.msg)
-    }
-}
-
-impl std::error::Error for NegativeCycleError {
-    fn description(&self) -> &str { &self.msg }
-}
+use crate::{
+    dijkstra_dense::dijkstra_dense,
+    negative_cycle::NegativeCycleError,
+};
 
 /// O(VE)
 pub fn bellman_ford_sparse(

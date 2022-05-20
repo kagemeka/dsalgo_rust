@@ -1,0 +1,20 @@
+- [ ]dual segment tree
+- [ ]lazy segment tree
+- [ ]lazy sqrt decomposition
+- [ ]fenwick tree
+- [ ]dual fenwick tree
+- [ ]tonelli shanks
+- [ ]cipolla
+- [ ]splay tree
+- [ ]linkcut tree
+- [ ]tetoration mod
+- [ ]pow of pow mod. (x^{y^z} mod p)
+- [ ]binary GCD
+- [ ]pollard rho
+- [ ]hopkroft karp
+- [ ]ford fulkerson
+- [ ]edmonds karp
+- [ ]dinic
+- [ ]kruskal
+- [ ]prim
+- [ ]brouvka

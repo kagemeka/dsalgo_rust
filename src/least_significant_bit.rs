@@ -7,9 +7,6 @@ pub fn lsb(n: u64) -> usize {
 mod tests {
     #[test]
     fn bitwise() {
-        assert_eq!(
-            super::lsb(1),
-            0,
-        );
+        assert_eq!(super::lsb(1), 0,);
     }
 }
