@@ -26,3 +26,15 @@ impl<T> std::ops::IndexMut<usize> for AdjacencyList<T> {
         &mut self.edges[i]
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::debug_print::debug_print;
+    #[test]
+    fn test() {
+        let mut g = AdjacencyList::new(5);
+        g[0].push((1, 1));
+        debug_print(&g);
+    }
+}
