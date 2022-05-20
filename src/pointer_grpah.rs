@@ -79,8 +79,7 @@ mod tests {
 
     #[test]
     fn test() {
-        type EdgeData = Rc<RefCell<usize>>;
-        type V = Vertex<Option<usize>, EdgeData>;
+        type V = Vertex<Option<usize>, Rc<RefCell<usize>>>;
 
         let mut a = V::new_rc_refcell(None);
         let b = V::new_rc_refcell(Some(1));
@@ -89,5 +88,7 @@ mod tests {
         V::connect(&mut a, &b, new_rc_refcell(1));
         debug_print(&a.borrow());
         debug_print(&b.borrow());
+        *a.borrow().edges[0].value.borrow_mut() += 1;
+        debug_print(&a.borrow());
     }
 }
