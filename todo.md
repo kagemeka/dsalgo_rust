@@ -1,7 +1,5 @@
-* [ ]binary GCD
-* [ ]brouvka
-* [ ]cipolla
-* [ ]dinic
+# todo
+find `TODO` with ctrl + shift + F in VSCode.
 * [ ]dual fenwick tree
 * [ ]dual segment tree
 * [ ]edmonds karp
@@ -21,6 +19,12 @@
 * [ ]splay tree
 * [ ]tetoration mod
 * [ ]tonelli shanks
+* [ ]radix heap
+* [ ]dial shortest path
+* [ ]refactor potentialized uf
+* [ ]xor_sparse_table
+- [ ]tree diameter
+- [ ]
 
 // TODO: add Generic Type F to segment tree for applying.
 // replace set(i, x) -> apply(i, x) and apply function of type F
@@ -43,3 +47,5 @@
 * https://github.com/ecnerwala/cp-book
 * https://github.com/kotatsugame/library
 * https://github.com/TheAlgorithms
+* https://github.com/yosupo06/yosupo-library
+* https://ei1333.github.io/luzhiled/

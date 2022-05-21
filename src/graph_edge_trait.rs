@@ -32,3 +32,11 @@ pub trait Value {
     type T;
     fn value(&self) -> &Self::T;
 }
+
+pub trait Weight<T> {
+    fn weight(&self) -> &T;
+}
+
+pub trait Capacity<T> {
+    fn capacity(&self) -> &T;
+}

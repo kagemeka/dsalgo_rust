@@ -1,8 +1,23 @@
-// TODO: this code is stub yet;
-pub trait PriorityQueue<T>
-where
-    T: PartialOrd,
-{
-    fn push(&mut self, x: T);
-    fn pop(&mut self) -> Option<T>;
+pub trait PriorityQueue {}
+
+pub trait Push {
+    type T;
+
+    fn push(&mut self, x: Self::T);
+}
+
+pub trait Pop {
+    type T;
+
+    fn pop(&mut self) -> Option<Self::T>;
+}
+
+pub trait Top {
+    type T;
+
+    fn top(&mut self) -> &Self::T;
+}
+
+pub trait IsEmpty {
+    fn is_empty(&self) -> bool;
 }

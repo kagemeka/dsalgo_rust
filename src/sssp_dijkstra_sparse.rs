@@ -1,38 +1,38 @@
-use crate::graph_edge_trait::{To, Value};
+use crate::{
+    dijkstra_sparse_queue::DijkstraSparseQueue,
+    general_dijkstra_sparse::general_dijkstra_sparse,
+    graph_edge_trait::{To, Weight},
+};
 
-// TODO: use generic type for priority queues instead of binary heap.
-pub fn dijkstra_sparse<E>(
+pub fn dijkstra_sparse<E, Q>(
     sparse_graph: &[Vec<E>],
     src: usize,
 ) -> Vec<Option<u64>>
 where
-    E: To<V = usize> + Value<T = u64>,
+    E: To<V = usize> + Weight<u64>,
+    Q: DijkstraSparseQueue,
 {
-    use std::cmp::Reverse;
-    let n = sparse_graph.len();
-    let mut dist = vec![None; n];
-    let mut hq = std::collections::BinaryHeap::<Reverse<(u64, _)>>::new();
-    dist[src] = Some(0);
-    hq.push(Reverse((0, src)));
-    while let Some(Reverse((du, u))) = hq.pop() {
-        if du > dist[u].unwrap() {
-            continue;
-        }
-        for e in sparse_graph[u].iter() {
+    let mut data = vec![None; sparse_graph.len()];
+    data[src] = Some(0);
+    general_dijkstra_sparse::<_, _, _, Q>(
+        sparse_graph,
+        &|dist: &mut Vec<Option<u64>>, u, e| {
             let v = *e.to();
-            let dv = du + e.value();
+            let dv = dist[u].unwrap() + e.weight();
             if dist[v].is_some() && dv >= dist[v].unwrap() {
-                continue;
+                return;
             }
             dist[v] = Some(dv);
-            hq.push(Reverse((dv, v)));
-        }
-    }
-    dist
+        },
+        data,
+        src,
+    )
 }
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+    use crate::dijkstra_queue_binary_heap_std::DijkstraQueueBinaryHeapStd;
     #[test]
     fn test() {
         let g = vec![
@@ -42,7 +42,7 @@ mod tests {
             vec![],
         ];
         assert_eq!(
-            super::dijkstra_sparse(&g, 0),
+            dijkstra_sparse::<_, DijkstraQueueBinaryHeapStd>(&g, 0),
             vec![
                 Some(0),
                 Some(1),
@@ -58,7 +58,7 @@ mod tests {
             vec![(3, 1, 1), (3, 2, 5)],
         ];
         assert_eq!(
-            super::dijkstra_sparse(&g, 1),
+            dijkstra_sparse::<_, DijkstraQueueBinaryHeapStd>(&g, 1),
             vec![Some(3), Some(0), Some(2), None]
         );
     }

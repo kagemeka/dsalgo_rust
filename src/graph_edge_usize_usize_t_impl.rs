@@ -1,4 +1,4 @@
-use crate::graph_edge_trait::{From, Reversed, To, ToDirected, Value};
+use crate::graph_edge_trait::{From, Reversed, To, ToDirected, Value, Weight};
 
 impl<T> ToDirected for (usize, usize, T) {
     type E = Self;
@@ -30,3 +30,8 @@ impl<T> Value for (usize, usize, T) {
 
     fn value(&self) -> &Self::T { &self.2 }
 }
+
+impl<T: Weight<U>, U> Weight<U> for (usize, usize, T) {
+    fn weight(&self) -> &U { &self.2.weight() }
+}
+// impled U: see graph_edge_weight_impl

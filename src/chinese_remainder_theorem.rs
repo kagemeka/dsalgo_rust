@@ -1,4 +1,6 @@
 use crate::euclidean;
+// TODO: refactor
+// return Result<T, E> instead of Option<T>
 
 pub fn crt_2_coprime(
     mod_0: usize,

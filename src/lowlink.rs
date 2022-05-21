@@ -1,3 +1,5 @@
+// TODO: refactor
+
 pub fn lowlink(g: &Vec<Vec<usize>>) -> (Vec<usize>, Vec<usize>) {
     let n = g.len();
     let mut order = vec![n; n];
@@ -35,7 +37,9 @@ pub fn lowlink(g: &Vec<Vec<usize>>) -> (Vec<usize>, Vec<usize>) {
         if order[i] != n {
             continue;
         }
-        dfs(g, i, n, &mut ord, &mut order, &mut low);
+        dfs(
+            g, i, n, &mut ord, &mut order, &mut low,
+        );
     }
     (order, low)
 }
@@ -89,7 +93,9 @@ pub fn articulation_points(g: &Vec<Vec<usize>>) -> Vec<usize> {
                 continue;
             }
             cnt += 1;
-            dfs(g, v, u, visited, order, low, points);
+            dfs(
+                g, v, u, visited, order, low, points,
+            );
             if parent == n || low[v] < order[u] {
                 continue;
             }
@@ -106,7 +112,15 @@ pub fn articulation_points(g: &Vec<Vec<usize>>) -> Vec<usize> {
         if visited[i] {
             continue;
         }
-        dfs(g, i, n, &mut visited, &order, &low, &mut articulation_points);
+        dfs(
+            g,
+            i,
+            n,
+            &mut visited,
+            &order,
+            &low,
+            &mut articulation_points,
+        );
     }
     articulation_points.sort();
     articulation_points
