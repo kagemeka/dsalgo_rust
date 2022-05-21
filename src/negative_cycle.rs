@@ -4,7 +4,7 @@ pub struct NegativeCycleError {
 }
 
 impl NegativeCycleError {
-    pub(crate) fn new() -> Self { Self { msg: "Negative Cycle Found." } }
+    pub fn new() -> Self { Self { msg: "Negative Cycle Found." } }
 }
 
 impl std::fmt::Display for NegativeCycleError {

@@ -1,30 +1,46 @@
+use crate::{
+    graph_edge_trait::{To, Value},
+    negative_cycle::NegativeCycleError,
+};
 /// SSSP with negative edges containing no cycles.
 /// O(VE) but usually faster than bellman ford.
-pub fn spfa(
-    sparse_graph: &[Vec<(usize, i64)>],
+
+pub fn spfa<E>(
+    sparse_graph: &[Vec<E>],
     src: usize,
-) -> Vec<Option<i64>> {
+) -> Result<Vec<Option<i64>>, NegativeCycleError>
+where
+    E: To<V = usize> + Value<T = i64>,
+{
     let n = sparse_graph.len();
     let mut dist = vec![None; n];
     dist[src] = Some(0);
-    let mut stack = vec![src];
-    let mut on_stack = vec![false; n];
-    on_stack[src] = true;
-    while let Some(u) = stack.pop() {
-        on_stack[u] = false;
-        for &(v, w) in &sparse_graph[u] {
-            let dv = Some(dist[u].unwrap() + w);
-            if dist[v].is_some() && dv >= dist[v] {
-                continue;
-            }
-            dist[v] = dv;
-            if !on_stack[v] {
-                stack.push(v);
-                on_stack[v] = true;
+    let mut que = vec![src];
+    let mut in_que = vec![false; n];
+    in_que[src] = true;
+    for _ in 0..n {
+        let mut next_que = vec![];
+        for u in que.into_iter() {
+            in_que[u] = false;
+            for e in &sparse_graph[u] {
+                let v = *e.to();
+                let dv = Some(dist[u].unwrap() + e.value());
+                if dist[v].is_some() && dv >= dist[v] {
+                    continue;
+                }
+                dist[v] = dv;
+                if !in_que[v] {
+                    next_que.push(v);
+                    in_que[v] = true;
+                }
             }
         }
+        que = next_que;
+        if que.is_empty() {
+            return Ok(dist);
+        }
     }
-    dist
+    Err(NegativeCycleError::new())
 }
 
 #[cfg(test)]
@@ -33,19 +49,19 @@ mod tests {
     #[test]
     fn test_negative_edge() {
         let graph = vec![
-            vec![(1, 2), (2, 3)],
-            vec![(2, -5), (3, 1)],
-            vec![(3, 2)],
+            vec![(0, 1, 2), (0, 2, 3)],
+            vec![(1, 2, -5), (1, 3, 1)],
+            vec![(2, 3, 2)],
             vec![],
         ];
         assert_eq!(
             spfa(&graph, 1),
-            vec![
+            Ok(vec![
                 None,
                 Some(0),
                 Some(-5),
                 Some(-3)
-            ],
+            ]),
         );
     }
 }

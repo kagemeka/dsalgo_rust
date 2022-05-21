@@ -6,6 +6,8 @@ pub struct AdjacencyMatrix<T> {
 impl<T> AdjacencyMatrix<T> {
     pub fn size(&self) -> usize { self.data.len() }
 
+    pub fn data(&self) -> &[Vec<T>] { &self.data }
+
     pub fn new(size: usize) -> Self
     where
         T: Default,

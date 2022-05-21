@@ -1,14 +1,23 @@
-use crate::negative_cycle::NegativeCycleError;
+use crate::{
+    graph_edge_trait::{From, To, Value},
+    negative_cycle::NegativeCycleError,
+};
 
-pub fn bellman_ford_sparse(
+pub fn bellman_ford<E>(
     nodes_size: usize,
-    directed_edges: &[(usize, usize, i64)],
+    directed_edges: &[E],
     src: usize,
-) -> Result<Vec<Option<i64>>, NegativeCycleError> {
+) -> Result<Vec<Option<i64>>, NegativeCycleError>
+where
+    E: From<V = usize> + To<V = usize> + Value<T = i64>,
+{
     let mut dist = vec![None; nodes_size];
     dist[src] = Some(0);
     for i in 0..nodes_size {
-        for &(u, v, w) in directed_edges {
+        for e in directed_edges {
+            let u = *e.from();
+            let v = *e.to();
+            let w = *e.value();
             if dist[u].is_none()
                 || dist[v].is_some() && dist[u].unwrap() + w >= dist[v].unwrap()
             {
@@ -36,7 +45,7 @@ mod tests {
             (2, 3, 2),
         ];
         assert_eq!(
-            bellman_ford_sparse(4, &edges, 1),
+            bellman_ford(4, &edges, 1),
             Ok(vec![
                 None,
                 Some(0),
@@ -57,7 +66,7 @@ mod tests {
             (3, 1, 0),
         ];
         assert_eq!(
-            bellman_ford_sparse(4, &edges, 0),
+            bellman_ford(4, &edges, 0),
             Err(NegativeCycleError::new()),
         );
     }

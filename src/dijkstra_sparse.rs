@@ -1,8 +1,13 @@
+use crate::graph_edge_trait::{To, Value};
+
 // TODO: use generic type for priority queues instead of binary heap.
-pub fn dijkstra_sparse(
-    sparse_graph: &[Vec<(usize, u64)>],
+pub fn dijkstra_sparse<E>(
+    sparse_graph: &[Vec<E>],
     src: usize,
-) -> Vec<Option<u64>> {
+) -> Vec<Option<u64>>
+where
+    E: To<V = usize> + Value<T = u64>,
+{
     use std::cmp::Reverse;
     let n = sparse_graph.len();
     let mut dist = vec![None; n];
@@ -13,8 +18,9 @@ pub fn dijkstra_sparse(
         if du > dist[u].unwrap() {
             continue;
         }
-        for &(v, weight) in sparse_graph[u].iter() {
-            let dv = du + weight;
+        for e in sparse_graph[u].iter() {
+            let v = *e.to();
+            let dv = du + e.value();
             if dist[v].is_some() && dv >= dist[v].unwrap() {
                 continue;
             }
@@ -30,9 +36,9 @@ mod tests {
     #[test]
     fn test() {
         let g = vec![
-            vec![(1, 1), (2, 4)],
-            vec![(2, 2), (3, 5)],
-            vec![(3, 1)],
+            vec![(0, 1, 1), (0, 2, 4)],
+            vec![(1, 2, 2), (1, 3, 5)],
+            vec![(2, 3, 1)],
             vec![],
         ];
         assert_eq!(
@@ -46,10 +52,10 @@ mod tests {
         );
 
         let g = vec![
-            vec![(1, 1), (2, 4)],
-            vec![(2, 2)],
-            vec![(0, 1)],
-            vec![(1, 1), (2, 5)],
+            vec![(0, 1, 1), (0, 2, 4)],
+            vec![(1, 2, 2)],
+            vec![(2, 0, 1)],
+            vec![(3, 1, 1), (3, 2, 5)],
         ];
         assert_eq!(
             super::dijkstra_sparse(&g, 1),
