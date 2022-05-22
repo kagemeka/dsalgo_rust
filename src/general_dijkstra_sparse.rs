@@ -5,7 +5,7 @@ use crate::{
 
 pub fn general_dijkstra_sparse<E, T, F, Q>(
     sparse_graph: &[Vec<E>],
-    update: &F,
+    callback: &F,
     mut data: T,
     src: usize,
 ) -> (Vec<Option<u64>>, T)
@@ -24,7 +24,7 @@ where
             continue;
         }
         for e in sparse_graph[u].iter() {
-            update(&dist, &mut data, u, e);
+            callback(&dist, &mut data, u, e);
             let v = *e.to();
             let dv = du + e.weight();
             if dist[v].is_some() && dv >= dist[v].unwrap() {
