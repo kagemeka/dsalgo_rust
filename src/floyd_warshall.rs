@@ -3,8 +3,8 @@ use crate::negative_cycle::NegativeCycleError;
 pub fn floyd_warshall(
     weight_matrix: Vec<Vec<Option<i64>>>,
 ) -> Result<Vec<Vec<Option<i64>>>, NegativeCycleError> {
-    let n = weight_matrix.len();
     let mut g = weight_matrix;
+    let n = g.len();
     assert!((0..n).all(|i| g[i].len() == n));
     for i in 0..n {
         if g[i][i].is_none() || g[i][i] > Some(0) {

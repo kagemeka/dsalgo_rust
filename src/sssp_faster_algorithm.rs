@@ -1,16 +1,15 @@
 use crate::{
-    graph_edge_trait::{To, Value},
+    graph_edge_trait::{To, Weight},
     negative_cycle::NegativeCycleError,
 };
-/// SSSP with negative edges containing no cycles.
-/// O(VE) but usually faster than bellman ford.
 
+/// O(VE) but usually faster than bellman ford.
 pub fn spfa<E>(
     sparse_graph: &[Vec<E>],
     src: usize,
 ) -> Result<Vec<Option<i64>>, NegativeCycleError>
 where
-    E: To<V = usize> + Value<T = i64>,
+    E: To<V = usize> + Weight<i64>,
 {
     let n = sparse_graph.len();
     let mut dist = vec![None; n];
@@ -24,7 +23,7 @@ where
             in_que[u] = false;
             for e in &sparse_graph[u] {
                 let v = *e.to();
-                let dv = Some(dist[u].unwrap() + e.value());
+                let dv = Some(dist[u].unwrap() + e.weight());
                 if dist[v].is_some() && dv >= dist[v] {
                     continue;
                 }

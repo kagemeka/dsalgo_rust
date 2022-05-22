@@ -4,16 +4,16 @@ use crate::{
 };
 
 pub fn bellman_ford<E>(
-    nodes_size: usize,
+    v_size: usize,
     directed_edges: &[E],
     src: usize,
 ) -> Result<Vec<Option<i64>>, NegativeCycleError>
 where
     E: From<V = usize> + To<V = usize> + Value<T = i64>,
 {
-    let mut dist = vec![None; nodes_size];
+    let mut dist = vec![None; v_size];
     dist[src] = Some(0);
-    for i in 0..nodes_size {
+    for i in 0..v_size {
         for e in directed_edges {
             let u = *e.from();
             let v = *e.to();
@@ -23,7 +23,7 @@ where
             {
                 continue;
             }
-            if i == nodes_size - 1 {
+            if i == v_size - 1 {
                 return Err(NegativeCycleError::new());
             }
             dist[v] = Some(dist[u].unwrap() + w);

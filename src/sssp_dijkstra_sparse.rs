@@ -12,21 +12,13 @@ where
     E: To<V = usize> + Weight<u64>,
     Q: DijkstraSparseQueue,
 {
-    let mut data = vec![None; sparse_graph.len()];
-    data[src] = Some(0);
     general_dijkstra_sparse::<_, _, _, Q>(
         sparse_graph,
-        &|dist: &mut Vec<Option<u64>>, u, e| {
-            let v = *e.to();
-            let dv = dist[u].unwrap() + e.weight();
-            if dist[v].is_some() && dv >= dist[v].unwrap() {
-                return;
-            }
-            dist[v] = Some(dv);
-        },
-        data,
+        &|_, _, _, _| {},
+        (),
         src,
     )
+    .0
 }
 
 #[cfg(test)]

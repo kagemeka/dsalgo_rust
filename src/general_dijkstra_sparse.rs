@@ -8,10 +8,10 @@ pub fn general_dijkstra_sparse<E, T, F, Q>(
     update: &F,
     mut data: T,
     src: usize,
-) -> T
+) -> (Vec<Option<u64>>, T)
 where
     E: To<V = usize> + Weight<u64>,
-    F: Fn(&mut T, usize, &E),
+    F: Fn(&Vec<Option<u64>>, &mut T, usize, &E),
     Q: DijkstraSparseQueue,
 {
     let n = sparse_graph.len();
@@ -24,7 +24,7 @@ where
             continue;
         }
         for e in sparse_graph[u].iter() {
-            update(&mut data, u, e);
+            update(&dist, &mut data, u, e);
             let v = *e.to();
             let dv = du + e.weight();
             if dist[v].is_some() && dv >= dist[v].unwrap() {
@@ -34,8 +34,9 @@ where
             hq.push((dv, v));
         }
     }
-    data
+    (dist, data)
 }
+
 // TODO
 // test on each specific problems
 // like sssp, path-count, and predecessors, ....

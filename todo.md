@@ -1,4 +1,5 @@
 # todo
+
 find `TODO` with ctrl + shift + F in VSCode.
 * [ ]dual fenwick tree
 * [ ]dual segment tree
@@ -23,8 +24,8 @@ find `TODO` with ctrl + shift + F in VSCode.
 * [ ]dial shortest path
 * [ ]refactor potentialized uf
 * [ ]xor_sparse_table
-- [ ]tree diameter
-- [ ]
+* [ ]tree diameter
+* [ ]
 
 // TODO: add Generic Type F to segment tree for applying.
 // replace set(i, x) -> apply(i, x) and apply function of type F
@@ -49,3 +50,5 @@ find `TODO` with ctrl + shift + F in VSCode.
 * https://github.com/TheAlgorithms
 * https://github.com/yosupo06/yosupo-library
 * https://ei1333.github.io/luzhiled/
+* https://niuez.hatenablog.com/entry/2019/03/04/142903
+* http://hos.ac/slides/20150319_flow.pdf

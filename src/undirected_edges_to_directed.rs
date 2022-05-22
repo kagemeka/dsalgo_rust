@@ -1,8 +1,9 @@
 use crate::graph_edge_trait::{Reversed, ToDirected};
 
-pub fn edges_to_directed<E>(undirected_edges: Vec<E>) -> Vec<E>
+pub fn edges_to_directed<UE, DE>(undirected_edges: Vec<UE>) -> Vec<DE>
 where
-    E: Clone + Reversed + ToDirected<E = E>,
+    UE: Clone + ToDirected<E = DE>,
+    DE: Reversed,
 {
     let di_edges = undirected_edges.into_iter().map(|e| e.to_directed());
     let rev = di_edges.clone().map(|e| e.reversed());
