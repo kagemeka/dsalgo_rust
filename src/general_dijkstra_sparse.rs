@@ -14,13 +14,12 @@ where
     F: Fn(&mut T, usize, &E),
     Q: DijkstraSparseQueue,
 {
-    use std::cmp::Reverse;
     let n = sparse_graph.len();
     let mut hq = Q::default();
     let mut dist = vec![None; n];
     dist[src] = Some(0);
-    hq.push(Reverse((0, src)));
-    while let Some(Reverse((du, u))) = hq.pop() {
+    hq.push((0, src));
+    while let Some((du, u)) = hq.pop() {
         if du > dist[u].unwrap() {
             continue;
         }
@@ -32,12 +31,11 @@ where
                 continue;
             }
             dist[v] = Some(dv);
-            hq.push(Reverse((dv, v)));
+            hq.push((dv, v));
         }
     }
     data
 }
-
 // TODO
 // test on each specific problems
 // like sssp, path-count, and predecessors, ....

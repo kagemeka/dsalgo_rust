@@ -1,5 +1,8 @@
 pub trait PriorityQueue {}
 
+pub trait MinimumQueue {}
+pub trait MaximumQueue {}
+
 pub trait Push {
     type T;
 

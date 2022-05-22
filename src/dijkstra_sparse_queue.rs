@@ -1,15 +1,11 @@
-use crate::priority_queue::{Pop, Push};
+use crate::priority_queue::{MinimumQueue, Pop, Push};
 
 pub trait DijkstraSparseQueue:
-    Push<T = std::cmp::Reverse<(u64, usize)>>
-    + Pop<T = std::cmp::Reverse<(u64, usize)>>
-    + Default
+    MinimumQueue + Push<T = (u64, usize)> + Pop<T = (u64, usize)> + Default
 {
 }
 
-impl<T> DijkstraSparseQueue for T where
-    T: Push<T = std::cmp::Reverse<(u64, usize)>>
-        + Pop<T = std::cmp::Reverse<(u64, usize)>>
-        + Default
+impl<Q> DijkstraSparseQueue for Q where
+    Q: MinimumQueue + Push<T = (u64, usize)> + Pop<T = (u64, usize)> + Default
 {
 }
