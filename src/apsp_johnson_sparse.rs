@@ -1,7 +1,6 @@
 use crate::{
     adjacency_list_graph::AdjacencyList,
     dijkstra_sparse_queue::DijkstraSparseQueue,
-    graph_edge_trait::Weight,
     negative_cycle::NegativeCycleError,
     shortest_path_potential::{
         shortest_path_potential,
@@ -44,6 +43,72 @@ where
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+    use crate::dijkstra_queue_binary_heap_std::DijkstraQueueBinaryHeapStd as Q;
     #[test]
-    fn test() {}
+    fn test_positive() {
+        let edges = vec![
+            (0, 1, 1),
+            (0, 2, 5),
+            (1, 2, 2),
+            (1, 3, 4),
+            (2, 3, 1),
+            (3, 2, 7),
+        ];
+        assert_eq!(
+            johnson_sparse::<_, Q>(4, edges),
+            Ok(vec![
+                vec![
+                    Some(0),
+                    Some(1),
+                    Some(3),
+                    Some(4)
+                ],
+                vec![None, Some(0), Some(2), Some(3)],
+                vec![None, None, Some(0), Some(1)],
+                vec![None, None, Some(7), Some(0)],
+            ]),
+        )
+    }
+
+    #[test]
+    fn test_negative() {
+        let edges = vec![
+            (0, 1, 1),
+            (0, 2, -5),
+            (1, 2, 2),
+            (1, 3, 4),
+            (2, 3, 1),
+            (3, 2, 7),
+        ];
+        assert_eq!(
+            johnson_sparse::<_, Q>(4, edges),
+            Ok(vec![
+                vec![
+                    Some(0),
+                    Some(1),
+                    Some(-5),
+                    Some(-4)
+                ],
+                vec![None, Some(0), Some(2), Some(3)],
+                vec![None, None, Some(0), Some(1)],
+                vec![None, None, Some(7), Some(0)],
+            ]),
+        )
+    }
+    #[test]
+    fn test_negative_cycle() {
+        let edges = vec![
+            (0, 1, 1),
+            (0, 2, 5),
+            (1, 2, 2),
+            (1, 3, 4),
+            (2, 3, 1),
+            (3, 2, -7),
+        ];
+        assert_eq!(
+            johnson_sparse::<_, Q>(4, edges),
+            Err(NegativeCycleError::new()),
+        )
+    }
 }
