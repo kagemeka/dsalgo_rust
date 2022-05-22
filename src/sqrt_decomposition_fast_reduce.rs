@@ -6,6 +6,7 @@ where
     G::S: Clone,
 {
     /// faster with constant time optimization.
+    /// more strictly, 2-times faster for random range queries mathematically.
     pub fn fast_reduce(&self, mut l: usize, r: usize) -> G::S {
         assert!(l < r && r <= self.size());
         let n = self.sqrt();

@@ -1,7 +1,4 @@
-fn tree_dfs(
-    g: &Vec<Vec<(usize, i64)>>,
-    root: usize,
-) -> (Vec<usize>, Vec<i64>) {
+fn tree_dfs(g: &Vec<Vec<(usize, i64)>>, root: usize) -> (Vec<usize>, Vec<i64>) {
     let mut st = vec![root];
     let n = g.len();
     let mut parent = vec![n; n];

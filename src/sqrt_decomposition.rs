@@ -74,16 +74,17 @@ where
 
     pub fn apply<F>(&mut self, i: usize, f: F)
     where
-        F: FnOnce(&G::S) -> G::S,
+        F: FnOnce(G::S) -> G::S,
     {
-        self.data[i] = f(&self.data[i]);
+        self.data[i] = f(self.data[i].clone());
         self.update(i / self.sqrt());
     }
 
-    // TODO: move out from core implementation. (the core is apply method)
-    /// set is defined as the application of 'replacement'
+    // TODO: move out from core implementation.
+    // because set can be defined as application of 'replacement'
+    // (the core is apply method)
     pub fn set(&mut self, i: usize, x: G::S) {
-        self.apply(i, |_| x);
+        self.data[i] = x;
         self.update(i / self.sqrt());
     }
 

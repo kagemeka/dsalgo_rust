@@ -16,7 +16,7 @@ where
         let n = self.n();
         let mut v = M::identity();
         let mut i = l + n;
-        assert_ne!(i, 0);
+        debug_assert_ne!(i, 0);
         loop {
             i >>= i.trailing_zeros(); // upstream
             let nv = M::operate(v.clone(), self.data[i].clone());
@@ -54,7 +54,7 @@ where
         let n = self.n();
         let mut v = M::identity();
         let mut i = r + n;
-        assert_ne!(i, 0);
+        debug_assert_ne!(i, 0);
         loop {
             i >>= i.trailing_zeros(); // upstream
             let nv = M::operate(

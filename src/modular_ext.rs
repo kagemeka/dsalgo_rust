@@ -33,10 +33,6 @@ impl<M: Modulus> IdentityElement<Multiplicative> for Modular<M> {
 
 impl<M: Modulus> AssociativeProperty<Multiplicative> for Modular<M> {}
 
-impl<M: Modulus + Clone> Modular<M> {
-    pub fn pow(self, exponent: u64) -> Self { self.pow_monoid(exponent) }
-}
-
 impl<M: Modulus> MulInv for Modular<M> {
     type Output = Self;
 

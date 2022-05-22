@@ -1,10 +1,10 @@
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct NegativeCycleError {
     msg: &'static str,
 }
 
 impl NegativeCycleError {
-    pub(crate) fn new() -> Self { Self { msg: "Negative Cycle Found." } }
+    pub fn new() -> Self { Self { msg: "Negative Cycle Found." } }
 }
 
 impl std::fmt::Display for NegativeCycleError {

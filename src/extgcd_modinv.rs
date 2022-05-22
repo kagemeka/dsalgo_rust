@@ -21,6 +21,6 @@ pub fn extgcd_modinv(modulus: i64, n: i64) -> (i64, i64) {
     if x00 < 0 {
         x00 += modulus / a;
     }
-    assert!(0 <= x00 && x00 < modulus / a);
+    debug_assert!(0 <= x00 && x00 < modulus / a);
     (a, x00)
 }
