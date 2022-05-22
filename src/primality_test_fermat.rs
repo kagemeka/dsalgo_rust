@@ -1,12 +1,17 @@
+// TODO:  refactor
+// - use nother modular
+// - use u64 intead of usize
+
 fn is_composite<M: crate::modular_static::Modulus + Copy>(
     n: usize,
     base: crate::modular_static::Modular<M>,
 ) -> bool {
-    use crate::euclidean::greatest_common_divisor;
+    use crate::greatest_common_divisor::gcd;
+    // use crate::euclidean::greatest_common_divisor;
     if crate::primality::is_trivial_composite(n) {
         return true;
     }
-    if greatest_common_divisor(n, base.value()) != 1 {
+    if gcd(n as u64, base.value() as u64) != 1 {
         return true;
     }
     if base.pow(n - 1).value() != 1 {

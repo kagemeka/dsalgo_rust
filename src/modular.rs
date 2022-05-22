@@ -139,8 +139,8 @@ impl<M: Modulus> Modular<M> {
             return Err("0 is not invertible");
         }
         let (g, inv) = extgcd_modinv(
-            M::value() as i64,
-            self.value() as i64,
+            M::value() as u64,
+            self.value() as u64,
         );
         if g != 1 {
             Err("value and modulus are not coprime")

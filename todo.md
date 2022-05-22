@@ -36,6 +36,7 @@ find `TODO` with ctrl + shift + F in VSCode.
 * https://github.com/hitonanode/cplib-cpp
 * https://github.com/maspypy/library
 * https://github.com/niuez/mochi-graph-algorithms
+* https://noshi91.github.io/Library/
 * https://github.com/noshi91/NoshiMochiLibrary
 * https://github.com/noshi91/algorithm-encyclopedia
 * https://github.com/yosupo06/Algorithm
@@ -52,3 +53,11 @@ find `TODO` with ctrl + shift + F in VSCode.
 * https://ei1333.github.io/luzhiled/
 * https://niuez.hatenablog.com/entry/2019/03/04/142903
 * http://hos.ac/slides/20150319_flow.pdf
+* https://www.youtube.com/c/BackToBackSWE/videos
+* https://www.youtube.com/user/tusharroy2525/videos
+* https://www.youtube.com/channel/UCZCFT11CWBi3MHNlGf019nw/videos
+* https://www.youtube.com/c/TECHDOSE4u
+* https://www.programiz.com/dsa
+* https://www.geeksforgeeks.org/data-structures
+* https://www.geeksforgeeks.org/fundamentals-of-algorithms
+* https://noshi91.hatenablog.com/
