@@ -61,3 +61,4 @@ find `TODO` with ctrl + shift + F in VSCode.
 * https://www.geeksforgeeks.org/data-structures
 * https://www.geeksforgeeks.org/fundamentals-of-algorithms
 * https://noshi91.hatenablog.com/
+* https://scipy.github.io/devdocs/reference/index.html
