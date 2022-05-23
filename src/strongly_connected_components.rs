@@ -15,7 +15,9 @@ pub fn path_based(g: &Vec<Vec<usize>>) -> Vec<usize> {
         st_1.push(u);
         for v in g[u].iter().map(|x| *x) {
             if order[v] == g.len() {
-                dfs(g, order, label, st_0, st_1, v, ord, l);
+                dfs(
+                    g, order, label, st_0, st_1, v, ord, l,
+                );
             } else if label[v] == g.len() {
                 while order[*st_0.last().unwrap()] > order[v] {
                     st_0.pop();
@@ -71,7 +73,9 @@ pub fn tarjan_offline(g: &Vec<Vec<usize>>) -> Vec<usize> {
         on_stack[u] = true;
         for v in g[u].iter().map(|x| *x) {
             if order[v] == g.len() {
-                dfs(g, order, low, label, on_stack, st, v, ord, l);
+                dfs(
+                    g, order, low, label, on_stack, st, v, ord, l,
+                );
                 if low[v] < low[u] {
                     low[u] = low[v];
                 }

@@ -69,3 +69,7 @@ find `TODO` with ctrl + shift + F in VSCode.
 * https://www.youtube.com/user/tusharroy2525/videos
 * http://e-maxx.ru/algo/
 * https://onlinejudge.u-aizu.ac.jp/courses/list
+-
+* https://ja.wikipedia.org/wiki/%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0
+- https://ja.wikipedia.org/wiki/%E3%82%BD%E3%83%BC%E3%83%88
+- https://en.wikipedia.org/wiki/Sorting_algorithm

@@ -4,11 +4,7 @@ pub struct NonDAGError {
 }
 
 impl NonDAGError {
-    fn new() -> Self {
-        Self {
-            msg: "Given graph is not DAG.",
-        }
-    }
+    fn new() -> Self { Self { msg: "Given graph is not DAG." } }
 }
 
 impl std::fmt::Display for NonDAGError {
