@@ -62,3 +62,7 @@ find `TODO` with ctrl + shift + F in VSCode.
 * https://www.geeksforgeeks.org/fundamentals-of-algorithms
 * https://noshi91.hatenablog.com/
 * https://scipy.github.io/devdocs/reference/index.html
+* https://dic.kimiyuki.net/
+* https://ja.wikipedia.org/wiki/%E3%83%87%E3%83%BC%E3%82%BF%E6%A7%8B%E9%80%A0
+* https://en.wikipedia.org/wiki/List_of_data_structures
+* https://en.wikipedia.org/wiki/List_of_algorithms

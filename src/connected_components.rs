@@ -68,7 +68,7 @@ pub fn with_union_find(n: usize, g: &Vec<(usize, usize)>) -> Vec<usize> {
         uf.unite(*u, *v);
     }
     for i in 0..n {
-        let root = uf.find(i);
+        let root = uf.find_root(i);
         if label[root] == n {
             label[root] = l;
             l += 1
