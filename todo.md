@@ -25,7 +25,10 @@ find `TODO` with ctrl + shift + F in VSCode.
 * [ ]refactor potentialized uf
 * [ ]xor_sparse_table
 * [ ]tree diameter
-* [ ]
+* [ ]radix_heap
+- [ ]binary gcd
+- [ ]chu liu edmonds
+
 
 // TODO: add Generic Type F to segment tree for applying.
 // replace set(i, x) -> apply(i, x) and apply function of type F
