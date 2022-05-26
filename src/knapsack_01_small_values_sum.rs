@@ -1,34 +1,25 @@
+use crate::dual_01_knapsack_table_just::dual_knapsack_01_table_just;
+
+/// max sum of values such that their weights sum is `at most` capacity.
 pub fn knapsack_01_small_values_sum(
     value_weight_pairs: &[(u64, u64)],
     capacity: u64,
 ) -> u64 {
-    let s = value_weight_pairs.iter().map(|&(v, _)| v).sum::<u64>() as usize;
-    let mut min_weight = vec![None; s + 1];
-    min_weight[0] = Some(0);
-    for &(v, w) in value_weight_pairs {
-        let v = v as usize;
-        for i in (v..=s).rev() {
-            if min_weight[i - v].is_none() {
-                continue;
-            }
-            let nw = Some(min_weight[i - v].unwrap() + w);
-            if min_weight[i].is_none() || nw < min_weight[i] {
-                min_weight[i] = nw;
-            }
+    dual_knapsack_01_table_just(
+        value_weight_pairs,
+        value_weight_pairs.iter().map(|&(v, _)| v).sum::<u64>() as usize + 1,
+    )
+    .into_iter()
+    .enumerate()
+    .filter_map(|(v, min_w)| {
+        if let Some(w) = min_w {
+            if w <= capacity { Some(v as u64) } else { None }
+        } else {
+            None
         }
-    }
-    min_weight
-        .into_iter()
-        .enumerate()
-        .filter_map(|(i, w)| {
-            if let Some(w) = w {
-                if w <= capacity { Some(i as u64) } else { None }
-            } else {
-                None
-            }
-        })
-        .max()
-        .unwrap()
+    })
+    .max()
+    .unwrap()
 }
 
 // TODO
