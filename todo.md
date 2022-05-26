@@ -1,40 +1,3 @@
-# todo
-
-find `TODO` with ctrl + shift + F in VSCode.
-* [ ]dual fenwick tree
-* [ ]dual segment tree
-* [ ]edmonds karp
-* [ ]fenwick tree
-* [ ]fibonacci heap
-* [ ]ford fulkerson
-* [ ]general tree path query with BinaryLifting
-* [ ]general tree path query with HLD
-* [ ]hopkroft karp
-* [ ]kruskal
-* [ ]lazy segment tree
-* [ ]lazy sqrt decomposition
-* [ ]linkcut tree
-* [ ]pollard rho
-* [ ]pow of pow mod. (x^{y^z} mod p)
-* [ ]prim
-* [ ]splay tree
-* [ ]tetoration mod
-* [ ]tonelli shanks
-* [ ]radix heap
-* [ ]dial shortest path
-* [ ]refactor potentialized uf
-* [ ]xor_sparse_table
-* [ ]tree diameter
-* [ ]radix_heap
-- [ ]binary gcd
-- [ ]chu liu edmonds
-
-
-// TODO: add Generic Type F to segment tree for applying.
-// replace set(i, x) -> apply(i, x) and apply function of type F
-// and set(i, x) is gonnabe an extension for segment tree but primitime core
-// API. consider dual segment tree and lazy segment tree similarly.
-
 # references
 * http://hos.ac/slides/20150319_flow.pdf
 * https://cp-algorithms.com/index.html
@@ -74,12 +37,90 @@ find `TODO` with ctrl + shift + F in VSCode.
 * https://onlinejudge.u-aizu.ac.jp/courses/list
 -
 * https://ja.wikipedia.org/wiki/%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0
-- https://ja.wikipedia.org/wiki/%E3%82%BD%E3%83%BC%E3%83%88
-- https://en.wikipedia.org/wiki/Sorting_algorithm
-- https://flex.phys.tohoku.ac.jp/~maru/implementations.php
-- https://algo-logic.info/
-- https://algo-method.com/
-- https://atcoder.jp/contests/dp
-- https://atcoder.jp/contests/tdpc
-- https://qiita.com/drken/items/a5e6fe22863b7992efdb
-- https://inzkyk.xyz/algorithms/
+* https://ja.wikipedia.org/wiki/%E3%82%BD%E3%83%BC%E3%83%88
+* https://en.wikipedia.org/wiki/Sorting_algorithm
+* https://flex.phys.tohoku.ac.jp/~maru/implementations.php
+* https://algo-logic.info/
+* https://algo-method.com/
+* https://atcoder.jp/contests/dp
+* https://atcoder.jp/contests/tdpc
+* https://qiita.com/drken/items/a5e6fe22863b7992efdb
+* https://inzkyk.xyz/algorithms/
+# todo
+
+find `TODO` with ctrl + shift + F in VSCode.
+* [ ]2-sat
+* [ ]2d segment tree
+* [ ]2d sqrt decomposition
+* [ ]64 tree
+* [ ]add Generic Type F to segment tree for applying.
+* [ ]aks primalitytest
+* [ ]b tree
+* [ ]biconnected components
+* [ ]binary gcd
+* [ ]bridge/articulation points (chain decomposition)
+* [ ]bubble sort
+* [ ]bucket sort
+* [ ]cartesian tree
+* [ ]centroid decomposition
+* [ ]chain decomposition
+* [ ]chu liu edmonds
+* [ ]counting sort
+* [ ]desopo pape
+* [ ]dial shortest path
+* [ ]dual fenwick tree
+* [ ]dual segment tree
+* [ ]dual sqrt decomposition
+* [ ]edmonds karp
+* [ ]farach-colton and bender
+* [ ]fenwick tree
+* [ ]fft butterfly
+* [ ]fibonacci heap
+* [ ]ford fulkerson
+* [ ]formal power series
+* [ ]general tree path query with BinaryLifting
+* [ ]general tree path query with HLD
+* [ ]hopkroft karp
+* [ ]karatsuba
+* [ ]kruskal
+* [ ]lazy segment tree
+* [ ]lazy sqrt decomposition
+* [ ]linkcut tree
+* [ ]linked list (singly, doubly)
+* [ ]manacher
+* [ ]mergesort
+* [ ]mergesort inplace
+* [ ]minimum cut
+* [ ]mo algorithm
+* [ ]ntt
+* [ ]persistent union find
+* [ ]pollard rho
+* [ ]pow of pow mod. (x^{y^z} mod p)
+* [ ]prim
+* [ ]qual tree
+* [ ]quick sort
+* [ ]radix hea
+* [ ]radix heap
+* [ ]radix sort
+* [ ]red black tree
+* [ ]refactor maximum flow algorithms
+* [ ]refactor potentialized uf
+* [ ]rerooting dp
+* [ ]review coordinate compression
+* [ ]rolling hash
+* [ ]shaker sort
+* [ ]slidng window aggregation
+* [ ]sorted set (tatyam)
+* [ ]review splay tree
+* [ ]sqrt tree
+* [ ]tensor
+* [ ]tetoration mod
+* [ ]tonelli shanks
+* [ ]review avl tree
+* [ ]toom-cook
+* [ ]tree diameter
+* [ ]twelvefold way
+* [ ]xor_sparse_table
+* [ ]z algorithm
+* [ ]insertion sort
+* replace set(i, x) -> apply(i, x) and apply function of type F and set(i, x) is gonnabe an extension for segment tree but primitime core API. consider dual segment tree and lazy segment tree similarly.
