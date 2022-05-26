@@ -45,7 +45,7 @@ impl<M: Modulus> From<u64> for Modular<M> {
 impl<M: Modulus> From<i64> for Modular<M> {
     fn from(mut value: i64) -> Self {
         let m = M::value() as i64;
-        if value < 0 || value >= m {
+        if value < -m || value >= m {
             value %= m;
         }
         if value < 0 {
