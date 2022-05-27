@@ -123,4 +123,13 @@ find `TODO` with ctrl + shift + F in VSCode.
 * [ ]xor_sparse_table
 * [ ]z algorithm
 * [ ]insertion sort
+* [ ]minimum cost flow
 * replace set(i, x) -> apply(i, x) and apply function of type F and set(i, x) is gonnabe an extension for segment tree but primitime core API. consider dual segment tree and lazy segment tree similarly.
+- [ ]refactor subset sum with knapsack (or ndim knapsack)
+- [ ]refactor knapsack with 3d knapsack (or ndim knapsack)
+- [ ]impl 3d knapsack
+- [ ]impl ndim knapsack
+- [ ]genelized knapsack items to i64 from u64 (pre-compute offset and normalize smallest to 0 internally).
+- [ ]ndim tensor
+- [ ]ndim segment tree
+- [ ]3d segment tree

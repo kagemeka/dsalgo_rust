@@ -9,13 +9,14 @@ pub struct DynamicMod<Id: DynamicModId>(std::marker::PhantomData<Id>);
 
 impl<I: DynamicModId> DynamicMod<I> {
     fn core() -> &'static std::sync::atomic::AtomicU32 {
-        // cannot return &'static mut VALUE because it can be changed by
-        // multiple threads.
-        // so we should return a reference of a type having interior mutability.
-        // cannot use std::cell for static value because it is not
-        // `Sync`;
-        // we should use std::sync types instead.
-        // atomic types are lighter than mutex.
+        // VALUE type needs Sync + 'static
+        // std::cell types are not Sync
+        // std::sync::Mutex is not 'static
+        // only atomic types can be.
+        // or we can use external crate like `lazy_static`.
+
+        // why not defining as associated const variable?
+        // -> const variables are immutabe in any situation.
 
         static VALUE: std::sync::atomic::AtomicU32 =
             std::sync::atomic::AtomicU32::new(0);
