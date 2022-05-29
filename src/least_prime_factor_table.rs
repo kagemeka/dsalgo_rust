@@ -1,16 +1,15 @@
-use crate::sieve_of_eratosthenes::sieve_of_eratosthenes;
+use crate::find_prime_numbers::find_prime_numbers;
 
 pub fn least_prime_factor_table(size: usize) -> Vec<Option<u64>> {
-    let mut lpf = sieve_of_eratosthenes(size)
-        .into_iter()
-        .enumerate()
-        .map(
-            |(i, is_prime)| {
-                if is_prime { Some(i as u64) } else { None }
-            },
-        )
-        .collect::<Vec<_>>();
-    for i in 2..size {
+    let mut lpf = vec![None; size];
+    for p in find_prime_numbers(size as u64) {
+        debug_assert!(lpf[p as usize].is_none());
+        lpf[p as usize] = Some(p);
+    }
+    for i in (4..size).step_by(2) {
+        lpf[i] = Some(2);
+    }
+    for i in (3..size).step_by(2) {
         if i * i >= size {
             break;
         }
@@ -18,7 +17,7 @@ pub fn least_prime_factor_table(size: usize) -> Vec<Option<u64>> {
         if lpf[i] != Some(i as u64) {
             continue;
         }
-        for j in (i * i..size).step_by(i as usize) {
+        for j in (i * i..size).step_by(i * 2) {
             if let Some(x) = lpf[j] {
                 debug_assert!(x < i as u64);
             } else {

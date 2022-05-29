@@ -2,14 +2,6 @@ use crate::sieve_of_eratosthenes::sieve_of_eratosthenes;
 
 pub fn find_prime_numbers(less_than: u64) -> Vec<u64> {
     sieve_of_eratosthenes(less_than as usize)
-        .iter()
-        .enumerate()
-        .filter_map(
-            |(i, &is_prime)| {
-                if is_prime { Some(i as u64) } else { None }
-            },
-        )
-        .collect()
 }
 
 #[cfg(test)]

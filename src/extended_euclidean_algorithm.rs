@@ -21,9 +21,9 @@ pub fn extgcd(mut a: i64, mut b: i64) -> (u64, i64, i64) {
         std::mem::swap(&mut a, &mut b);
     }
     if a < 0 {
-        a *= -1;
-        x00 *= -1;
-        x10 *= -1;
+        a = -a;
+        x00 = -x00;
+        x10 = -x10;
     }
     (a as u64, x00, x10)
 }
