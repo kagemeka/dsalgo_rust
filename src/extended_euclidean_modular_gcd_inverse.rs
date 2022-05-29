@@ -30,7 +30,7 @@ mod tests {
     use super::*;
     #[test]
     fn test() {
-        // extgcd_modinv(10, 0); // runtime error.
+        // euclidean_mod_gcd_inv(10, 0); // runtime error.
         assert_eq!(
             euclidean_mod_gcd_inv(5, 2),
             (1, 3)

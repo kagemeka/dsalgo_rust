@@ -39,6 +39,7 @@ mod tests {
         );
         assert_eq!(extgcd_recurse(0, 0), (0, 1, 0));
         assert_eq!(extgcd(-30, 111), (3, 11, 3));
+        assert_eq!(extgcd(111, 30), (3, 3, -11));
         assert_eq!(extgcd(0, 0), (0, 1, 0));
     }
 }

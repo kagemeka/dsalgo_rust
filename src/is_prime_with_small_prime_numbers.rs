@@ -1,4 +1,4 @@
-// TODO: 
+// TODO:
 // for n \le 10^6, O(1)
 // by precomputing 10^6 prime numbers,
 // for n \le 10^12, O(\sqrt{N})
