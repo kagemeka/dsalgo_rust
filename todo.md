@@ -1,10 +1,18 @@
 # references
+* http://e-maxx.ru/algo/
 * http://hos.ac/slides/20150319_flow.pdf
+* https://37zigen.com/
+* https://algo-logic.info/
+* https://algo-method.com/
+* https://atcoder.jp/contests/dp
+* https://atcoder.jp/contests/tdpc
 * https://cp-algorithms.com/index.html
 * https://dic.kimiyuki.net/
 * https://ei1333.github.io/luzhiled/
 * https://en.wikipedia.org/wiki/List_of_algorithms
 * https://en.wikipedia.org/wiki/List_of_data_structures
+* https://en.wikipedia.org/wiki/Sorting_algorithm
+* https://flex.phys.tohoku.ac.jp/~maru/implementations.php
 * https://github.com/ecnerwala/cp-book
 * https://github.com/hitonanode/cplib-cpp
 * https://github.com/kotatsugame/library
@@ -20,12 +28,18 @@
 * https://github.com/TheAlgorithms
 * https://github.com/yosupo06/Algorithm
 * https://github.com/yosupo06/yosupo-library
+* https://inzkyk.xyz/algorithms/
+* https://ja.wikipedia.org/wiki/%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0
+* https://ja.wikipedia.org/wiki/%E3%82%BD%E3%83%BC%E3%83%88
 * https://ja.wikipedia.org/wiki/%E3%83%87%E3%83%BC%E3%82%BF%E6%A7%8B%E9%80%A0
 * https://judge.yosupo.jp/
 * https://niuez.hatenablog.com/entry/2019/03/04/142903
 * https://noshi91.github.io/Library/
 * https://noshi91.hatenablog.com/
+* https://onlinejudge.u-aizu.ac.jp/courses/list
+* https://qiita.com/drken/items/a5e6fe22863b7992efdb
 * https://scipy.github.io/devdocs/reference/index.html
+* https://tjkendev.github.io/procon-library/
 * https://www.geeksforgeeks.org/data-structures
 * https://www.geeksforgeeks.org/fundamentals-of-algorithms
 * https://www.programiz.com/dsa
@@ -33,19 +47,6 @@
 * https://www.youtube.com/c/TECHDOSE4u
 * https://www.youtube.com/channel/UCZCFT11CWBi3MHNlGf019nw/videos
 * https://www.youtube.com/user/tusharroy2525/videos
-* http://e-maxx.ru/algo/
-* https://onlinejudge.u-aizu.ac.jp/courses/list
--
-* https://ja.wikipedia.org/wiki/%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0
-* https://ja.wikipedia.org/wiki/%E3%82%BD%E3%83%BC%E3%83%88
-* https://en.wikipedia.org/wiki/Sorting_algorithm
-* https://flex.phys.tohoku.ac.jp/~maru/implementations.php
-* https://algo-logic.info/
-* https://algo-method.com/
-* https://atcoder.jp/contests/dp
-* https://atcoder.jp/contests/tdpc
-* https://qiita.com/drken/items/a5e6fe22863b7992efdb
-* https://inzkyk.xyz/algorithms/
 # todo
 
 find `TODO` with ctrl + shift + F in VSCode.
@@ -125,11 +126,12 @@ find `TODO` with ctrl + shift + F in VSCode.
 * [ ]insertion sort
 * [ ]minimum cost flow
 * replace set(i, x) -> apply(i, x) and apply function of type F and set(i, x) is gonnabe an extension for segment tree but primitime core API. consider dual segment tree and lazy segment tree similarly.
-- [ ]refactor subset sum with knapsack (or ndim knapsack)
-- [ ]refactor knapsack with 3d knapsack (or ndim knapsack)
-- [ ]impl 3d knapsack
-- [ ]impl ndim knapsack
-- [ ]genelized knapsack items to i64 from u64 (pre-compute offset and normalize smallest to 0 internally).
-- [ ]ndim tensor
-- [ ]ndim segment tree
-- [ ]3d segment tree
+* [ ]refactor subset sum with knapsack (or ndim knapsack)
+* [ ]refactor knapsack with 3d knapsack (or ndim knapsack)
+* [ ]impl 3d knapsack
+* [ ]impl ndim knapsack
+* [ ]genelized knapsack items to i64 from u64 (pre-compute offset and normalize smallest to 0 internally).
+* [ ]ndim tensor
+* [ ]ndim segment tree
+* [ ]3d segment tree
+- [ ]min-max priority queue

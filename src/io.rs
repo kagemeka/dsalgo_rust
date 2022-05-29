@@ -49,7 +49,7 @@ pub fn locked_stdin_reader() -> ReadWrapper<std::io::StdinLock<'static>> {
     ReadWrapper::new(stdin.lock())
 }
 
-pub fn locked_stdin_buf_writer()
+pub fn locked_stdout_buf_writer()
 -> std::io::BufWriter<std::io::StdoutLock<'static>> {
     let stdout = Box::leak(Box::new(std::io::stdout()));
     std::io::BufWriter::new(stdout.lock())
@@ -68,8 +68,8 @@ mod tests {
     fn test_locked_stdin_buf_writer() {
         use std::io::Write;
 
-        use super::locked_stdin_buf_writer;
-        let mut writer = locked_stdin_buf_writer();
+        use super::locked_stdout_buf_writer;
+        let mut writer = locked_stdout_buf_writer();
         writeln!(writer, "Hello, world!").unwrap();
         writer.flush().unwrap();
     }

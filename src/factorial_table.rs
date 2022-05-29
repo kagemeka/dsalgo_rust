@@ -10,5 +10,5 @@ where
     let mut v = (0..size as u64).map(|i| i.into()).collect::<Vec<T>>();
     v[0] = 1.into();
     let op = |a: T, b: T| -> T { a * b };
-    accumulate(v, op)
+    accumulate(&op, v.into_iter()).collect()
 }

@@ -17,11 +17,7 @@ where
     }
     v[size - 1] = factorial::<T>(size as u64 - 1).mul_inv();
     let op = |a: T, b: T| -> T { a * b };
-    accumulate(
-        v.into_iter().rev().collect(),
-        op,
-    )
-    .into_iter()
-    .rev()
-    .collect()
+    let mut ifact = accumulate(&op, v.into_iter().rev()).collect::<Vec<_>>();
+    ifact.reverse();
+    ifact
 }

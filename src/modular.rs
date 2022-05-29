@@ -1,4 +1,7 @@
-use crate::{extgcd_modinv::extgcd_modinv, modulus::Modulus};
+use crate::{
+    extended_euclidean_modular_gcd_inverse::euclidean_mod_gcd_inv,
+    modulus::Modulus,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Modular<M> {
@@ -138,7 +141,7 @@ impl<M: Modulus> Modular<M> {
         if self.value() == 0 {
             return Err("0 is not invertible");
         }
-        let (g, inv) = extgcd_modinv(
+        let (g, inv) = euclidean_mod_gcd_inv(
             M::value() as u64,
             self.value() as u64,
         );

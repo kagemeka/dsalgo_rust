@@ -1,4 +1,8 @@
-/// O(\sqrt{N})
+//! related
+//! - charmichael_function.rs
+
+// TODO:
+// pass reference of factorization funtion (or closure) as parameter.
 pub fn euler_totient(mut n: usize) -> usize {
     let mut cnt = n;
     let mut i = 1;
@@ -18,5 +22,15 @@ pub fn euler_totient(mut n: usize) -> usize {
     cnt
 }
 
+// TODO: deprecated
 /// O(N\log\log{N} + O(\log{N}))
 pub struct EulerTotientLPF {}
+
+// TODO:
+#[cfg(test)]
+mod tests {
+    // TODO:
+    // test with lpf
+    #[test]
+    fn test() {}
+}

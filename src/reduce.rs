@@ -1,7 +1,14 @@
-pub fn reduce<T, F>(f: F, v: Vec<T>) -> T
+pub fn reduce<T, F, I>(f: F, values: I) -> Option<T>
 where
     F: Fn(T, T) -> T,
+    I: Iterator<Item = T>,
 {
-    assert!(v.len() > 0);
-    v.into_iter().reduce(f).unwrap()
+    values.reduce(f)
+}
+
+// TODO
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test() {}
 }
