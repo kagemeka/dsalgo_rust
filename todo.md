@@ -47,6 +47,8 @@
 * https://www.youtube.com/c/TECHDOSE4u
 * https://www.youtube.com/channel/UCZCFT11CWBi3MHNlGf019nw/videos
 * https://www.youtube.com/user/tusharroy2525/videos
+- https://number-pedia.com/highly_composite/
+
 # todo
 
 find `TODO` with ctrl + shift + F in VSCode.
