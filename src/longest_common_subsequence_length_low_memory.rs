@@ -23,6 +23,9 @@ mod tests {
         use super::*;
         let s = "axyb".chars().collect::<Vec<_>>();
         let t = "abyxb".chars().collect::<Vec<_>>();
-        assert_eq!(lcs_length_low_memory(&s, &t), 3);
+        assert_eq!(
+            lcs_length_low_memory(&s, &t),
+            3
+        );
     }
 }

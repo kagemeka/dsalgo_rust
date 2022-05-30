@@ -1,4 +1,4 @@
-pub fn find_divisors(n: u64) -> Vec<u64> {
+pub fn find_divisors_naive(n: u64) -> Vec<u64> {
     let mut divisors = Vec::new();
     for d in 1..=n {
         if d * d > n {
@@ -22,7 +22,7 @@ mod tests {
     #[test]
     fn test_find_divisors() {
         assert_eq!(
-            find_divisors(25),
+            find_divisors_naive(25),
             vec![1, 5, 25]
         );
     }
