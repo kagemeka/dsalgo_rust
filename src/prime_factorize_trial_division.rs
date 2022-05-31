@@ -1,4 +1,4 @@
-pub fn prime_factorize_trial_division(mut n: u64) -> Vec<(u64, usize)> {
+pub fn prime_factorize_trial_division(mut n: u64) -> Vec<(u64, u8)> {
     let mut factors = vec![];
     for i in 2..n {
         if i * i > n {
