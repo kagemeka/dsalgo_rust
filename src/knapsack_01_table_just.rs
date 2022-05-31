@@ -1,4 +1,5 @@
 /// dp[i] := max sum of values such that their weights sum is `just` i.
+#[allow(dead_code)]
 pub(crate) fn knapsack_01_table_just(
     value_weight_pairs: &[(u64, u64)],
     size: usize,

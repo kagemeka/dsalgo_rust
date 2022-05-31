@@ -61,7 +61,7 @@ mod tests {
     fn test_read_wrapper() {
         use super::ReadWrapper;
         let stdin = std::io::stdin();
-        let mut reader = ReadWrapper::new(stdin.lock());
+        let _reader = ReadWrapper::new(stdin.lock());
     }
 
     #[test]

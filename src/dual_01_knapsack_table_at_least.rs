@@ -30,6 +30,7 @@ pub(crate) fn dual_knapsack_01_table(
 }
 
 /// dp[i] := min sum of weights such that their values sum is `at least` i.
+#[allow(dead_code)]
 pub(crate) fn dual_knapsack_01_table_fast(
     value_weight_pairs: &[(u64, u64)],
     size: usize,

@@ -373,6 +373,7 @@ pub mod minimum_pair_sum_for_const_product;
 pub mod minimum_spanning_tree;
 pub mod mo_algorithm;
 pub mod mo_algorithm_3d;
+pub mod mobius_function;
 pub mod mobius_transformation;
 pub mod modular;
 pub mod modular_constant;
