@@ -123,6 +123,7 @@ pub mod count_divisors_naive;
 pub mod count_leading_zeros;
 pub mod count_subset_sum;
 pub mod count_trailing_zeros;
+pub mod count_trailing_zeros_factorial;
 pub mod counting_sort;
 pub mod cover_tree;
 pub mod crt;
