@@ -1,7 +1,8 @@
 /// reference
 /// https://users.rust-lang.org/t/show-value-only-in-debug-mode/43686/3
-#[allow(unused_macros)]
-macro_rules! dbg {
+#[macro_export]
+// #[allow(unused_macros)]
+macro_rules! debug {
     ($($x:tt)*) => {
         {
             // default in debug mode
@@ -23,8 +24,8 @@ macro_rules! dbg {
 mod tests {
     #[test]
     fn test() {
-        use super::*;
+        // use super::*;
         let a = 1;
-        dbg!(dbg!(a) + 1);
+        dbg!(debug!(a) + 1);
     }
 }

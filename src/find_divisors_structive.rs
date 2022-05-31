@@ -7,8 +7,7 @@ where
     divisors_from_prime_factors(&prime_factorize(n))
 }
 
-
-// TODO: 
+// TODO:
 #[cfg(test)]
 mod tests {
     #[test]
