@@ -86,3 +86,8 @@ find `TODO` with ctrl + shift + F in VSCode.
 * [ ]ndim segment tree
 * [ ]3d segment tree
 - [ ]min-max priority queue
+- [ ]montgomery multiplication
+- [ ]newton raphson division
+- [ ]barret reduction
+- [ ]toom-cook multiplication
+- [ ]solovay strassen primality test

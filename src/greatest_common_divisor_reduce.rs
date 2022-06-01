@@ -1,11 +1,15 @@
 use crate::greatest_common_divisor::gcd;
 
-/// internally, use fold but initial value (= gcd(empty)) is defined as 0.
+/// in the context, we define
+/// _{\gcd}|prod{\emptyset} := 0
+/// \gcd(0, 0) := 0
 pub fn gcd_reduce<I>(iter: I) -> u64
 where
     I: Iterator<Item = u64>,
 {
-    iter.fold(0, |a, b| gcd(a, b))
+    iter.fold(0, |a, b| {
+        if a == 0 && b == 0 { 0 } else { gcd(a, b) }
+    })
 }
 
 #[cfg(test)]

@@ -1,10 +1,12 @@
+use crate::vector_unique::vector_unique;
+
 pub struct CompressionResult<T> {
     pub keys: Vec<usize>,
     pub values: Vec<T>,
 }
 
 pub fn compress<T: Ord + Clone>(slice: &[T]) -> CompressionResult<T> {
-    let values = crate::vector_util::unique(slice);
+    let values = vector_unique(slice.to_vec());
     let keys = slice
         .iter()
         .map(|x| values.binary_search(x).unwrap())
@@ -19,7 +21,7 @@ pub struct ArrayCompression<T: Ord + Clone> {
 impl<T: Ord + Clone> ArrayCompression<T> {
     pub fn new(slice: &[T]) -> Self {
         Self {
-            values: crate::vector_util::unique(slice),
+            values: vector_unique(slice.to_vec()),
         }
     }
 
