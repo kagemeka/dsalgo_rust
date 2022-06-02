@@ -89,3 +89,8 @@ find `TODO` with ctrl + shift + F in VSCode.
 - [ ]newton raphson division
 - [ ]toom-cook multiplication
 - [ ]solovay strassen primality test
+- [ ]euler criterion
+- [ ]quadratic residue
+- [ ]legendre symbol
+- [ ]jacobi symbol
+- [ ]schonhage-strassen

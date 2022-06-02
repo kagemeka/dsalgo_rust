@@ -9,7 +9,7 @@ impl BarrettReduction63 {
 
     pub fn new(modulus: u64) -> Self {
         let n = modulus as u128;
-        assert!(n < (1u128 << 63));
+        assert!(n >> 63 == 0);
         let m = (1u128 << 126) / n;
         let (m1, m0) = (m >> 63, m & Self::MASK);
         Self { n, m0, m1 }

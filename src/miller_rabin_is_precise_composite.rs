@@ -1,4 +1,7 @@
-use crate::modular_power::modular_pow_64;
+use crate::{
+    montgomery_modular_multiplication_64::MontgomeryMultiplication64,
+    power_semigroup::pow_semigroup,
+};
 
 pub(crate) fn is_precise_composite(base: u64, n: u64) -> bool {
     debug_assert!(n > 2 && n & 1 == 1);
@@ -8,16 +11,20 @@ pub(crate) fn is_precise_composite(base: u64, n: u64) -> bool {
         s += 1;
         d >>= 1;
     }
-    let mut x = modular_pow_64(n, base as u128, d) as u128;
+    let multiplier = MontgomeryMultiplication64::new(n);
+    let mut x = pow_semigroup(
+        &|x, y| multiplier.mul(x, y),
+        base % n,
+        d,
+    );
     if x == 1 {
         return false;
     }
-    let n = n as u128;
     for _ in 0..s {
         if x == n - 1 {
             return false;
         }
-        x = x * x % n;
+        x = multiplier.mul(x, x);
     }
     true
 }
