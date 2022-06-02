@@ -23,18 +23,27 @@ impl MontgomeryMultiplication {
         let mask = r - 1;
         let mut n_dash = 0; // n*n_dash \equiv -1 \mod r
         // decide n_dash so that n*n_dash \equiv -1 \equiv r - 1 = mask
-        let mut t = 0; 
+        let mut t = 0;
         // t = n*n_dash (manage upper than or equal to i-th bit)
         for i in 0..n_bit_len {
-            if t & 1 == 0 { // i-th bit is not set.
-                t += n; // because n is odd, i-th bit is gonna be set. 
-                n_dash |= 1 << i; 
+            if t & 1 == 0 {
+                // i-th bit is not set.
+                t += n;
+                // because n is odd, i-th bit is gonna be set.
+                n_dash |= 1 << i;
             }
             t >>= 1; // next, check (i+1)-th bit
         }
         debug_assert_eq!(n * n_dash & mask, mask);
         let nr = n * r;
-        Self { n, n_bit_len, mask, r2, n_dash, nr }
+        Self {
+            n,
+            n_bit_len,
+            mask,
+            r2,
+            n_dash,
+            nr,
+        }
     }
 
     /// return tr^{-1} mod n
@@ -52,7 +61,7 @@ impl MontgomeryMultiplication {
     /// return xr mod n
     /// (xr^2)r^{-1} \equiv xr
     #[allow(dead_code)]
-    fn form(&self, x: u64) -> u64 { self.reduce(x as u128 * self.r2) }
+    fn form(&self, x: u64) -> u128 { self.reduce(x as u128 * self.r2) as u128 }
 
     /// return (a * b) mod n
     pub fn mul(&self, x: u64, y: u64) -> u64 {
@@ -61,7 +70,6 @@ impl MontgomeryMultiplication {
         // equivalent to: reduce(form(x) * form(y))
     }
 }
-
 
 // TODO:
 #[cfg(test)]
