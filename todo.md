@@ -1,54 +1,97 @@
 # todo
 
 find `TODO` with ctrl + shift + F in VSCode.
+* [ ]2-sat
+* [ ]2d segment tree
+* [ ]2d sqrt decomposition
+* [ ]64 tree
+* [ ]add Generic Type F to segment tree for applying.
+* [ ]aks primalitytest
+* [ ]b tree
+* [ ]biconnected components
+* [ ]binary gcd
+* [ ]bridge/articulation points (chain decomposition)
+* [ ]bubble sort
+* [ ]bucket sort
+* [ ]cartesian tree
+* [ ]centroid decomposition
+* [ ]chain decomposition
+* [ ]chu liu edmonds
+* [ ]counting sort
+* [ ]desopo pape
+* [ ]dial shortest path
 * [ ]dual fenwick tree
 * [ ]dual segment tree
+* [ ]dual sqrt decomposition
 * [ ]edmonds karp
+* [ ]farach-colton and bender
 * [ ]fenwick tree
+* [ ]fft butterfly
 * [ ]fibonacci heap
 * [ ]ford fulkerson
+* [ ]formal power series
 * [ ]general tree path query with BinaryLifting
 * [ ]general tree path query with HLD
 * [ ]hopkroft karp
+* [ ]karatsuba
 * [ ]kruskal
 * [ ]lazy segment tree
 * [ ]lazy sqrt decomposition
 * [ ]linkcut tree
+* [ ]linked list (singly, doubly)
+* [ ]manacher
+* [ ]mergesort
+* [ ]mergesort inplace
+* [ ]minimum cut
+* [ ]mo algorithm
+* [ ]ntt
+* [ ]persistent union find
 * [ ]pollard rho
 * [ ]pow of pow mod. (x^{y^z} mod p)
 * [ ]prim
-* [ ]splay tree
+* [ ]qual tree
+* [ ]quick sort
+* [ ]radix hea
+* [ ]radix heap
+* [ ]radix sort
+* [ ]red black tree
+* [ ]refactor maximum flow algorithms
+* [ ]refactor potentialized uf
+* [ ]rerooting dp
+* [ ]review coordinate compression
+* [ ]rolling hash
+* [ ]shaker sort
+* [ ]slidng window aggregation
+* [ ]sorted set (tatyam)
+* [ ]review splay tree
+* [ ]sqrt tree
+* [ ]tensor
 * [ ]tetoration mod
 * [ ]tonelli shanks
-* [ ]radix heap
-* [ ]dial shortest path
-* [ ]refactor potentialized uf
-* [ ]xor_sparse_table
+* [ ]review avl tree
+* [ ]toom-cook
 * [ ]tree diameter
-* [ ]
-
-// TODO: add Generic Type F to segment tree for applying.
-// replace set(i, x) -> apply(i, x) and apply function of type F
-// and set(i, x) is gonnabe an extension for segment tree but primitime core
-// API. consider dual segment tree and lazy segment tree similarly.
-
-# references
-* https://github.com/hitonanode/cplib-cpp
-* https://github.com/maspypy/library
-* https://github.com/niuez/mochi-graph-algorithms
-* https://github.com/noshi91/NoshiMochiLibrary
-* https://github.com/noshi91/algorithm-encyclopedia
-* https://github.com/yosupo06/Algorithm
-* https://judge.yosupo.jp/
-* https://github.com/noshi91/n91lib_rs
-* https://github.com/noshi91/Library
-* https://github.com/tatyam-prime/SortedSet
-* https://github.com/tatyam-prime/kyopro_library
-* https://github.com/NyaanNyaan/library
-* https://github.com/ecnerwala/cp-book
-* https://github.com/kotatsugame/library
-* https://github.com/TheAlgorithms
-* https://github.com/yosupo06/yosupo-library
-* https://ei1333.github.io/luzhiled/
-* https://niuez.hatenablog.com/entry/2019/03/04/142903
-* http://hos.ac/slides/20150319_flow.pdf
+* [ ]twelvefold way
+* [ ]xor_sparse_table
+* [ ]z algorithm
+* [ ]insertion sort
+* [ ]minimum cost flow
+* replace set(i, x) -> apply(i, x) and apply function of type F and set(i, x) is gonnabe an extension for segment tree but primitime core API. consider dual segment tree and lazy segment tree similarly.
+* [ ]refactor subset sum with knapsack (or ndim knapsack)
+* [ ]refactor knapsack with 3d knapsack (or ndim knapsack)
+* [ ]impl 3d knapsack
+* [ ]impl ndim knapsack
+* [ ]genelized knapsack items to i64 from u64 (pre-compute offset and normalize smallest to 0 internally).
+* [ ]ndim tensor
+* [ ]ndim segment tree
+* [ ]3d segment tree
+- [ ]min-max priority queue
+- [ ]newton raphson division
+- [ ]toom-cook multiplication
+- [ ]solovay strassen primality test
+- [ ]euler criterion
+- [ ]quadratic residue
+- [ ]legendre symbol
+- [ ]jacobi symbol
+- [ ]schonhage-strassen
+- [ ]graph cycle detection

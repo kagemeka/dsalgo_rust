@@ -6,7 +6,6 @@ use crate::{
     modular::Modular,
     modulus::Modulus,
     multiplicative_inverse::MulInv,
-    power_monoid::PowerMonoid,
 };
 
 impl<M: Modulus> From<i32> for Modular<M> {

@@ -1,3 +1,5 @@
+// TODO: refactor
+
 pub fn least_prime_factor(n: usize) -> Vec<usize> {
     assert!(n >= 2);
     let mut s: Vec<usize> = (0..n).collect();
@@ -71,9 +73,7 @@ pub struct PrimeFactorizeLPF {
 
 impl PrimeFactorizeLPF {
     pub fn new(n: usize) -> Self {
-        PrimeFactorizeLPF {
-            lpf: least_prime_factor(n),
-        }
+        PrimeFactorizeLPF { lpf: least_prime_factor(n) }
     }
 
     pub fn factorize(
@@ -103,15 +103,6 @@ pub fn count_prime_factors(n: usize) -> Vec<usize> {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn test_least_prime_factor() {
-        let lpf = least_prime_factor(1 << 10);
-        assert_eq!(
-            lpf.into_iter().take(10).collect::<Vec<_>>(),
-            vec![0, 0, 2, 3, 2, 5, 2, 7, 2, 3],
-        );
-    }
 
     #[test]
     fn test_greatest_prime_factor() {
@@ -149,27 +140,27 @@ mod tests {
     #[test]
     fn test_prime_factorize_lpf() {
         let lpf = PrimeFactorizeLPF::new(1 << 10);
-        use std::{
-            array::IntoIter,
-            collections::BTreeMap,
-            iter::FromIterator,
-        };
+        use std::{array::IntoIter, collections::BTreeMap, iter::FromIterator};
         assert_eq!(
             lpf.factorize(105),
-            BTreeMap::from_iter(IntoIter::new([(3, 1), (5, 1), (7, 1)])),
+            BTreeMap::from_iter(IntoIter::new([
+                (3, 1),
+                (5, 1),
+                (7, 1)
+            ])),
         );
     }
 
     #[test]
     fn test_prime_factorize() {
-        use std::{
-            array::IntoIter,
-            collections::BTreeMap,
-            iter::FromIterator,
-        };
+        use std::{array::IntoIter, collections::BTreeMap, iter::FromIterator};
         assert_eq!(
             prime_factorize(105),
-            BTreeMap::from_iter(IntoIter::new([(3, 1), (5, 1), (7, 1)])),
+            BTreeMap::from_iter(IntoIter::new([
+                (3, 1),
+                (5, 1),
+                (7, 1)
+            ])),
         );
     }
 

@@ -1,12 +1,18 @@
+// TODO:  refactor
+// - use nother modular
+// - use u64 intead of usize
+
+use crate::vector_unique::vector_unique;
 fn is_composite<M: crate::modular_static::Modulus + Copy>(
     n: usize,
     base: crate::modular_static::Modular<M>,
 ) -> bool {
-    use crate::euclidean::greatest_common_divisor;
+    use crate::greatest_common_divisor::gcd;
+    // use crate::euclidean::greatest_common_divisor;
     if crate::primality::is_trivial_composite(n) {
         return true;
     }
-    if greatest_common_divisor(n, base.value()) != 1 {
+    if gcd(n as u64, base.value() as u64) != 1 {
         return true;
     }
     if base.pow(n - 1).value() != 1 {
@@ -44,7 +50,7 @@ pub fn fermat_test(n: usize, check_times: usize) -> bool {
     let mut bases = (0..check_times)
         .map(|_| rng.gen_range(2..n - 1))
         .collect::<Vec<_>>();
-    bases = crate::vector_util::unique(&bases);
+    bases = vector_unique(bases);
     for base in bases.iter().map(|x| Mint::new(*x)) {
         if is_composite(n, base) {
             return false;

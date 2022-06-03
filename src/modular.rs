@@ -1,4 +1,4 @@
-use crate::{extgcd_modinv::extgcd_modinv, modulus::Modulus};
+use crate::{modular_inverse_extgcd::modular_inverse_extgcd, modulus::Modulus};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Modular<M> {
@@ -45,7 +45,7 @@ impl<M: Modulus> From<u64> for Modular<M> {
 impl<M: Modulus> From<i64> for Modular<M> {
     fn from(mut value: i64) -> Self {
         let m = M::value() as i64;
-        if value < 0 || value >= m {
+        if value < -m || value >= m {
             value %= m;
         }
         if value < 0 {
@@ -136,16 +136,14 @@ impl<M: Modulus> Modular<M> {
     /// handle execption inside the method, and return Result<T, E>
     pub fn invert(self) -> Result<Self, &'static str> {
         if self.value() == 0 {
+            // user does not call extgcd directly,
+            // so return err instead of panic.
             return Err("0 is not invertible");
         }
-        let (g, inv) = extgcd_modinv(
-            M::value() as i64,
-            self.value() as i64,
-        );
-        if g != 1 {
-            Err("value and modulus are not coprime")
-        } else {
-            Ok(inv.into())
-        }
+        Ok(modular_inverse_extgcd(
+            M::value() as u64,
+            self.value() as u64,
+        )?
+        .into())
     }
 }

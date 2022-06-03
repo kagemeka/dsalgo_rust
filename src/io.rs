@@ -49,10 +49,52 @@ pub fn locked_stdin_reader() -> ReadWrapper<std::io::StdinLock<'static>> {
     ReadWrapper::new(stdin.lock())
 }
 
-pub fn locked_stdin_buf_writer()
+pub fn locked_stdout_buf_writer()
 -> std::io::BufWriter<std::io::StdoutLock<'static>> {
     let stdout = Box::leak(Box::new(std::io::stdout()));
     std::io::BufWriter::new(stdout.lock())
+}
+
+#[macro_export]
+#[allow(unused_macros)]
+macro_rules! write_vec {
+    ($writer:ident, $values:expr) => {
+        write_vec!($writer, $values, sep: ' ');
+    };
+
+    ($writer:ident, $values:expr,sep: $sep:expr) => {
+        let n = $values.len();
+                if n == 0 {
+                    writeln!($writer).unwrap();
+                } else {
+                    for i in 0..n - 1 {
+                        write!(
+                            $writer,
+                            "{}{}",
+                            $values[i], $sep
+                        )
+                        .unwrap();
+                    }
+                    writeln!($writer, "{}", $values[n - 1]).unwrap();
+                }
+    };
+}
+
+#[macro_export]
+#[allow(unused_macros)]
+macro_rules! write_all {
+    ($writer:ident) => {
+        writeln!($writer).unwrap();
+    };
+
+    ($writer:ident, $v:expr) => {
+        writeln!($writer, "{}", $v).unwrap();
+    };
+
+    ($writer:ident, $v:expr, $($values:expr),+) => {
+        write!($writer, "{} ", $v).unwrap();
+        write_all!($writer, $($values),*);
+    };
 }
 
 #[cfg(test)]
@@ -61,16 +103,34 @@ mod tests {
     fn test_read_wrapper() {
         use super::ReadWrapper;
         let stdin = std::io::stdin();
-        let mut reader = ReadWrapper::new(stdin.lock());
+        let _reader = ReadWrapper::new(stdin.lock());
     }
 
     #[test]
     fn test_locked_stdin_buf_writer() {
         use std::io::Write;
 
-        use super::locked_stdin_buf_writer;
-        let mut writer = locked_stdin_buf_writer();
+        use super::locked_stdout_buf_writer;
+        let mut writer = locked_stdout_buf_writer();
         writeln!(writer, "Hello, world!").unwrap();
+        writer.flush().unwrap();
+    }
+
+    #[test]
+    fn write_macro() {
+        use std::io::Write;
+
+        use super::locked_stdout_buf_writer;
+        let mut writer = locked_stdout_buf_writer();
+        let mut v = vec![];
+        write_vec!(writer, v);
+        v.push(1);
+        v.push(2);
+        write_vec!(writer, v, sep: '\n');
+        write_vec!(writer, v, sep: ' ');
+        write_all!(writer);
+        write_all!(writer, 1, 2, 3);
+        write_all!(writer, 1);
         writer.flush().unwrap();
     }
 }

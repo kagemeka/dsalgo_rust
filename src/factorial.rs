@@ -6,3 +6,18 @@ where
         accum * x.into()
     })
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test() {
+        use super::*;
+        use crate::{modular::Modular, static_modulus::StaticMod};
+        type Mint = Modular<StaticMod<1_000_000_007>>;
+
+        assert_eq!(
+            factorial::<Mint>(20).value(),
+            146326063
+        );
+    }
+}
