@@ -94,3 +94,4 @@ find `TODO` with ctrl + shift + F in VSCode.
 - [ ]legendre symbol
 - [ ]jacobi symbol
 - [ ]schonhage-strassen
+- [ ]graph cycle detection
