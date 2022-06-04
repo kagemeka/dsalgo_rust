@@ -1,17 +1,30 @@
-use crate::power_semigroup::pow_semigroup;
+use crate::{
+    montgomery_modular_multiplication_64::MontgomeryMultiplication64,
+    power_semigroup::pow_semigroup,
+};
+
+/// n might not be prime.
+pub(crate) fn try_euler_criterion(n: u64, a: u64) -> Result<u64, &'static str> {
+    assert!(2 < n && n & 1 == 1 && 0 < a && a < n);
+    assert!(a % n != 0);
+    let multiplier = MontgomeryMultiplication64::new(n);
+    let res = pow_semigroup(
+        &|x, y| multiplier.mul(x, y),
+        a,
+        (n - 1) >> 1,
+    );
+    if res == 1 || res == n - 1 {
+        Ok(res)
+    } else {
+        Err("modulus n cannot be prime.")
+    }
+}
 
 /// prime modulus p and a != 0 (mod p)
+/// user must ensure that p is prime.
 pub fn euler_criterion(p: u64, a: u64) -> u64 {
-    assert!(2 < p && p & 1 == 1 && 0 < a && a < p);
     // TODO: assert p is prime if O(\log{p}) possible
-    assert!(a % p != 0);
-    let res = pow_semigroup(
-        &|x, y| (x as u128 * y as u128 % p as u128) as u64,
-        a,
-        (p - 1) >> 1,
-    );
-    debug_assert!(res == 1 || res == p - 1);
-    res
+    try_euler_criterion(p, a).unwrap()
 }
 
 #[cfg(test)]

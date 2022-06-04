@@ -3,8 +3,8 @@ use crate::{
     power_semigroup::pow_semigroup,
 };
 
-pub(crate) fn is_precise_composite(base: u64, n: u64) -> bool {
-    debug_assert!(n > 2 && n & 1 == 1 && 0 < base && base < n);
+pub(crate) fn is_composite_miller_rabin(base: u64, n: u64) -> bool {
+    assert!(n > 2 && n & 1 == 1 && 2 <= base && base < n - 1);
     let (mut s, mut d) = (0, n - 1);
     // n - 1 = 2^s*d
     while d & 1 == 0 {

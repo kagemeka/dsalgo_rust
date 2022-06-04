@@ -85,13 +85,16 @@ find `TODO` with ctrl + shift + F in VSCode.
 * [ ]ndim tensor
 * [ ]ndim segment tree
 * [ ]3d segment tree
-- [ ]min-max priority queue
-- [ ]newton raphson division
-- [ ]toom-cook multiplication
-- [ ]solovay strassen primality test
-- [ ]euler criterion
-- [ ]quadratic residue
-- [ ]legendre symbol
-- [ ]jacobi symbol
-- [ ]schonhage-strassen
-- [ ]graph cycle detection
+* [ ]min-max priority queue
+* [ ]newton raphson division
+* [ ]toom-cook multiplication
+* [ ]schonhage-strassen
+* [ ]graph cycle detection
+* [ ]lucas lehmer
+* [ ]pocklington
+* [ ]rng xorshift (32, 96, 128, 246, 1024)
+* [ ]rng xoshiro
+* [ ]rng chacha
+* [ ]rng pcg
+* [ ]rng mersenne twister
+* [ ]rename Modular -> ModularInt, and define ModularArthmetic struct (no instance, only associated functions), use modulararthmetic

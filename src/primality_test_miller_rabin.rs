@@ -1,10 +1,8 @@
-use crate::{
-    miller_rabin_fixed_bases::miller_rabin_fixed_bases,
-    miller_rabin_precise_bases::BASES_64_FEW,
-};
+use crate::miller_rabin_fixed_bases::MillerRabinFixedBases;
 
 pub fn miller_rabin_test(n: u64) -> bool {
-    miller_rabin_fixed_bases(&BASES_64_FEW, n)
+    let tester = MillerRabinFixedBases::default();
+    tester.is_prime(n)
 }
 
 #[cfg(test)]

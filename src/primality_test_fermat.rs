@@ -1,62 +1,8 @@
-// TODO:  refactor
-// - use nother modular
-// - use u64 intead of usize
+use crate::fermat_test_fixed_bases::FermatTestFixedBases;
 
-use crate::vector_unique::vector_unique;
-fn is_composite<M: crate::modular_static::Modulus + Copy>(
-    n: usize,
-    base: crate::modular_static::Modular<M>,
-) -> bool {
-    use crate::greatest_common_divisor::gcd;
-    // use crate::euclidean::greatest_common_divisor;
-    if crate::primality::is_trivial_composite(n) {
-        return true;
-    }
-    if gcd(n as u64, base.value() as u64) != 1 {
-        return true;
-    }
-    if base.pow(n - 1).value() != 1 {
-        return true;
-    }
-    false
-}
-
-pub fn fermat_test(n: usize, check_times: usize) -> bool {
-    if n < 2 {
-        return false;
-    }
-    if n <= 3 {
-        return true;
-    }
-    #[derive(Clone, Copy)]
-    struct Mod;
-    use crate::{
-        modular_runtime_static::{RuntimeModulus, RuntimeModulusCore},
-        modular_static::{Modular, Modulus},
-    };
-    impl RuntimeModulus for Mod {
-        fn core() -> &'static RuntimeModulusCore {
-            static MODULUS: RuntimeModulusCore = RuntimeModulusCore::new(1);
-            &MODULUS
-        }
-    }
-    impl Modulus for Mod {
-        fn value() -> usize { Self::core().get_value() }
-    }
-    Mod::set(n);
-    type Mint = Modular<Mod>;
-    use rand::{thread_rng, Rng};
-    let mut rng = thread_rng();
-    let mut bases = (0..check_times)
-        .map(|_| rng.gen_range(2..n - 1))
-        .collect::<Vec<_>>();
-    bases = vector_unique(bases);
-    for base in bases.iter().map(|x| Mint::new(*x)) {
-        if is_composite(n, base) {
-            return false;
-        }
-    }
-    true
+pub fn fermat_test(n: u64, epochs: u8) -> bool {
+    let tester = FermatTestFixedBases::from_random_bases(epochs);
+    tester.is_prime(n)
 }
 
 #[cfg(test)]
@@ -64,19 +10,19 @@ mod tests {
     #[test]
     fn test() {
         assert_eq!(
-            super::fermat_test(998_244_353, 100),
+            super::fermat_test(998_244_353, 10),
             true
         );
         assert_eq!(
-            super::fermat_test(1_000_000_007, 100),
+            super::fermat_test(1_000_000_007, 10),
             true
         );
         assert_eq!(
-            super::fermat_test(561, 100),
+            super::fermat_test(561, 10),
             false
         );
         assert_eq!(
-            super::fermat_test(512461, 100),
+            super::fermat_test(512461, 10),
             false
         );
     }
