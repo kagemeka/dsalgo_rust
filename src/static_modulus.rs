@@ -8,20 +8,20 @@ impl<const MOD: u32> Modulus for StaticMod<MOD> {
     fn value() -> u32 { MOD }
 }
 
-/// old version.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct Mod1_000_000_007;
+// old version.
+macro_rules! define_static_modulus {
+    ($typename:ident, $value:expr) => {
+        #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+        pub struct $typename;
 
-impl Modulus for Mod1_000_000_007 {
-    fn value() -> u32 { 1_000_000_007 }
+        impl Modulus for $typename {
+            fn value() -> u32 { $value }
+        }
+    };
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct Mod998_244_353;
-
-impl Modulus for Mod998_244_353 {
-    fn value() -> u32 { 998_244_353 }
-}
+define_static_modulus!(Mod998_244_353, 998_244_353);
+define_static_modulus!(Mod1_000_000_007, 1_000_000_007);
 
 #[cfg(test)]
 mod tests {
