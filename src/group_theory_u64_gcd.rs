@@ -3,11 +3,10 @@ use crate::{
     binary_operation::BinaryOperation,
     commutative_property::CommutativeProperty,
     gcd_00_is_0::gcd_00_is_0,
+    group_theory_id::GCD,
     idempotence::Idempotence,
     identity_element::IdentityElement,
 };
-
-pub struct GCD;
 
 impl BinaryOperation<GCD> for u64 {
     type Codomain = Self;

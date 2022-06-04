@@ -3,20 +3,18 @@ use crate::{
     extended_euclidean_modular_gcd_inverse::euclidean_mod_gcd_inv,
 };
 
-fn crt_preprocess(
-    mod_0: &mut u64,
-    rem_0: &mut u64,
-    mod_1: &mut u64,
-    rem_1: &mut u64,
-) {
-    assert!(rem_0 < mod_0 && rem_1 < mod_1);
-    if rem_0 > rem_1 {
-        std::mem::swap(rem_0, rem_1);
-        std::mem::swap(mod_0, mod_1);
-        // (rem_0, rem_1) = (rem_1, rem_0);
-        // (mod_0, mod_1) = (mod_1, mod_0);
-    }
-}
+// fn crt_pre_swap(
+//     mod_0: &mut u64,
+//     rem_0: &mut u64,
+//     mod_1: &mut u64,
+//     rem_1: &mut u64,
+// ) {
+//     assert!(rem_0 < mod_0 && rem_1 < mod_1);
+//     if rem_0 < rem_1 {
+//         std::mem::swap(rem_0, rem_1);
+//         std::mem::swap(mod_0, mod_1);
+//     }
+// }
 
 pub fn crt(
     mut mod_0: u64,
@@ -24,10 +22,12 @@ pub fn crt(
     mut mod_1: u64,
     mut rem_1: u64,
 ) -> Result<(u64, u64), String> {
-    crt_preprocess(
-        &mut mod_0, &mut rem_0, &mut mod_1, &mut rem_1,
-    );
+    assert!(rem_0 < mod_0 && rem_1 < mod_1);
     let (gcd, mut x, _) = extgcd(mod_0 as i64, mod_1 as i64);
+    if rem_0 > rem_1 {
+        std::mem::swap(&mut rem_0, &mut rem_1);
+        std::mem::swap(&mut mod_0, &mut mod_1);
+    }
     if (rem_1 - rem_0) % gcd != 0 {
         return Err("answer is undefined".to_string());
     }
@@ -48,22 +48,26 @@ pub fn crt_coprime(
     mod_1: u64,
     rem_1: u64,
 ) -> (u64, u64) {
-    crt(mod_0, rem_0, mod_1, rem_1).unwrap()
+    safe_crt(mod_0, rem_0, mod_1, rem_1).unwrap()
 }
 
+/// avoid overflows unless lcm(mod_0, mod_1) overflows.
 pub fn safe_crt(
     mut mod_0: u64,
     mut rem_0: u64,
     mut mod_1: u64,
     mut rem_1: u64,
 ) -> Result<(u64, u64), String> {
-    crt_preprocess(
-        &mut mod_0, &mut rem_0, &mut mod_1, &mut rem_1,
-    );
+    assert!(rem_0 < mod_0 && rem_1 < mod_1);
+    if rem_0 > rem_1 {
+        std::mem::swap(&mut rem_0, &mut rem_1);
+        std::mem::swap(&mut mod_0, &mut mod_1);
+    }
     if mod_0 % mod_1 == 0 {
         // extgcd_modinv(*, 0) fails to panic.
         // because it's trivial that inv(0) is undefined.
-        return if rem_0 % mod_1 == rem_1 {
+        // (mod_1|mod_0 -> rem_1 <= rem_0) \land rem_0 <= rem_1.
+        return if rem_0 == rem_1 {
             Ok((mod_0, rem_0))
         } else {
             Err("answer is undefined".to_string())
