@@ -4,8 +4,8 @@ use crate::{
 };
 
 pub fn is_composite_euler_jacobi(base: u64, n: u64) -> bool {
-    assert!(n > 2 && n & 1 == 1 && 1 < base && base < n);
-    // 1 < a because if a == 1, it's trivial jacobi = euler = 1.
+    assert!(n > 2 && n & 1 == 1 && 2 <= base && base < n);
+    // 2 <= a because if a == 1, it's trivial jacobi = euler = 1.
     // compare jcobi symbol and euler's criterion.
     let jacobi = jacobi_symbol(n, base);
     if jacobi == 0 {

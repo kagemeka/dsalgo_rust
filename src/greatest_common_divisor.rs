@@ -1,4 +1,6 @@
-/// gcd(0, 0) is not unique -> panic.
+/// gcd(0, 0) is infinity -> panic.
+/// user can redefine gcd(0, 0) := 0 outside of this function.
+/// but strictlly, we should not return gcd(0, 0).
 pub fn gcd(mut a: u64, mut b: u64) -> u64 {
     while b != 0 {
         a %= b;

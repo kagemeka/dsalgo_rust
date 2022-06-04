@@ -97,3 +97,4 @@ find `TODO` with ctrl + shift + F in VSCode.
 * [ ]rng chacha
 * [ ]rng pcg
 * [ ]rng mersenne twister
+* [ ]rename Modular -> ModularInt, and define ModularArthmetic struct (no instance, only associated functions), use modulararthmetic
