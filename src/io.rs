@@ -97,6 +97,17 @@ macro_rules! write_all {
     };
 }
 
+#[macro_export]
+#[allow(unused_macros)]
+macro_rules! read_vec {
+    ($reader:ident, $type:ty, $n:expr) => {
+        (0..$n)
+            .map(|_| $reader.read::<$type>())
+            .collect::<Result<Vec<_>, _>>()
+            .unwrap()
+    };
+}
+
 #[cfg(test)]
 mod tests {
     #[test]

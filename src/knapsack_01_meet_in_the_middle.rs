@@ -27,8 +27,8 @@ pub fn knapsack_01_meet_in_the_middle(
         cand
     }
     let n = value_weight_pairs.len();
-    let a = enumerate_bits_brute_force(&value_weight_pairs[..n / 2]);
-    let b = enumerate_bits_brute_force(&value_weight_pairs[n / 2..]);
+    let a = enumerate_bits_brute_force(&value_weight_pairs[..n >> 1]);
+    let b = enumerate_bits_brute_force(&value_weight_pairs[n >> 1..]);
     let b_weights = b.iter().map(|&(_, w)| w).collect::<Vec<_>>();
     let mut max_value = 0;
     for &(v, w) in a.iter() {
