@@ -1,16 +1,6 @@
-pub fn floor_sqrt(n: u64) -> u64 {
-    let mut lo = 0;
-    let mut hi = 1 << 32;
-    while hi - lo > 1 {
-        let x = (lo + hi) >> 1;
-        if x * x <= n {
-            lo = x;
-        } else {
-            hi = x;
-        }
-    }
-    lo
-}
+use crate::int_sqrt_binary_search::int_sqrt_binary_search;
+
+pub fn floor_sqrt(n: u64) -> u64 { int_sqrt_binary_search(n) }
 
 #[cfg(test)]
 mod tests {
