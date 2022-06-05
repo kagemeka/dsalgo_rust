@@ -33,7 +33,9 @@ impl<I: DynamicModId> DynamicMod<I> {
 }
 
 impl<I: DynamicModId> Modulus for DynamicMod<I> {
-    fn value() -> u32 { Self::core().load(std::sync::atomic::Ordering::SeqCst) }
+    fn modulus() -> u32 {
+        Self::core().load(std::sync::atomic::Ordering::SeqCst)
+    }
 }
 
 #[cfg(test)]
@@ -44,6 +46,6 @@ mod tests {
         struct Foo;
         type Mod = DynamicMod<Foo>;
         Mod::set(1_000_000_007);
-        assert_eq!(Mod::value(), 1_000_000_007);
+        assert_eq!(Mod::modulus(), 1_000_000_007);
     }
 }

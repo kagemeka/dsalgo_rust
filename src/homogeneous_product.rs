@@ -26,11 +26,11 @@ mod tests {
         use super::HomogeneousProduct;
         use crate::{
             combination::Combination,
-            modular::Modular,
+            modular_int::ModularInt,
             static_modulus::Mod1_000_000_007,
         };
 
-        type Mint = Modular<Mod1_000_000_007>;
+        type Mint = ModularInt<Mod1_000_000_007>;
         let mut hom =
             HomogeneousProduct::<Mint>::new(Box::new(
                 Combination::<Mint>::new(100),

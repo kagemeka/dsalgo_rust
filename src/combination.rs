@@ -49,8 +49,8 @@ mod tests {
     #[test]
     fn test() {
         use super::*;
-        use crate::{modular::Modular, static_modulus::StaticMod};
-        type Mint = Modular<StaticMod<1_000_000_007>>;
+        use crate::{modular_int::ModularInt, static_modulus::StaticMod};
+        type Mint = ModularInt<StaticMod<1_000_000_007>>;
         let choose = Combination::<Mint>::new(100);
         assert_eq!(choose.calc(5, 2), 10.into());
     }

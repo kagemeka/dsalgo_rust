@@ -5,7 +5,7 @@ use crate::modulus::Modulus;
 pub struct StaticMod<const MOD: u32>;
 
 impl<const MOD: u32> Modulus for StaticMod<MOD> {
-    fn value() -> u32 { MOD }
+    fn modulus() -> u32 { MOD }
 }
 
 // old version.
@@ -15,7 +15,7 @@ macro_rules! define_static_modulus {
         pub struct $typename;
 
         impl Modulus for $typename {
-            fn value() -> u32 { $value }
+            fn modulus() -> u32 { $value }
         }
     };
 }
@@ -28,8 +28,8 @@ mod tests {
     #[test]
     fn test() {
         use super::StaticMod;
-        use crate::modular::Modular;
-        type Mint = Modular<StaticMod<1_000_000_007>>;
+        use crate::modular_int::ModularInt;
+        type Mint = ModularInt<StaticMod<1_000_000_007>>;
         let a = Mint::from(1_000_000_008);
         assert_eq!(a.value(), 1);
     }

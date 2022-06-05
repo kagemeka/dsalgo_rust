@@ -1,3 +1,3 @@
 pub trait Modulus {
-    fn value() -> u32;
+    fn modulus() -> u32;
 }
