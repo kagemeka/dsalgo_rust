@@ -2,6 +2,7 @@
 
 // #![allow(dead_code)]
 pub mod a_star_search;
+
 pub mod aa_tree;
 pub mod ab_tree;
 pub mod abelian_group;
@@ -69,6 +70,7 @@ pub mod bit_scan_forward;
 pub mod bit_scan_reverse;
 pub mod bit_shr_until_odd;
 pub mod bitonic_sort;
+pub mod bits_rotate_left;
 pub mod bk_tree;
 pub mod block_cut_tree;
 pub mod block_sort;
@@ -530,7 +532,19 @@ pub mod right_identity_element;
 pub mod ring;
 pub mod rng;
 pub mod rng_mersenne_twister;
-pub mod rng_static_xorshift_64;
+pub mod rng_static_xorshift64;
+pub mod rng_xorshift1024star;
+pub mod rng_xorshift128;
+pub mod rng_xorshift128plus;
+pub mod rng_xorshift32;
+pub mod rng_xorshift64;
+pub mod rng_xorshift64star;
+pub mod rng_xorshift96;
+pub mod rng_xorwow;
+pub mod rng_xoshiro256_core;
+pub mod rng_xoshiro256plus;
+pub mod rng_xoshiro256starstar;
+
 pub mod rng_xorshift;
 pub mod rollback_union_find;
 pub mod scapegoad_tree;

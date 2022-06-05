@@ -9,8 +9,8 @@ impl SolovayStrassenFixedBases {
 
     // TODO: implement as common trait.
     pub fn from_random_bases(epochs: u8) -> Self {
-        use crate::rng_static_xorshift_64::static_xorshift_64;
-        Self::new((0..epochs).map(|_| static_xorshift_64()).collect::<Vec<_>>())
+        use crate::rng_static_xorshift64::static_xorshift64;
+        Self::new((0..epochs).map(|_| static_xorshift64()).collect::<Vec<_>>())
     }
 
     pub fn is_prime(&self, n: u64) -> bool {
