@@ -77,7 +77,7 @@ impl<T> DynamicShapedMatrix<T> {
     {
         let mut result = Self { data: self.data.clone() };
         let height = self.shape().height;
-        for i in 0..height / 2 {
+        for i in 0..height >> 1 {
             result.data.swap(i, height - i - 1);
         }
         result

@@ -1,5 +1,5 @@
 use crate::{
-    modular::Modular,
+    modular_int::ModularInt,
     modulus::Modulus,
     power_monoid::{pow_monoid, PowerMonoid},
 };
@@ -24,7 +24,7 @@ pub fn modular_pow_64(modulus: u64, base: u128, exponent: u64) -> u64 {
     ) as u64
 }
 
-impl<M: Modulus + Clone> Modular<M> {
+impl<M: Modulus + Clone> ModularInt<M> {
     pub fn pow(self, exponent: u64) -> Self { self.pow_monoid(exponent) }
 }
 

@@ -1,3 +1,7 @@
+// TODO: review group theory trait constraints.
+// is it needed to be monoid to call `update`, `set`, ...?
+// answer: No.
+
 use std::iter::FromIterator;
 
 use crate::monoid::Monoid;
@@ -62,6 +66,14 @@ where
         }
     }
 
+    /// not `reduce` but `fold`?
+    /// but initial element internally is just the identity element.
+    /// it's not an arbitrary element.
+    /// also, it is not necessarily used to compute _{op}\prod_l^r (l < r).
+    /// we use the identity only to make it easy implementation.
+    /// (requireing monoid for simplicity,
+    /// however, strictly, it's enough to be only semigrouop.)
+    /// so this method should be called `reduce`.
     pub fn reduce(&self, mut l: usize, mut r: usize) -> M::S {
         assert!(l < r && r <= self.size);
         let n = self.n();
