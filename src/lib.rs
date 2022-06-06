@@ -586,7 +586,7 @@ pub mod sieve_of_atkin;
 pub mod sieve_of_eratosthenes;
 pub mod sieve_of_eratosthenes_low_memoty_prime_generator;
 pub mod sieve_of_euler;
-pub mod sieve_of_subdaram;
+pub mod sieve_of_sundaram;
 pub mod simulated_annealing;
 pub mod single_source_shortest_path;
 pub mod size;
