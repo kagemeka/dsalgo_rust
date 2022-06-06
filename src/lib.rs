@@ -186,6 +186,7 @@ pub mod euler_criterion;
 pub mod euler_jacobi_pseudo_prime;
 pub mod euler_phi_function;
 pub mod euler_totient_function;
+pub mod euler_totient_prime_factorize;
 pub mod euler_tour_edges;
 pub mod euler_tour_ext;
 pub mod euler_tour_nodes;
