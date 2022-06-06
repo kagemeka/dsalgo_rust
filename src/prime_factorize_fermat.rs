@@ -6,10 +6,9 @@ use crate::{
 fn prime_factorize_flat_fermat(mut n: u64) -> Vec<u64> {
     assert!(n > 0);
     let mut res = vec![];
-    while n & 1 == 0 {
-        res.push(2);
-        n >>= 1;
-    }
+    let ctz = n.trailing_zeros();
+    res.extend(vec![2; ctz as usize]);
+    n >>= ctz;
     if n == 1 {
         return res;
     }
