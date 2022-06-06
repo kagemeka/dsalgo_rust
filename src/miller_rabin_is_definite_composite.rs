@@ -5,12 +5,9 @@ use crate::{
 
 pub(crate) fn is_composite_miller_rabin(base: u64, n: u64) -> bool {
     assert!(n > 2 && n & 1 == 1 && 2 <= base && base < n - 1);
-    let (mut s, mut d) = (0, n - 1);
+    let s = (n - 1).trailing_zeros();
+    let d = (n - 1) >> s;
     // n - 1 = 2^s*d
-    while d & 1 == 0 {
-        s += 1;
-        d >>= 1;
-    }
     let multiplier = MontgomeryMultiplication64::new(n);
     let mut x = pow_semigroup(
         &|x, y| multiplier.mul(x, y),
