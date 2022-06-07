@@ -1,6 +1,7 @@
 use crate::{
     miller_rabin_deterministic_bases::MILLER_RABIN_BASES_64_FEW,
     miller_rabin_is_definite_composite::is_composite_miller_rabin,
+    rng_static_xorshift64::static_xorshift64,
 };
 
 pub struct MillerRabinFixedBases {
@@ -16,7 +17,6 @@ impl MillerRabinFixedBases {
 
     // TODO: impl as common trait
     pub fn from_random_bases(epochs: u8) -> Self {
-        use crate::rng_static_xorshift64::static_xorshift64;
         Self::new((0..epochs).map(|_| static_xorshift64()).collect::<Vec<_>>())
     }
 
