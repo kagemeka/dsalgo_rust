@@ -27,47 +27,37 @@ impl RangeSieveOfEratosthenes {
             lo = 2;
         }
         debug_assert!(2 <= lo && lo < hi);
-        let mut lo = lo as usize;
-        let mut hi = hi as usize;
-        let mut size = hi - lo;
-        let mut res = Vec::with_capacity(size >> 1);
+        let mut res = vec![];
         if lo & 1 == 0 {
             if lo == 2 {
                 res.push(2);
             }
             lo += 1;
-            size -= 1;
         }
-        if size == 0 {
+        if lo == hi {
             return res;
         }
-        if hi & 1 == 0 {
-            hi += 1;
-            size += 1;
-        }
-        debug_assert!(size & 1 == 0);
         // initially, only odd numbers are in sieve.
         // be careful of indices.
-        let mut is_prime = vec![true; size >> 1];
-        let size2 = size >> 1;
+        let size = ((hi - lo + 1) >> 1) as usize;
+        let mut is_prime = vec![true; size];
         for &p in self.primes.iter().skip(1) {
-            let i = p as usize;
-            let mut from = i * i;
+            let mut from = p * p;
             if from >= hi {
                 break;
             }
-            from = std::cmp::max(from, (lo + i - 1) / i * i);
+            from = std::cmp::max(from, (lo + p - 1) / p * p);
             if from & 1 == 0 {
-                from += i;
+                from += p;
             }
             debug_assert!(from & 1 == 1);
-            for j in ((from - lo) >> 1..size2).step_by(i) {
+            for j in (((from - lo) >> 1) as usize..size).step_by(p as usize) {
                 is_prime[j] = false;
             }
         }
         res.extend(
             is_prime.into_iter().enumerate().filter_map(|(i, is_prime)| {
-                if is_prime { Some((lo + (i << 1)) as u64) } else { None }
+                if is_prime { Some(lo + (i << 1) as u64) } else { None }
             }),
         );
         res
