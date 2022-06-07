@@ -1,15 +1,15 @@
-pub fn sieve_of_eratosthenes(sieve_size: usize) -> Vec<u64> {
-    let mut primes = Vec::with_capacity(sieve_size);
+pub fn sieve_of_eratosthenes(sieve_size: usize) -> Vec<u32> {
+    let mut primes = Vec::with_capacity(sieve_size >> 1);
     if sieve_size > 2 {
         primes.push(2);
     }
-    let mut is_prime = vec![true; sieve_size];
+    let mut is_prime = vec![true; sieve_size >> 1];
     for i in (3..sieve_size).step_by(2) {
-        if !is_prime[i] {
+        if !is_prime[i >> 1] {
             continue;
         }
-        primes.push(i as u64);
-        for j in (i * i..sieve_size).step_by(i << 1) {
+        primes.push(i as u32);
+        for j in (i * i >> 1..sieve_size >> 1).step_by(i) {
             is_prime[j] = false;
         }
     }

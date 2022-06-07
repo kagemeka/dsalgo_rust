@@ -2,7 +2,7 @@ use crate::find_prime_numbers::find_prime_numbers;
 
 pub fn is_prime_table(size: usize) -> Vec<bool> {
     let mut is_prime = vec![false; size];
-    for p in find_prime_numbers(size as u64) {
+    for p in find_prime_numbers(size as u32) {
         is_prime[p as usize] = true;
     }
     is_prime

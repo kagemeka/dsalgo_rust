@@ -1,8 +1,8 @@
 use crate::find_prime_numbers::find_prime_numbers;
 
-pub fn least_prime_factor_table(size: usize) -> Vec<Option<u64>> {
+pub fn least_prime_factor_table(size: usize) -> Vec<Option<u32>> {
     let mut lpf = vec![None; size];
-    for p in find_prime_numbers(size as u64) {
+    for p in find_prime_numbers(size as u32) {
         debug_assert!(lpf[p as usize].is_none());
         lpf[p as usize] = Some(p);
     }
@@ -14,14 +14,14 @@ pub fn least_prime_factor_table(size: usize) -> Vec<Option<u64>> {
             break;
         }
         debug_assert!(lpf[i].is_some());
-        if lpf[i] != Some(i as u64) {
+        if lpf[i] != Some(i as u32) {
             continue;
         }
         for j in (i * i..size).step_by(i * 2) {
             if let Some(x) = lpf[j] {
-                debug_assert!(x < i as u64);
+                debug_assert!(x < i as u32);
             } else {
-                lpf[j] = Some(i as u64);
+                lpf[j] = Some(i as u32);
             }
         }
     }

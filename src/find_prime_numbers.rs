@@ -1,6 +1,6 @@
 use crate::sieve_of_eratosthenes::sieve_of_eratosthenes;
 
-pub fn find_prime_numbers(less_than: u64) -> Vec<u64> {
+pub fn find_prime_numbers(less_than: u32) -> Vec<u32> {
     sieve_of_eratosthenes(less_than as usize)
 }
 

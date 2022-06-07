@@ -2,7 +2,6 @@ use crate::{
     floor_sqrt::floor_sqrt,
     range_sieve_of_eratosthenes::RangeSieveOfEratosthenes,
 };
-
 pub struct SieveOfEratosthenesLowMemoryPrimeGenerator {
     iter: std::vec::IntoIter<u64>,
     range_sieve: RangeSieveOfEratosthenes,
@@ -19,7 +18,11 @@ impl SieveOfEratosthenesLowMemoryPrimeGenerator {
             hi = 2;
         }
         let mut ranges = vec![];
-        let range_size = floor_sqrt(hi) as usize;
+        let range_size = (floor_sqrt(hi) as usize) << 3; // 2 or 3?
+        // because range sieve has only odd numbers internally,
+        // the size is sqrt / 2.
+        // so we can check more than twice the range at once.
+        // four times is best in test.
         for i in (lo..hi).step_by(range_size) {
             ranges.push((
                 i,

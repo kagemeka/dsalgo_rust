@@ -1,4 +1,4 @@
-pub fn sieve_of_sundaram(less_than: u64) -> Vec<u64> {
+pub fn sieve_of_sundaram(less_than: u32) -> Vec<u32> {
     let mut prime_numbers = vec![];
     if less_than <= 2 {
         return prime_numbers;
@@ -8,7 +8,7 @@ pub fn sieve_of_sundaram(less_than: u64) -> Vec<u64> {
     let mut is_prime = vec![true; size];
     for i in 1..size {
         if is_prime[i] {
-            prime_numbers.push(((i as u64) << 1) | 1);
+            prime_numbers.push(((i as u32) << 1) | 1);
         }
         for j in (i * (i + 1) << 1..size).step_by((i << 1) | 1) {
             is_prime[j] = false;

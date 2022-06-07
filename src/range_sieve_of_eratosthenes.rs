@@ -1,5 +1,4 @@
 use crate::{find_prime_numbers::find_prime_numbers, floor_sqrt::floor_sqrt};
-
 pub struct RangeSieveOfEratosthenes {
     primes: Vec<u64>,
     less_than: u64,
@@ -8,7 +7,10 @@ pub struct RangeSieveOfEratosthenes {
 impl RangeSieveOfEratosthenes {
     pub fn new(less_than: u64) -> Self {
         Self {
-            primes: find_prime_numbers(floor_sqrt(less_than) + 1),
+            primes: find_prime_numbers(floor_sqrt(less_than) as u32 + 1)
+                .into_iter()
+                .map(|p| p as u64)
+                .collect(),
             less_than,
         }
     }
@@ -24,39 +26,51 @@ impl RangeSieveOfEratosthenes {
         if lo < 2 {
             lo = 2;
         }
-
-        let lo = lo as usize;
-        let hi = hi as usize;
-        let size = hi - lo;
-        let mut is_prime = vec![true; size];
-        for i in (lo & 1..size).step_by(2) {
-            is_prime[i] = false;
+        debug_assert!(2 <= lo && lo < hi);
+        let mut lo = lo as usize;
+        let mut hi = hi as usize;
+        let mut size = hi - lo;
+        let mut res = Vec::with_capacity(size >> 1);
+        if lo & 1 == 0 {
+            if lo == 2 {
+                res.push(2);
+            }
+            lo += 1;
+            size -= 1;
         }
-        if lo == 2 {
-            is_prime[0] = true;
+        if size == 0 {
+            return res;
         }
+        if hi & 1 == 0 {
+            hi += 1;
+            size += 1;
+        }
+        debug_assert!(size & 1 == 0);
+        // initially, only odd numbers are in sieve.
+        // be careful of indices.
+        let mut is_prime = vec![true; size >> 1];
+        let size2 = size >> 1;
         for &p in self.primes.iter().skip(1) {
             let i = p as usize;
-            if i * i >= hi {
+            let mut from = i * i;
+            if from >= hi {
                 break;
             }
-            let mut from = (lo + i - 1) / i * i;
+            from = std::cmp::max(from, (lo + i - 1) / i * i);
             if from & 1 == 0 {
                 from += i;
             }
-            for j in (std::cmp::max(from, i * i)..hi).step_by(i << 1) {
-                is_prime[j - lo] = false;
+            debug_assert!(from & 1 == 1);
+            for j in ((from - lo) >> 1..size2).step_by(i) {
+                is_prime[j] = false;
             }
         }
-        is_prime
-            .into_iter()
-            .enumerate()
-            .filter_map(
-                |(i, is_prime)| {
-                    if is_prime { Some((i + lo) as u64) } else { None }
-                },
-            )
-            .collect()
+        res.extend(
+            is_prime.into_iter().enumerate().filter_map(|(i, is_prime)| {
+                if is_prime { Some((lo + (i << 1)) as u64) } else { None }
+            }),
+        );
+        res
     }
 }
 

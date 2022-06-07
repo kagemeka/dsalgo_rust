@@ -34,7 +34,6 @@ find `TODO` with ctrl + shift + F in VSCode.
 * [ ]general tree path query with HLD
 * [ ]hopkroft karp
 * [ ]karatsuba
-* [ ]kruskal
 * [ ]lazy segment tree
 * [ ]lazy sqrt decomposition
 * [ ]linkcut tree
@@ -46,9 +45,7 @@ find `TODO` with ctrl + shift + F in VSCode.
 * [ ]mo algorithm
 * [ ]ntt
 * [ ]persistent union find
-* [ ]pollard rho
 * [ ]pow of pow mod. (x^{y^z} mod p)
-* [ ]prim
 * [ ]qual tree
 * [ ]quick sort
 * [ ]radix hea
@@ -98,3 +95,5 @@ find `TODO` with ctrl + shift + F in VSCode.
 * [ ]rng pcg
 * [ ]rng mersenne twister
 * [ ]rename Modular -> ModularInt, and define ModularArthmetic struct (no instance, only associated functions), use modulararthmetic
+- [ ]binary gcd
+- [ ]modular arithmetic trait
